@@ -1,0 +1,37 @@
+package de.redlion.badminton;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+
+public class Resources {
+	
+	public final boolean debugMode = true;
+
+	public BitmapFont font;
+	
+	public Sprite background = new Sprite(new Texture(Gdx.files.internal("data/court_bg.png")));
+	public Sprite player = new Sprite(new Texture(Gdx.files.internal("data/player.png")));
+	
+	public static Resources instance;
+
+	public static Resources getInstance() {
+		if (instance == null) {
+			instance = new Resources();
+		}
+		return instance;
+	}
+
+	public Resources() {
+		reInit();	
+	}
+
+	public void reInit() {			
+		font = new BitmapFont();
+	}
+
+	public void dispose() {
+		font.dispose();
+	}
+}

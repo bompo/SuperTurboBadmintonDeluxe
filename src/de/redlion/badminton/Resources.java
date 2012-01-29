@@ -4,6 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+
+import de.redlion.badminton.shader.DiffuseShader;
 
 public class Resources {
 	
@@ -14,6 +17,8 @@ public class Resources {
 	public Sprite background = new Sprite(new Texture(Gdx.files.internal("data/court_bg.png")));
 	public Sprite player = new Sprite(new Texture(Gdx.files.internal("data/player.png")));
 	
+	public ShaderProgram diffuseShader;
+	
 	public static Resources instance;
 
 	public static Resources getInstance() {
@@ -23,15 +28,27 @@ public class Resources {
 		return instance;
 	}
 
-	public Resources() {
+	public Resources() {		
 		reInit();	
 	}
+	
+	public void initShader() {
+		diffuseShader = new ShaderProgram(DiffuseShader.mVertexShader, DiffuseShader.mFragmentShader);
+		if (diffuseShader.isCompiled() == false) {
+			Gdx.app.log("diffuseShader: ", diffuseShader.getLog());
+			System.exit(0);
+		}
+	}
 
-	public void reInit() {			
+	public void reInit() {	
+		initShader();
+		
 		font = new BitmapFont();
 	}
 
 	public void dispose() {
 		font.dispose();
+		
+		diffuseShader.dispose();
 	}
 }

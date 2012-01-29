@@ -8,18 +8,23 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.loaders.ModelLoaderRegistry;
+import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
 
 public class GameScreen extends DefaultScreen implements InputProcessor {
 
 	float startTime = 0;
-	OrthographicCamera cam;
+	PerspectiveCamera cam;
 
 	SpriteBatch batch;
 	SpriteBatch fadeBatch;
@@ -27,7 +32,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	BitmapFont font;
 	Sprite blackFade;
 	
-	BackgroundFXRenderer bg;
+	StillModel modelPlaneObj;
+	Texture modelPlaneTex;
 
 	Player player = new Player();
 
@@ -38,14 +44,19 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 	float delta;
 	
+	// GLES20
+	Matrix4 model = new Matrix4().idt();
+	Matrix4 normal = new Matrix4().idt();
+	Matrix4 tmp = new Matrix4().idt();
+	
+	private ShaderProgram diffuseShader;
+	
 	private boolean win = false;
 
 	public GameScreen(Game game) {
 		super(game);
 		Gdx.input.setInputProcessor(this);
 				
-		bg = new BackgroundFXRenderer();
-		
 		batch = new SpriteBatch();
 		batch.getProjectionMatrix().setToOrtho2D(0, 0, 800, 480);
 		fontbatch = new SpriteBatch();
@@ -54,6 +65,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		fadeBatch = new SpriteBatch();
 		fadeBatch.getProjectionMatrix().setToOrtho2D(0, 0, 1, 1);
 
+		modelPlaneObj = ModelLoaderRegistry.loadStillModel(Gdx.files.internal("data/plane.g3dt"));	
+		modelPlaneTex = new Texture(Gdx.files.internal("data/court_top_texture.png"));
+		modelPlaneTex.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		
+		diffuseShader = Resources.getInstance().diffuseShader;	
+		
 		font = Resources.getInstance().font;
 		font.setScale(1);
 		
@@ -64,6 +81,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 	public void initRender() {
 		Gdx.graphics.getGL20().glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+		Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
 	}
 
 	@Override
@@ -74,12 +93,17 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		if(cam!=null) {
 			oldPosition.set(cam.position);
 			oldDirection.set(cam.direction);
-			cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+			cam = new PerspectiveCamera(30, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			cam.position.set(oldPosition);
+			cam.direction.set(oldDirection);
 		} else {
-			cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-			cam.position.set(0, 0f, 0f);
+			cam = new PerspectiveCamera(30, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+			cam.position.set(0, 3.0f, 15f);
+			cam.lookAt(0, 0, 0.5f);
 		}
+		cam.up.set(0, 1, 0);
+		cam.near = 0.5f;
+		cam.far = 600f;
 		
 		initRender();
 	}
@@ -135,12 +159,34 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	}
 
 	private void updateAI() {
-		cam.position.y = player.getY()/5;
 		player.update();
 	}
 
-	private void renderScene() {
-		bg.render(cam);
+	private void renderScene() {	
+		
+		//3D Stuff
+		diffuseShader.begin();
+		diffuseShader.setUniformMatrix("VPMatrix", cam.combined);
+		diffuseShader.setUniformi("uSampler", 0);
+		
+		// render court
+		tmp.idt();
+		model.idt();
+
+		tmp.setToTranslation(0,0, 0);
+		model.mul(tmp);
+		
+		tmp.setToScaling(10,10,10);
+		model.mul(tmp);
+			
+		diffuseShader.setUniformMatrix("MMatrix", model);
+		diffuseShader.setUniformi("uSampler", 0);
+		
+		modelPlaneTex.bind(0);
+		modelPlaneObj.render(diffuseShader);
+		
+		diffuseShader.end();		
+		
 		
 		batch.begin();
 			player.draw(batch);

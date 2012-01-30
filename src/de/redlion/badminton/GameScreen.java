@@ -43,6 +43,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	float footStepCnt = 0;
 
 	float delta;
+
 	
 	// GLES20
 	Matrix4 model = new Matrix4().idt();
@@ -236,35 +237,77 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		//Player controls
 		if (keycode == Input.Keys.LEFT) {
-			player.state = Player.STATE.LEFT;
+			if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
+				player.state = Player.STATE.DOWNLEFT;
+			else if(Gdx.input.isKeyPressed(Input.Keys.UP))
+				player.state = Player.STATE.UPLEFT;
+			else
+				player.state = Player.STATE.LEFT;
 		}	
 		if (keycode == Input.Keys.RIGHT) {
-			player.state = Player.STATE.RIGHT;
+			if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
+				player.state = Player.STATE.DOWNRIGHT;
+			else if(Gdx.input.isKeyPressed(Input.Keys.UP))
+				player.state = Player.STATE.UPRIGHT;
+			else
+				player.state = Player.STATE.RIGHT;
 		}
 		if (keycode == Input.Keys.UP) {
-			player.state = Player.STATE.FORWARD;
+			if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
+				player.state = Player.STATE.UPLEFT;
+			else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+				player.state = Player.STATE.UPRIGHT;
+			else
+				player.state = Player.STATE.FORWARD;
 		}	
 		if (keycode == Input.Keys.DOWN) {
-			player.state = Player.STATE.BACKWARD;
-		}	
+			if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
+				player.state = Player.STATE.DOWNLEFT;
+			else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+				player.state = Player.STATE.DOWNRIGHT;
+			else
+				player.state = Player.STATE.BACKWARD;
+		}
 		
 		return false;
 	}
 
 	@Override
 	public boolean keyUp(int keycode) {
+		
 		if (keycode == Input.Keys.LEFT) {
-			player.state = Player.STATE.IDLE;
-		}	
+			if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
+				player.state = Player.STATE.BACKWARD;
+			else if(Gdx.input.isKeyPressed(Input.Keys.UP))
+				player.state = Player.STATE.FORWARD;
+			else if(!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !Gdx.input.isKeyPressed(Input.Keys.DOWN) && !Gdx.input.isKeyPressed(Input.Keys.UP))
+				player.state = Player.STATE.IDLE;
+		}		
 		if (keycode == Input.Keys.RIGHT) {
-			player.state = Player.STATE.IDLE;
+			if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
+				player.state = Player.STATE.BACKWARD;
+			else if(Gdx.input.isKeyPressed(Input.Keys.UP))
+				player.state = Player.STATE.FORWARD;
+			else if(!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !Gdx.input.isKeyPressed(Input.Keys.DOWN) && !Gdx.input.isKeyPressed(Input.Keys.UP))
+				player.state = Player.STATE.IDLE;
 		}
 		if (keycode == Input.Keys.UP) {
-			player.state = Player.STATE.IDLE;
+			if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
+				player.state = Player.STATE.LEFT;
+			else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+				player.state = Player.STATE.RIGHT;
+			else if(!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !Gdx.input.isKeyPressed(Input.Keys.DOWN) && !Gdx.input.isKeyPressed(Input.Keys.UP))
+				player.state = Player.STATE.IDLE;
 		}	
 		if (keycode == Input.Keys.DOWN) {
-			player.state = Player.STATE.IDLE;
-		}	
+			if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
+				player.state = Player.STATE.LEFT;
+			else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+				player.state = Player.STATE.RIGHT;
+			else if(!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !Gdx.input.isKeyPressed(Input.Keys.DOWN) && !Gdx.input.isKeyPressed(Input.Keys.UP))
+				player.state = Player.STATE.IDLE;
+		}
+		
 		return false;
 	}
 

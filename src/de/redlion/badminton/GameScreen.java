@@ -96,7 +96,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			oldDirection.set(cam.direction);
 			cam = new PerspectiveCamera(30, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			cam.position.set(oldPosition);
-			cam.direction.set(oldDirection);
+			cam.lookAt(0, 0, 0.5f);
 		} else {
 			cam = new PerspectiveCamera(30, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			cam.position.set(0, 3.0f, 15f);
@@ -267,6 +267,35 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				player.state = Player.STATE.DOWNRIGHT;
 			else
 				player.state = Player.STATE.BACKWARD;
+		}
+		if (keycode == Input.Keys.S) {
+			cam.position.z += 3;
+		}
+		if (keycode == Input.Keys.W) {
+			cam.position.z -= 3;
+		}
+		if (keycode == Input.Keys.A) {
+			cam.fieldOfView += 0.5;
+		}
+		if (keycode == Input.Keys.D) {
+			cam.fieldOfView -= 0.5;
+		}
+		if (keycode == Input.Keys.Q) {
+			cam.direction.z += 0.2;
+		}
+		if (keycode == Input.Keys.E) {
+			cam.direction.z -= 0.2;
+		}
+		if (keycode == Input.Keys.R) {
+			cam.position.y += 0.1;
+		}
+		if (keycode == Input.Keys.T) {
+			cam.position.y -= 0.1;
+		}
+		if (keycode == Input.Keys.ENTER) {
+			Gdx.app.log("pos: ", cam.position.toString());
+			Gdx.app.log("look: ", cam.direction.toString());
+			Gdx.app.log("fov: ", cam.fieldOfView + "");
 		}
 		
 		return false;

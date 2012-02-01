@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 public class Player extends Sprite {
 	
 	public enum STATE {
-		IDLE,FORWARD,BACKWARD,LEFT,RIGHT,DOWNLEFT,UPLEFT,DOWNRIGHT,UPRIGHT;
+		IDLE,UP,DOWN,LEFT,RIGHT,DOWNLEFT,UPLEFT,DOWNRIGHT,UPRIGHT;
 	}
 	
 	public Vector3 direction = new Vector3(0,0,-1);
@@ -30,10 +30,10 @@ public class Player extends Sprite {
 		if (state == STATE.RIGHT) {
 			setX(getX() + Gdx.graphics.getDeltaTime()*200);
 		}
-		if (state ==STATE.FORWARD) {
+		if (state ==STATE.UP) {
 			setY(getY() + Gdx.graphics.getDeltaTime()*200);
 		}	
-		if (state == STATE.BACKWARD) {
+		if (state == STATE.DOWN) {
 			setY(getY() - Gdx.graphics.getDeltaTime()*200);
 		}
 		if (state == STATE.DOWNLEFT) {

@@ -360,9 +360,15 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	public boolean keyUp(int keycode) {
 		
 		if (keycode == Input.Keys.A) {
-			if(player.state == Player.STATE.IDLE && Gdx.input.isKeyPressed(Input.Keys.D))
-				player.state = Player.STATE.RIGHT;
-			if(player.state == Player.STATE.DOWN)
+			if(Gdx.input.isKeyPressed(Input.Keys.D)) {
+				if(Gdx.input.isKeyPressed(Input.Keys.W))
+					player.state = Player.STATE.UPRIGHT;
+				else if(Gdx.input.isKeyPressed(Input.Keys.S))
+					player.state = Player.STATE.DOWNRIGHT;
+				else
+					player.state = Player.STATE.RIGHT;
+			}
+			else if(player.state == Player.STATE.DOWN)
 				player.state = Player.STATE.DOWN;
 			else if(player.state == Player.STATE.DOWNLEFT) {
 				if(Gdx.input.isKeyPressed(Input.Keys.D))
@@ -388,8 +394,14 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				player.state = Player.STATE.UPRIGHT;
 		}
 		if (keycode == Input.Keys.D) {
-			if(player.state == Player.STATE.IDLE && Gdx.input.isKeyPressed(Input.Keys.A))
-				player.state = Player.STATE.LEFT;
+			if(Gdx.input.isKeyPressed(Input.Keys.A)) {
+				if(Gdx.input.isKeyPressed(Input.Keys.W))
+					player.state = Player.STATE.UPLEFT;
+				else if(Gdx.input.isKeyPressed(Input.Keys.S))
+					player.state = Player.STATE.DOWNLEFT;
+				else
+					player.state = Player.STATE.LEFT;
+			}
 			if (player.state == Player.STATE.DOWN)
 				player.state = Player.STATE.DOWN;
 			else if (player.state == Player.STATE.DOWNRIGHT) {
@@ -414,8 +426,14 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				player.state = Player.STATE.UPLEFT;
 		}
 		if (keycode == Input.Keys.W) {
-			if(player.state == Player.STATE.IDLE && Gdx.input.isKeyPressed(Input.Keys.S))
-				player.state = Player.STATE.DOWN;
+			if(Gdx.input.isKeyPressed(Input.Keys.S)) {
+				if(Gdx.input.isKeyPressed(Input.Keys.A))
+					player.state = Player.STATE.DOWNLEFT;
+				else if(Gdx.input.isKeyPressed(Input.Keys.D))
+					player.state = Player.STATE.DOWNRIGHT;
+				else
+					player.state = Player.STATE.DOWN;
+			}
 			if (player.state == Player.STATE.DOWN)
 				player.state = Player.STATE.DOWN;
 			else if (player.state == Player.STATE.DOWNLEFT)
@@ -441,8 +459,14 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			}
 		}
 		if (keycode == Input.Keys.S ) {
-			if(player.state == Player.STATE.IDLE && Gdx.input.isKeyPressed(Input.Keys.W))
-				player.state = Player.STATE.UP;
+			if(Gdx.input.isKeyPressed(Input.Keys.W)) {
+				if(Gdx.input.isKeyPressed(Input.Keys.A))
+					player.state = Player.STATE.UPLEFT;
+				else if(Gdx.input.isKeyPressed(Input.Keys.D))
+					player.state = Player.STATE.UPRIGHT;
+				else
+					player.state = Player.STATE.UP;
+			}
 			if (player.state == Player.STATE.DOWN)
 				player.state = Player.STATE.IDLE;
 			else if (player.state == Player.STATE.UPLEFT)

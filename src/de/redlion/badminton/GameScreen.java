@@ -236,73 +236,122 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		}
 		
 		//Player controls
-		if (keycode == Input.Keys.LEFT) {
-			if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
-				player.state = Player.STATE.DOWNLEFT;
-			else if(Gdx.input.isKeyPressed(Input.Keys.UP))
-				player.state = Player.STATE.UPLEFT;
-			else
-				player.state = Player.STATE.LEFT;
-		}	
-		if (keycode == Input.Keys.RIGHT) {
-			if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
-				player.state = Player.STATE.DOWNRIGHT;
-			else if(Gdx.input.isKeyPressed(Input.Keys.UP))
-				player.state = Player.STATE.UPRIGHT;
-			else
-				player.state = Player.STATE.RIGHT;
-		}
-		if (keycode == Input.Keys.UP) {
-			if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
-				player.state = Player.STATE.UPLEFT;
-			else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
-				player.state = Player.STATE.UPRIGHT;
-			else
-				player.state = Player.STATE.UP;
-		}	
-		if (keycode == Input.Keys.DOWN) {
-			if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
-				player.state = Player.STATE.DOWNLEFT;
-			else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
-				player.state = Player.STATE.DOWNRIGHT;
-			else
-				player.state = Player.STATE.DOWN;
-		}
-		if (keycode == Input.Keys.S) {
-			cam.position.z += 0.1;
-		}
-		if (keycode == Input.Keys.W) {
-			cam.position.z -= 0.1;
-		}
 		if (keycode == Input.Keys.A) {
-			cam.position.x += 0.1;
+			if(player.state == Player.STATE.IDLE)
+				player.state = Player.STATE.LEFT;
+			else if(player.state == Player.STATE.DOWN)
+				player.state = Player.STATE.DOWNLEFT;
+			else if(player.state == Player.STATE.DOWNLEFT)
+				player.state = Player.STATE.DOWNLEFT;
+			else if(player.state == Player.STATE.DOWNRIGHT)
+				player.state = Player.STATE.DOWNLEFT;
+			else if(player.state == Player.STATE.LEFT)
+				player.state = Player.STATE.LEFT;
+			else if(player.state == Player.STATE.RIGHT)
+				player.state = Player.STATE.IDLE;
+			else if(player.state == Player.STATE.UP)
+				player.state = Player.STATE.UPLEFT;
+			else if(player.state == Player.STATE.UPLEFT)
+				player.state = Player.STATE.UPLEFT;
+			else if(player.state == Player.STATE.UPRIGHT)
+				player.state = Player.STATE.UPLEFT;
 		}
 		if (keycode == Input.Keys.D) {
-			cam.position.x -= 0.1;
+			if(player.state == Player.STATE.IDLE)
+				player.state = Player.STATE.RIGHT;
+			else if(player.state == Player.STATE.DOWN)
+				player.state = Player.STATE.DOWNRIGHT;
+			else if(player.state == Player.STATE.DOWNLEFT)
+				player.state = Player.STATE.DOWNRIGHT;
+			else if(player.state == Player.STATE.DOWNRIGHT)
+				player.state = Player.STATE.DOWNRIGHT;
+			else if(player.state == Player.STATE.LEFT)
+				player.state = Player.STATE.IDLE;
+			else if(player.state == Player.STATE.RIGHT)
+				player.state = Player.STATE.RIGHT;
+			else if(player.state == Player.STATE.UP)
+				player.state = Player.STATE.UPRIGHT;
+			else if(player.state == Player.STATE.UPLEFT)
+				player.state = Player.STATE.UPRIGHT;
+			else if(player.state == Player.STATE.UPRIGHT)
+				player.state = Player.STATE.UPRIGHT;
 		}
-		if (keycode == Input.Keys.G) {
-			cam.fieldOfView += 0.5;
-		}
-		if (keycode == Input.Keys.H) {
-			cam.fieldOfView -= 0.5;
-		}
-		if (keycode == Input.Keys.Q) {
-			cam.direction.z += 0.1;
-		}
-		if (keycode == Input.Keys.E) {
-			cam.direction.z -= 0.1;
-		}
-		if (keycode == Input.Keys.R) {
-			cam.position.y += 0.1;
-		}
-		if (keycode == Input.Keys.T) {
-			cam.position.y -= 0.1;
-		}
-		if (keycode == Input.Keys.ENTER) {
-			Gdx.app.log("pos: ", cam.position.toString());
-			Gdx.app.log("look: ", cam.direction.toString());
-			Gdx.app.log("fov: ", cam.fieldOfView + "");
-		}
+		if (keycode == Input.Keys.W) {
+			if(player.state == Player.STATE.IDLE)
+				player.state = Player.STATE.UP;
+			else if(player.state == Player.STATE.DOWN)
+				player.state = Player.STATE.IDLE;
+			else if(player.state == Player.STATE.DOWNLEFT)
+				player.state = Player.STATE.UPLEFT;
+			else if(player.state == Player.STATE.DOWNRIGHT)
+				player.state = Player.STATE.UPRIGHT;
+			else if(player.state == Player.STATE.LEFT)
+				player.state = Player.STATE.UPLEFT;
+			else if(player.state == Player.STATE.RIGHT)
+				player.state = Player.STATE.UPRIGHT;
+			else if(player.state == Player.STATE.UP)
+				player.state = Player.STATE.UP;
+			else if(player.state == Player.STATE.UPLEFT)
+				player.state = Player.STATE.UPLEFT;
+			else if(player.state == Player.STATE.UPRIGHT)
+				player.state = Player.STATE.UPRIGHT;
+		}	
+		if (keycode == Input.Keys.S) {
+			if(player.state == Player.STATE.IDLE)
+				player.state = Player.STATE.DOWN;
+			else if(player.state == Player.STATE.DOWN)
+				player.state = Player.STATE.DOWN;
+			else if(player.state == Player.STATE.DOWNLEFT)
+				player.state = Player.STATE.DOWNLEFT;
+			else if(player.state == Player.STATE.DOWNRIGHT)
+				player.state = Player.STATE.DOWNRIGHT;
+			else if(player.state == Player.STATE.LEFT)
+				player.state = Player.STATE.DOWNLEFT;
+			else if(player.state == Player.STATE.RIGHT)
+				player.state = Player.STATE.DOWNRIGHT;
+			else if(player.state == Player.STATE.UP)
+				player.state = Player.STATE.IDLE;
+			else if(player.state == Player.STATE.UPLEFT)
+				player.state = Player.STATE.DOWNLEFT;
+			else if(player.state == Player.STATE.UPRIGHT)
+				player.state = Player.STATE.DOWNRIGHT;
+		}	
+//		if (keycode == Input.Keys.S) {
+//			cam.position.z += 0.1;
+//		}
+//		if (keycode == Input.Keys.W) {
+//			cam.position.z -= 0.1;
+//		}
+//		if (keycode == Input.Keys.A) {
+//			cam.position.x += 0.1;
+//		}
+//		if (keycode == Input.Keys.D) {
+//			cam.position.x -= 0.1;
+//		}
+//		if (keycode == Input.Keys.G) {
+//			cam.fieldOfView += 0.5;
+//		}
+//		if (keycode == Input.Keys.H) {
+//			cam.fieldOfView -= 0.5;
+//		}
+//		if (keycode == Input.Keys.Q) {
+//			cam.direction.z += 0.1;
+//		}
+//		if (keycode == Input.Keys.E) {
+//			cam.direction.z -= 0.1;
+//		}
+//		if (keycode == Input.Keys.R) {
+//			cam.position.y += 0.1;
+//		}
+//		if (keycode == Input.Keys.T) {
+//			cam.position.y -= 0.1;
+//		}
+//		if (keycode == Input.Keys.ENTER) {
+//			Gdx.app.log("pos: ", cam.position.toString());
+//			Gdx.app.log("look: ", cam.direction.toString());
+//			Gdx.app.log("fov: ", cam.fieldOfView + "");
+//		}
+		
 		
 		return false;
 	}
@@ -310,37 +359,113 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	@Override
 	public boolean keyUp(int keycode) {
 		
-		if (keycode == Input.Keys.LEFT && (player.state == Player.STATE.LEFT || player.state == Player.STATE.DOWNLEFT || player.state == Player.STATE.UPLEFT) ) {
-			if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
-				player.state = Player.STATE.DOWN;
-			else if(Gdx.input.isKeyPressed(Input.Keys.UP))
-				player.state = Player.STATE.UP;
-			else if(!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !Gdx.input.isKeyPressed(Input.Keys.DOWN) && !Gdx.input.isKeyPressed(Input.Keys.UP))
-				player.state = Player.STATE.IDLE;
-		}
-		if (keycode == Input.Keys.RIGHT && (player.state == Player.STATE.RIGHT || player.state == Player.STATE.DOWNRIGHT || player.state == Player.STATE.UPRIGHT) ) {
-			if(Gdx.input.isKeyPressed(Input.Keys.DOWN))
-				player.state = Player.STATE.DOWN;
-			else if(Gdx.input.isKeyPressed(Input.Keys.UP))
-				player.state = Player.STATE.UP;
-			else if(!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !Gdx.input.isKeyPressed(Input.Keys.DOWN) && !Gdx.input.isKeyPressed(Input.Keys.UP))
-				player.state = Player.STATE.IDLE;
-		}
-		if (keycode == Input.Keys.UP && (player.state == Player.STATE.UP || player.state == Player.STATE.UPRIGHT || player.state == Player.STATE.UPLEFT) ) {
-			if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
-				player.state = Player.STATE.LEFT;
-			else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+		if (keycode == Input.Keys.A) {
+			if(player.state == Player.STATE.IDLE && Gdx.input.isKeyPressed(Input.Keys.D))
 				player.state = Player.STATE.RIGHT;
-			else if(!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !Gdx.input.isKeyPressed(Input.Keys.DOWN) && !Gdx.input.isKeyPressed(Input.Keys.UP))
+			if(player.state == Player.STATE.DOWN)
+				player.state = Player.STATE.DOWN;
+			else if(player.state == Player.STATE.DOWNLEFT) {
+				if(Gdx.input.isKeyPressed(Input.Keys.D))
+					player.state = Player.STATE.DOWNRIGHT;
+				else
+					player.state = Player.STATE.DOWN;
+			}
+			else if(player.state == Player.STATE.DOWNRIGHT)
+				player.state = Player.STATE.DOWNRIGHT;
+			else if(player.state == Player.STATE.LEFT)
 				player.state = Player.STATE.IDLE;
-		}	
-		if (keycode == Input.Keys.DOWN  && (player.state == Player.STATE.DOWN || player.state == Player.STATE.DOWNRIGHT || player.state == Player.STATE.DOWNLEFT) ) {
-			if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
-				player.state = Player.STATE.LEFT;
-			else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+			else if(player.state == Player.STATE.RIGHT)
 				player.state = Player.STATE.RIGHT;
-			else if(!Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !Gdx.input.isKeyPressed(Input.Keys.DOWN) && !Gdx.input.isKeyPressed(Input.Keys.UP))
+			else if(player.state == Player.STATE.UP)
+				player.state = Player.STATE.UP;
+			else if(player.state == Player.STATE.UPLEFT){
+				if(Gdx.input.isKeyPressed(Input.Keys.D))
+					player.state = Player.STATE.UPRIGHT;
+				else
+					player.state = Player.STATE.UP;
+			}
+			else if(player.state == Player.STATE.UPRIGHT)
+				player.state = Player.STATE.UPRIGHT;
+		}
+		if (keycode == Input.Keys.D) {
+			if(player.state == Player.STATE.IDLE && Gdx.input.isKeyPressed(Input.Keys.A))
+				player.state = Player.STATE.LEFT;
+			if (player.state == Player.STATE.DOWN)
+				player.state = Player.STATE.DOWN;
+			else if (player.state == Player.STATE.DOWNRIGHT) {
+				if (Gdx.input.isKeyPressed(Input.Keys.A))
+					player.state = Player.STATE.DOWNLEFT;
+				else
+					player.state = Player.STATE.DOWN;
+			} else if (player.state == Player.STATE.DOWNLEFT)
+				player.state = Player.STATE.DOWNLEFT;
+			else if (player.state == Player.STATE.RIGHT)
 				player.state = Player.STATE.IDLE;
+			else if (player.state == Player.STATE.LEFT)
+				player.state = Player.STATE.LEFT;
+			else if (player.state == Player.STATE.UP)
+				player.state = Player.STATE.UP;
+			else if (player.state == Player.STATE.UPRIGHT) {
+				if (Gdx.input.isKeyPressed(Input.Keys.A))
+					player.state = Player.STATE.UPLEFT;
+				else
+					player.state = Player.STATE.UP;
+			} else if (player.state == Player.STATE.UPLEFT)
+				player.state = Player.STATE.UPLEFT;
+		}
+		if (keycode == Input.Keys.W) {
+			if(player.state == Player.STATE.IDLE && Gdx.input.isKeyPressed(Input.Keys.S))
+				player.state = Player.STATE.DOWN;
+			if (player.state == Player.STATE.DOWN)
+				player.state = Player.STATE.DOWN;
+			else if (player.state == Player.STATE.DOWNLEFT)
+				player.state = Player.STATE.DOWNLEFT;
+			else if (player.state == Player.STATE.DOWNRIGHT)
+				player.state = Player.STATE.DOWNRIGHT;
+			else if (player.state == Player.STATE.LEFT)
+				player.state = Player.STATE.LEFT;
+			else if (player.state == Player.STATE.RIGHT)
+				player.state = Player.STATE.RIGHT;
+			else if (player.state == Player.STATE.UP)
+				player.state = Player.STATE.IDLE;
+			else if (player.state == Player.STATE.UPLEFT) {
+				if (Gdx.input.isKeyPressed(Input.Keys.S))
+					player.state = Player.STATE.DOWNLEFT;
+				else
+					player.state = Player.STATE.LEFT;
+			} else if (player.state == Player.STATE.UPRIGHT) {
+				if (Gdx.input.isKeyPressed(Input.Keys.S))
+					player.state = Player.STATE.DOWNRIGHT;
+				else
+					player.state = Player.STATE.RIGHT;
+			}
+		}
+		if (keycode == Input.Keys.S ) {
+			if(player.state == Player.STATE.IDLE && Gdx.input.isKeyPressed(Input.Keys.W))
+				player.state = Player.STATE.UP;
+			if (player.state == Player.STATE.DOWN)
+				player.state = Player.STATE.IDLE;
+			else if (player.state == Player.STATE.UPLEFT)
+				player.state = Player.STATE.UPLEFT;
+			else if (player.state == Player.STATE.UPRIGHT)
+				player.state = Player.STATE.UPRIGHT;
+			else if (player.state == Player.STATE.LEFT)
+				player.state = Player.STATE.LEFT;
+			else if (player.state == Player.STATE.RIGHT)
+				player.state = Player.STATE.RIGHT;
+			else if (player.state == Player.STATE.UP)
+				player.state = Player.STATE.UP;
+			else if (player.state == Player.STATE.DOWNLEFT) {
+				if (Gdx.input.isKeyPressed(Input.Keys.W))
+					player.state = Player.STATE.UPLEFT;
+				else
+					player.state = Player.STATE.LEFT;
+			} else if (player.state == Player.STATE.DOWNRIGHT) {
+				if (Gdx.input.isKeyPressed(Input.Keys.W))
+					player.state = Player.STATE.UPRIGHT;
+				else
+					player.state = Player.STATE.RIGHT;
+			}
 		}
 				
 		return false;

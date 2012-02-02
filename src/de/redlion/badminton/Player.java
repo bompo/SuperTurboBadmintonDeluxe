@@ -1,6 +1,7 @@
 package de.redlion.badminton;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
@@ -52,6 +53,7 @@ public class Player extends Sprite {
 			setX(getX() + Gdx.graphics.getDeltaTime()*150);
 			setY(getY() + Gdx.graphics.getDeltaTime()*150);
 		}
+
 	}
 	
 	public void draw(SpriteBatch spriteBatch) {

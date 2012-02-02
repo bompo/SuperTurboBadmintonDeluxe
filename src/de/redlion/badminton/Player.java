@@ -6,59 +6,50 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 
-public class Player extends Sprite {
-	
+public class Player {
+
 	public enum STATE {
-		IDLE,UP,DOWN,LEFT,RIGHT,DOWNLEFT,UPLEFT,DOWNRIGHT,UPRIGHT;
+		IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT, UPRIGHT;
 	}
-	
-	public Vector3 direction = new Vector3(0,0,-1);
+
+	public Vector3 direction = new Vector3(0, 0, -1);
+	public Vector3 position = new Vector3(0, 0, 0);
 	public STATE state = STATE.IDLE;
-	
+
 	public Player() {
-		super();	
-		
-		this.set(Resources.getInstance().player);
-		
-		setX(500);
-		setY(150);
+		super();
 	}
-	
+
 	public void update() {
 		if (state == STATE.LEFT) {
-			setX(getX() - Gdx.graphics.getDeltaTime()*200);
-		}	
-		if (state == STATE.RIGHT) {
-			setX(getX() + Gdx.graphics.getDeltaTime()*200);
+			position.x = position.x - Gdx.graphics.getDeltaTime() * 4;
 		}
-		if (state ==STATE.UP) {
-			setY(getY() + Gdx.graphics.getDeltaTime()*200);
-		}	
+		if (state == STATE.RIGHT) {
+			position.x = position.x + Gdx.graphics.getDeltaTime() * 4;
+		}
+		if (state == STATE.UP) {
+			position.y = position.y - Gdx.graphics.getDeltaTime() * 4;
+		}
 		if (state == STATE.DOWN) {
-			setY(getY() - Gdx.graphics.getDeltaTime()*200);
+			position.y = position.y + Gdx.graphics.getDeltaTime() * 4;
 		}
 		if (state == STATE.DOWNLEFT) {
-			setX(getX() - Gdx.graphics.getDeltaTime()*150);
-			setY(getY() - Gdx.graphics.getDeltaTime()*150);
+			position.x = position.x - Gdx.graphics.getDeltaTime() * 3.5f;
+			position.y = position.y + Gdx.graphics.getDeltaTime() * 3.5f;
 		}
 		if (state == STATE.UPLEFT) {
-			setX(getX() - Gdx.graphics.getDeltaTime()*150);
-			setY(getY() + Gdx.graphics.getDeltaTime()*150);
+			position.x = position.x - Gdx.graphics.getDeltaTime() * 3.5f;
+			position.y = position.y - Gdx.graphics.getDeltaTime() * 3.5f;
 		}
 		if (state == STATE.DOWNRIGHT) {
-			setX(getX() + Gdx.graphics.getDeltaTime()*150);
-			setY(getY() - Gdx.graphics.getDeltaTime()*150);
+			position.x = position.x + Gdx.graphics.getDeltaTime() * 3.5f;
+			position.y = position.y + Gdx.graphics.getDeltaTime() * 3.5f;
 		}
 		if (state == STATE.UPRIGHT) {
-			setX(getX() + Gdx.graphics.getDeltaTime()*150);
-			setY(getY() + Gdx.graphics.getDeltaTime()*150);
+			position.x = position.x + Gdx.graphics.getDeltaTime() * 3.5f;
+			position.y = position.y - Gdx.graphics.getDeltaTime() * 3.5f;
 		}
 
 	}
-	
-	public void draw(SpriteBatch spriteBatch) {
-		
-		super.draw(spriteBatch);
-	}
-	
+
 }

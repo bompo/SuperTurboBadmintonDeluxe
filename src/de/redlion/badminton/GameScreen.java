@@ -36,6 +36,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	Texture modelPlaneTex;
 
 	Player player = new Player();
+	Birdie birdie = new Birdie();
 
 	float fade = 1.0f;
 	boolean finished = false;
@@ -186,12 +187,47 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		modelPlaneTex.bind(0);
 		modelPlaneObj.render(diffuseShader);
 		
+		
+		// render birdie
+		tmp.idt();
+		model.idt();
+		
+		tmp.setToRotation(Vector3.X, 90);
+		model.mul(tmp);
+
+		tmp.setToTranslation(birdie.position.x,birdie.position.y, 0);
+		model.mul(tmp);
+		
+		tmp.setToScaling(0.1f,0.1f,0.1f);
+		model.mul(tmp);
+			
+		diffuseShader.setUniformMatrix("MMatrix", model);
+		diffuseShader.setUniformi("uSampler", 0);
+		
+		modelPlaneTex.bind(0);
+		modelPlaneObj.render(diffuseShader);
+		
+		
+		// render player
+		tmp.idt();
+		model.idt();
+		
+		tmp.setToRotation(Vector3.X, 90);
+		model.mul(tmp);
+
+		tmp.setToTranslation(player.position.x,player.position.y, -1);
+		model.mul(tmp);
+		
+		tmp.setToScaling(0.5f,0.5f,0.5f);
+		model.mul(tmp);
+			
+		diffuseShader.setUniformMatrix("MMatrix", model);
+		diffuseShader.setUniformi("uSampler", 0);
+		
+		modelPlaneTex.bind(0);
+		modelPlaneObj.render(diffuseShader);
+		
 		diffuseShader.end();		
-		
-		
-		batch.begin();
-			player.draw(batch);
-		batch.end();
 	}
 	
 	private void processInput() {	        

@@ -13,11 +13,10 @@ public class Player {
 	}
 
 	public Vector3 direction = new Vector3(0, 0, -1);
-	public Vector3 position = new Vector3(0, 0, 0);
+	public Vector3 position = new Vector3(-2, 7, 0);
 	public STATE state = STATE.IDLE;
 
 	public Player() {
-		super();
 	}
 
 	public void update() {

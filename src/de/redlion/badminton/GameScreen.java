@@ -162,6 +162,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 	private void updateAI() {
 		player.update();
+		birdie.update();
 	}
 
 	private void renderScene() {	
@@ -195,7 +196,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		tmp.setToRotation(Vector3.X, 90);
 		model.mul(tmp);
 
-		tmp.setToTranslation(birdie.position.x,birdie.position.y, 0);
+		tmp.setToTranslation(birdie.position.x,birdie.position.y, birdie.position.z-0.1f);
 		model.mul(tmp);
 		
 		tmp.setToScaling(0.1f,0.1f,0.1f);
@@ -215,7 +216,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		tmp.setToRotation(Vector3.X, 90);
 		model.mul(tmp);
 
-		tmp.setToTranslation(player.position.x,player.position.y, -1);
+		tmp.setToTranslation(player.position.x,player.position.y, -0.5f);
 		model.mul(tmp);
 		
 		tmp.setToScaling(0.5f,0.5f,0.5f);
@@ -351,6 +352,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				player.state = Player.STATE.DOWNLEFT;
 			else if(player.state == Player.STATE.UPRIGHT)
 				player.state = Player.STATE.DOWNRIGHT;
+		}	
+		if (keycode == Input.Keys.SPACE) {
+			birdie.hit();
 		}	
 //		if (keycode == Input.Keys.S) {
 //			cam.position.z += 0.1;

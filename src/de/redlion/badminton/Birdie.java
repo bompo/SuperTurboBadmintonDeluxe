@@ -13,7 +13,7 @@ public class Birdie {
 	public Vector3 position = new Vector3(2,5,-0.5f);
 	public Vector3 velocity = new Vector3(0,0,0);
 	
-	float acceleration = 10.0f;
+	float acceleration = 6.0f;
 	
 	public STATE state = STATE.HIT;
 	
@@ -28,9 +28,11 @@ public class Birdie {
 		}
 	}
 	
-	public void hit() {		
-		velocity = new Vector3(-2,-5,-5);
-		
+	public void hit(Vector3 direction) {		
+		velocity = direction;
+		velocity.x *= acceleration/2;
+		velocity.y *= acceleration;
+		velocity.z = -acceleration;
 		//velocity.add(direction.x * acceleration * Gdx.graphics.getDeltaTime(), direction.y * acceleration * Gdx.graphics.getDeltaTime(), direction.z * acceleration * Gdx.graphics.getDeltaTime());
 	}
 	

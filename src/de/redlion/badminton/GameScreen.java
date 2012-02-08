@@ -208,6 +208,25 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		modelPlaneTex.bind(0);
 		modelPlaneObj.render(diffuseShader);
 		
+		// render shadow
+		tmp.idt();
+		model.idt();
+		
+		tmp.setToRotation(Vector3.X, 90);
+		model.mul(tmp);
+
+		tmp.setToTranslation(birdie.position.x,birdie.position.y, 0.0f);
+		model.mul(tmp);
+		
+		tmp.setToScaling(0.1f,0.1f,0.1f);
+		model.mul(tmp);
+			
+		diffuseShader.setUniformMatrix("MMatrix", model);
+		diffuseShader.setUniformi("uSampler", 0);
+		
+		modelPlaneTex.bind(0);
+		modelPlaneObj.render(diffuseShader);
+		
 		
 		// render player
 		tmp.idt();
@@ -354,8 +373,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				player.state = Player.STATE.DOWNRIGHT;
 		}	
 		if (keycode == Input.Keys.SPACE) {
-			birdie.hit();
-		}	
+			if(player.position.epsilonEquals(birdie.position, 1.3f))
+				birdie.hit(player.direction);
+		}
+		if (keycode == Input.Keys.R) {
+			birdie.position = new Vector3(2,5,-0.5f);
+		}
 //		if (keycode == Input.Keys.S) {
 //			cam.position.z += 0.1;
 //		}

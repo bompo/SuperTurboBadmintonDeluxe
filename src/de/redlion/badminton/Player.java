@@ -22,31 +22,42 @@ public class Player {
 	public void update() {
 		if (state == STATE.LEFT) {
 			position.x = position.x - Gdx.graphics.getDeltaTime() * 4;
+			direction = new Vector3(-1, 0, 0);
 		}
 		if (state == STATE.RIGHT) {
 			position.x = position.x + Gdx.graphics.getDeltaTime() * 4;
+			direction = new Vector3(1, 0, 0);
 		}
 		if (state == STATE.UP) {
 			position.y = position.y - Gdx.graphics.getDeltaTime() * 4;
+			direction = new Vector3(0, -1, 0);
 		}
 		if (state == STATE.DOWN) {
 			position.y = position.y + Gdx.graphics.getDeltaTime() * 4;
+			direction = new Vector3(0, 1, 0);
 		}
 		if (state == STATE.DOWNLEFT) {
 			position.x = position.x - Gdx.graphics.getDeltaTime() * 3.5f;
 			position.y = position.y + Gdx.graphics.getDeltaTime() * 3.5f;
+			direction = new Vector3(-1, 1, 0);
 		}
 		if (state == STATE.UPLEFT) {
 			position.x = position.x - Gdx.graphics.getDeltaTime() * 3.5f;
 			position.y = position.y - Gdx.graphics.getDeltaTime() * 3.5f;
+			direction = new Vector3(-1, -1, 0);
 		}
 		if (state == STATE.DOWNRIGHT) {
 			position.x = position.x + Gdx.graphics.getDeltaTime() * 3.5f;
 			position.y = position.y + Gdx.graphics.getDeltaTime() * 3.5f;
+			direction = new Vector3(1, 1, 0);
 		}
 		if (state == STATE.UPRIGHT) {
 			position.x = position.x + Gdx.graphics.getDeltaTime() * 3.5f;
 			position.y = position.y - Gdx.graphics.getDeltaTime() * 3.5f;
+			direction = new Vector3(1, -1, 0);
+		}
+		if (state == STATE.IDLE) {
+			direction = new Vector3(0, 0, 0);
 		}
 
 	}

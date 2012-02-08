@@ -13,8 +13,10 @@ public class Player {
 	}
 
 	public Vector3 direction = new Vector3(0, 0, -1);
-	public Vector3 position = new Vector3(-2, 7, 0);
+	public Vector3 position = new Vector3(-2, 7, -0.5f);
+	public Vector3 velocity = new Vector3(0,0,0); //for jumps
 	public STATE state = STATE.IDLE;
+	public boolean jump = false;
 
 	public Player() {
 	}
@@ -59,7 +61,29 @@ public class Player {
 		if (state == STATE.IDLE) {
 			direction = new Vector3(0, 0, 0);
 		}
+		
+		if(jump){
+			velocity.mul( (float) Math.pow(0.97f, Gdx.graphics.getDeltaTime() * 35.f));
+			position.add(velocity.x * Gdx.graphics.getDeltaTime(), velocity.y * Gdx.graphics.getDeltaTime(), velocity.z * Gdx.graphics.getDeltaTime());
+			if(position.z <= -0.5f) {
+				position.z = position.z + (Gdx.graphics.getDeltaTime() * 3.3f);
+			}
+			else if(position.z > -0.5f) {
+				jump = false;
+			}
+			
+		}
 
+
+	}
+	
+	public void jump()
+	{
+		jump=true;
+		velocity = direction;
+		velocity.x *= 6.0f/5;
+		velocity.y *= 6.0f/2;
+		velocity.z = -6.0f;
 	}
 
 }

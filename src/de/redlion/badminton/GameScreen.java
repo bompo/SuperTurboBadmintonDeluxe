@@ -235,7 +235,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		tmp.setToRotation(Vector3.X, 90);
 		model.mul(tmp);
 
-		tmp.setToTranslation(player.position.x,player.position.y, -0.5f);
+		if(!player.jump)
+			tmp.setToTranslation(player.position.x,player.position.y, -0.5f);
+		else
+			tmp.setToTranslation(player.position.x,player.position.y, player.position.z);
 		model.mul(tmp);
 		
 		tmp.setToScaling(0.5f,0.5f,0.5f);
@@ -375,6 +378,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		if (keycode == Input.Keys.SPACE) {
 			if(player.position.epsilonEquals(birdie.position, 1.3f))
 				birdie.hit(player.direction);
+		}
+		if (keycode == Input.Keys.CONTROL_LEFT) {
+			if(!player.jump)
+				player.jump();
 		}
 		if (keycode == Input.Keys.R) {
 			birdie.position = new Vector3(2,5,-0.5f);

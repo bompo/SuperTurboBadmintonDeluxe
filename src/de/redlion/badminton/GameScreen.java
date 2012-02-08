@@ -375,11 +375,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			else if(player.state == Player.STATE.UPRIGHT)
 				player.state = Player.STATE.DOWNRIGHT;
 		}	
-		if (keycode == Input.Keys.SPACE) {
+		if (keycode == Input.Keys.CONTROL_LEFT) {
 			if(player.position.epsilonEquals(birdie.position, 1.3f))
 				birdie.hit(player.direction);
 		}
-		if (keycode == Input.Keys.CONTROL_LEFT) {
+		if (keycode == Input.Keys.SPACE) {
 			if(!player.jump)
 				player.jump();
 		}

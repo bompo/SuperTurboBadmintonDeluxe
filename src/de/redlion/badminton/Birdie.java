@@ -15,7 +15,7 @@ public class Birdie {
 	
 	float acceleration = 6.0f;
 	
-	public STATE state = STATE.HIT;
+	public STATE state = STATE.NONHIT;
 	
 	public Birdie() {	
 	}
@@ -26,9 +26,12 @@ public class Birdie {
 		if(position.z < 0) {
 			position.z = position.z + (Gdx.graphics.getDeltaTime() * 2.f);
 		}
+		else
+			state = STATE.NONHIT;
 	}
 	
-	public void hit(Vector3 direction) {		
+	public void hit(Vector3 direction) {
+		state = STATE.HIT;
 		velocity = direction;
 		velocity.x *= acceleration/2;
 		velocity.y *= acceleration;

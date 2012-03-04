@@ -20,6 +20,8 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
+import de.redlion.badminton.Birdie.STATE;
+
 
 public class GameScreen extends DefaultScreen implements InputProcessor {
 
@@ -37,6 +39,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 	Player player = new Player();
 	Birdie birdie = new Birdie();
+	Opponent opp = new Opponent();
 
 	float fade = 1.0f;
 	boolean finished = false;
@@ -163,6 +166,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	private void updateAI() {
 		player.update();
 		birdie.update();
+		if(birdie.state == STATE.HIT)
+			opp.update(birdie.position);
 	}
 
 	private void renderScene() {	
@@ -239,6 +244,30 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			tmp.setToTranslation(player.position.x,player.position.y, -0.5f);
 		else
 			tmp.setToTranslation(player.position.x,player.position.y, player.position.z);
+		model.mul(tmp);
+		
+		tmp.setToScaling(0.5f,0.5f,0.5f);
+		model.mul(tmp);
+			
+		diffuseShader.setUniformMatrix("MMatrix", model);
+		diffuseShader.setUniformi("uSampler", 0);
+		
+		modelPlaneTex.bind(0);
+		modelPlaneObj.render(diffuseShader);
+		
+		
+		
+		// render opponent
+		tmp.idt();
+		model.idt();
+		
+		tmp.setToRotation(Vector3.X, 90);
+		model.mul(tmp);
+
+		if(!opp.jump)
+			tmp.setToTranslation(opp.position.x,opp.position.y, -0.5f);
+		else
+			tmp.setToTranslation(opp.position.x,opp.position.y, opp.position.z);
 		model.mul(tmp);
 		
 		tmp.setToScaling(0.5f,0.5f,0.5f);

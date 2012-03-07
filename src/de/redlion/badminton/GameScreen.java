@@ -166,8 +166,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	private void updateAI() {
 		player.update();
 		birdie.update();
-		if(birdie.state == STATE.HIT)
-			opp.update(birdie.position);
+		opp.update(birdie.position, player.position);
+		
+		if(opp.position.epsilonEquals(birdie.position, 1.3f) && birdie.state != Birdie.STATE.HITBYOPPONENT) {
+			birdie.state  = Birdie.STATE.HITBYOPPONENT;
+			birdie.hit(opp.direction);
+		}
 	}
 
 	private void renderScene() {	
@@ -405,8 +409,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				player.state = Player.STATE.DOWNRIGHT;
 		}	
 		if (keycode == Input.Keys.CONTROL_LEFT) {
-			if(player.position.epsilonEquals(birdie.position, 1.3f))
+			if(player.position.epsilonEquals(birdie.position, 1.3f) && birdie.state != Birdie.STATE.HIT) {
+				birdie.state = Birdie.STATE.HIT;
 				birdie.hit(player.direction);
+			}
 		}
 		if (keycode == Input.Keys.SPACE) {
 			if(!player.jump)

@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 public class Birdie {
 	
 	public enum STATE {
-		HIT, NONHIT;
+		HIT, NONHIT, HITBYOPPONENT;
 	}
 	
 	public Vector3 direction = new Vector3(0,0,-1);
@@ -31,8 +31,7 @@ public class Birdie {
 	}
 	
 	public void hit(Vector3 direction) {
-		state = STATE.HIT;
-		velocity = direction;
+		velocity = direction.cpy();
 		velocity.x *= acceleration/2;
 		velocity.y *= acceleration;
 		velocity.z = -acceleration;

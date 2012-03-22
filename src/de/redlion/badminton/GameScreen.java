@@ -39,7 +39,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 	Player player = new Player();
 	Birdie birdie = new Birdie();
-	Opponent opp = new Opponent();
+	Opponent opp = new Opponent(birdie);
 
 	float fade = 1.0f;
 	boolean finished = false;
@@ -166,7 +166,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	private void updateAI() {
 		player.update();
 		birdie.update();
-		opp.update(birdie.position, player.position);
+		opp.update(player.position);
 		
 		if(opp.position.epsilonEquals(birdie.position, 1.3f) && birdie.state != Birdie.STATE.HITBYOPPONENT) {
 			birdie.state  = Birdie.STATE.HITBYOPPONENT;

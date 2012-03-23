@@ -15,9 +15,16 @@ public class Resources {
 	public BitmapFont font;
 	
 	public Sprite background = new Sprite(new Texture(Gdx.files.internal("data/court_bg.png")));
-	public Sprite player = new Sprite(new Texture(Gdx.files.internal("data/player.png")));
+	public Sprite playerSprite = new Sprite(new Texture(Gdx.files.internal("data/player.png")));
+	
+	public Player player = new Player();
+	public Opponent opponent = new Opponent();
+	public Birdie birdie = new Birdie();
 	
 	public ShaderProgram diffuseShader;
+	
+	public int playerScore = 0;
+	public int opponentScore = 0;
 	
 	public static Resources instance;
 

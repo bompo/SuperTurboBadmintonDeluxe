@@ -37,9 +37,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	StillModel modelPlaneObj;
 	Texture modelPlaneTex;
 
-	Player player = new Player();
-	Birdie birdie = new Birdie();
-	Opponent opp = new Opponent(birdie);
+	Player player = Resources.getInstance().player;
+	Birdie birdie = Resources.getInstance().birdie;
+	Opponent opp = Resources.getInstance().opponent;
 
 	float fade = 1.0f;
 	boolean finished = false;
@@ -138,7 +138,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		renderScene();
 		
 		batch.begin();
-			font.draw(batch, Gdx.graphics.getFramesPerSecond() + " fps" ,20, 30);		
+			font.draw(batch, Gdx.graphics.getFramesPerSecond() + " fps" ,20, 30);
+			font.draw(batch, "P " + Resources.getInstance().playerScore + " : O " + Resources.getInstance().opponentScore, 730, 30);
 		batch.end();
 		
 

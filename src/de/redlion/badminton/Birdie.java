@@ -36,7 +36,6 @@ public class Birdie {
 				reset();
 			}
 		}
-		Gdx.app.log("", position.y + "");
 	}
 	
 	public void score()

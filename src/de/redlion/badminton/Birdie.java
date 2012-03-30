@@ -32,13 +32,33 @@ public class Birdie {
 			}
 			else {
 				state = STATE.NONHIT;
-				if(position.y < 0)
+				score();
+				reset();
+			}
+		}
+		Gdx.app.log("", position.y + "");
+	}
+	
+	public void score()
+	{
+		if(position.y < 0) {
+			if(Math.abs(position.x) < 3)
+				if(Math.abs(position.y) < 7.5)
 					Resources.getInstance().playerScore++;
 				else
 					Resources.getInstance().opponentScore++;
-				
-				reset();
-			}
+			else
+				Resources.getInstance().opponentScore++;
+		}
+		
+		if(position.y > 0) {
+			if(Math.abs(position.x) < 3)
+				if(Math.abs(position.y) < 7.5)
+					Resources.getInstance().opponentScore++;
+				else
+					Resources.getInstance().playerScore++;
+			else
+				Resources.getInstance().playerScore++;
 		}
 	}
 	
@@ -54,7 +74,7 @@ public class Birdie {
 		if(!smash) {
 			velocity = direction.cpy();
 			velocity.x *= acceleration/2;
-			velocity.y *= acceleration;
+			velocity.y *= acceleration*2;
 			velocity.z = -acceleration;
 			//velocity.add(direction.x * acceleration * Gdx.graphics.getDeltaTime(), direction.y * acceleration * Gdx.graphics.getDeltaTime(), direction.z * acceleration * Gdx.graphics.getDeltaTime());
 		}

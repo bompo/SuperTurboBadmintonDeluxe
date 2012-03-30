@@ -50,12 +50,20 @@ public class Birdie {
 		state = STATE.HELD;
 	}
 	
-	public void hit(Vector3 direction) {
-		velocity = direction.cpy();
-		velocity.x *= acceleration/2;
-		velocity.y *= acceleration;
-		velocity.z = -acceleration;
-		//velocity.add(direction.x * acceleration * Gdx.graphics.getDeltaTime(), direction.y * acceleration * Gdx.graphics.getDeltaTime(), direction.z * acceleration * Gdx.graphics.getDeltaTime());
+	public void hit(Vector3 direction, boolean smash) {
+		if(!smash) {
+			velocity = direction.cpy();
+			velocity.x *= acceleration/2;
+			velocity.y *= acceleration;
+			velocity.z = -acceleration;
+			//velocity.add(direction.x * acceleration * Gdx.graphics.getDeltaTime(), direction.y * acceleration * Gdx.graphics.getDeltaTime(), direction.z * acceleration * Gdx.graphics.getDeltaTime());
+		}
+		else {
+			velocity = direction.cpy();
+			velocity.x *= acceleration;
+			velocity.y *= acceleration*2;
+			velocity.z = -acceleration/4;
+		}
 	}
 	
 }

@@ -139,7 +139,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		batch.begin();
 			font.draw(batch, Gdx.graphics.getFramesPerSecond() + " fps" ,20, 30);
-			font.draw(batch, "P " + Resources.getInstance().playerScore + " : O " + Resources.getInstance().opponentScore, 730, 30);
+			font.draw(batch, "P " + Resources.getInstance().playerScore + " : O " + Resources.getInstance().opponentScore, 720, 30);
 		batch.end();
 		
 

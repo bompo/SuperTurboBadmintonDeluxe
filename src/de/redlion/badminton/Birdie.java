@@ -74,7 +74,7 @@ public class Birdie {
 		if(!smash) {
 			velocity = direction.cpy();
 			velocity.x *= acceleration/2;
-			velocity.y *= acceleration*2;
+			velocity.y *= acceleration;
 			velocity.z = -acceleration;
 			//velocity.add(direction.x * acceleration * Gdx.graphics.getDeltaTime(), direction.y * acceleration * Gdx.graphics.getDeltaTime(), direction.z * acceleration * Gdx.graphics.getDeltaTime());
 		}

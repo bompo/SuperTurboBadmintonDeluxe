@@ -9,6 +9,10 @@ import com.badlogic.gdx.math.Vector3;
 public class Player {
 
 	public enum STATE {
+		IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT, UPRIGHT, AIMING;
+	}
+	
+	public enum AIMING {
 		IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT, UPRIGHT;
 	}
 
@@ -16,6 +20,7 @@ public class Player {
 	public Vector3 position = new Vector3(-2, 7, -0.5f);
 	public Vector3 velocity = new Vector3(0,0,0); //for jumps
 	public STATE state = STATE.IDLE;
+	public AIMING aiming = AIMING.IDLE;
 	public boolean jump = false;
 
 	public Player() {
@@ -76,13 +81,16 @@ public class Player {
 
 	}
 	
-	public void jump()
-	{
+	public void jump() {
 		jump=true;
 		velocity = direction;
 		velocity.x *= 6.0f/5;
 		velocity.y *= 6.0f/2;
 		velocity.z = -6.0f;
+	}
+	
+	public String toString() {
+		return "Player State: " + state + " Aiming: " + aiming + " Position: " + position + " Direction: " + direction;
 	}
 
 }

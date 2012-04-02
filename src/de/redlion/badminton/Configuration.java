@@ -9,6 +9,7 @@ public class Configuration {
 	public Preferences preferences;
 	public boolean fullscreen;
 	public float brighness = 0.0f;
+	public boolean debug = true;
 	
 	static Configuration instance;
 	

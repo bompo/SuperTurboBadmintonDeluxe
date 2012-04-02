@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 public class Birdie {
 	
 	public enum STATE {
-		HIT, NONHIT, HITBYOPPONENT, HELD;
+		HIT, NONHIT, HITBYOPPONENT, HELD, PREPARED;
 	}
 	
 	public Vector3 direction = new Vector3(0,0,-1);
@@ -21,7 +21,7 @@ public class Birdie {
 	}
 	
 	public void update() {
-		if(state == STATE.HELD) {
+		if(state == STATE.HELD || state == STATE.PREPARED) {
 			position = Resources.getInstance().player.position.cpy().add(-0.5f, 0, 0);
 		}
 		else {
@@ -83,6 +83,10 @@ public class Birdie {
 			velocity.y *= acceleration*2;
 			velocity.z = -acceleration/4;
 		}
+	}
+	
+	public String toString() {
+		return "Birdie State: " + state + " Position: " + position + " Direction: " + direction;
 	}
 	
 }

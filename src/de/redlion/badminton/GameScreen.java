@@ -16,11 +16,12 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.loaders.ModelLoaderRegistry;
 import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
+import com.badlogic.gdx.graphics.glutils.MipMapGenerator;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
-import de.redlion.badminton.Birdie.STATE;
+import de.redlion.badminton.Player.AIMING;
 
 
 public class GameScreen extends DefaultScreen implements InputProcessor {
@@ -71,8 +72,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		fadeBatch.getProjectionMatrix().setToOrtho2D(0, 0, 1, 1);
 
 		modelPlaneObj = ModelLoaderRegistry.loadStillModel(Gdx.files.internal("data/plane.g3dt"));	
-		modelPlaneTex = new Texture(Gdx.files.internal("data/court_top_texture.png"));
-		modelPlaneTex.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		modelPlaneTex = new Texture(Gdx.files.internal("data/court_top_texture.png"),true);
+		modelPlaneTex.setFilter(TextureFilter.MipMapLinearLinear, TextureFilter.Linear);
+		modelPlaneTex.getTextureData().useMipMaps();
 		
 		diffuseShader = Resources.getInstance().diffuseShader;	
 		
@@ -138,10 +140,16 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		renderScene();
 		
 		batch.begin();
-			font.draw(batch, Gdx.graphics.getFramesPerSecond() + " fps" ,20, 30);
 			font.draw(batch, "P " + Resources.getInstance().playerScore + " : O " + Resources.getInstance().opponentScore, 720, 30);
 		batch.end();
 		
+		if(Configuration.getInstance().debug) {
+			batch.begin();
+				font.draw(batch, Gdx.graphics.getFramesPerSecond() + " fps" ,20, 30);
+				font.draw(batch, player.toString(), 20, 50);
+				font.draw(batch, birdie.toString(), 20, 70);
+			batch.end();
+		}		
 
 		// FadeInOut
 		if (!finished && fade > 0) {
@@ -329,93 +337,184 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		}
 		
 		//Player controls
-		if (keycode == Input.Keys.A) {
-			if(player.state == Player.STATE.IDLE)
-				player.state = Player.STATE.LEFT;
-			else if(player.state == Player.STATE.DOWN)
-				player.state = Player.STATE.DOWNLEFT;
-			else if(player.state == Player.STATE.DOWNLEFT)
-				player.state = Player.STATE.DOWNLEFT;
-			else if(player.state == Player.STATE.DOWNRIGHT)
-				player.state = Player.STATE.DOWNLEFT;
-			else if(player.state == Player.STATE.LEFT)
-				player.state = Player.STATE.LEFT;
-			else if(player.state == Player.STATE.RIGHT)
-				player.state = Player.STATE.IDLE;
-			else if(player.state == Player.STATE.UP)
-				player.state = Player.STATE.UPLEFT;
-			else if(player.state == Player.STATE.UPLEFT)
-				player.state = Player.STATE.UPLEFT;
-			else if(player.state == Player.STATE.UPRIGHT)
-				player.state = Player.STATE.UPLEFT;
+		if (keycode == Input.Keys.A) {			
+			if(player.state == Player.STATE.AIMING)  {
+				if(player.aiming == Player.AIMING.IDLE)
+					player.aiming = Player.AIMING.LEFT;
+				else if(player.aiming == Player.AIMING.DOWN)
+					player.aiming = Player.AIMING.DOWNLEFT;
+				else if(player.aiming == Player.AIMING.DOWNLEFT)
+					player.aiming = Player.AIMING.DOWNLEFT;
+				else if(player.aiming == Player.AIMING.DOWNRIGHT)
+					player.aiming = Player.AIMING.DOWNLEFT;
+				else if(player.aiming == Player.AIMING.LEFT)
+					player.aiming = Player.AIMING.LEFT;
+				else if(player.aiming == Player.AIMING.RIGHT)
+					player.aiming = Player.AIMING.IDLE;
+				else if(player.aiming == Player.AIMING.UP)
+					player.aiming = Player.AIMING.UPLEFT;
+				else if(player.aiming == Player.AIMING.UPLEFT)
+					player.aiming = Player.AIMING.UPLEFT;
+				else if(player.aiming == Player.AIMING.UPRIGHT)
+					player.aiming = Player.AIMING.UPLEFT;
+			} else {
+				if(player.state == Player.STATE.IDLE)
+					player.state = Player.STATE.LEFT;
+				else if(player.state == Player.STATE.DOWN)
+					player.state = Player.STATE.DOWNLEFT;
+				else if(player.state == Player.STATE.DOWNLEFT)
+					player.state = Player.STATE.DOWNLEFT;
+				else if(player.state == Player.STATE.DOWNRIGHT)
+					player.state = Player.STATE.DOWNLEFT;
+				else if(player.state == Player.STATE.LEFT)
+					player.state = Player.STATE.LEFT;
+				else if(player.state == Player.STATE.RIGHT)
+					player.state = Player.STATE.IDLE;
+				else if(player.state == Player.STATE.UP)
+					player.state = Player.STATE.UPLEFT;
+				else if(player.state == Player.STATE.UPLEFT)
+					player.state = Player.STATE.UPLEFT;
+				else if(player.state == Player.STATE.UPRIGHT)
+					player.state = Player.STATE.UPLEFT;
+			}
 		}
 		if (keycode == Input.Keys.D) {
-			if(player.state == Player.STATE.IDLE)
-				player.state = Player.STATE.RIGHT;
-			else if(player.state == Player.STATE.DOWN)
-				player.state = Player.STATE.DOWNRIGHT;
-			else if(player.state == Player.STATE.DOWNLEFT)
-				player.state = Player.STATE.DOWNRIGHT;
-			else if(player.state == Player.STATE.DOWNRIGHT)
-				player.state = Player.STATE.DOWNRIGHT;
-			else if(player.state == Player.STATE.LEFT)
-				player.state = Player.STATE.IDLE;
-			else if(player.state == Player.STATE.RIGHT)
-				player.state = Player.STATE.RIGHT;
-			else if(player.state == Player.STATE.UP)
-				player.state = Player.STATE.UPRIGHT;
-			else if(player.state == Player.STATE.UPLEFT)
-				player.state = Player.STATE.UPRIGHT;
-			else if(player.state == Player.STATE.UPRIGHT)
-				player.state = Player.STATE.UPRIGHT;
+			if(player.state == Player.STATE.AIMING)  {
+				if(player.aiming == Player.AIMING.IDLE)
+					player.aiming = Player.AIMING.RIGHT;
+				else if(player.aiming == Player.AIMING.DOWN)
+					player.aiming = Player.AIMING.DOWNRIGHT;
+				else if(player.aiming == Player.AIMING.DOWNLEFT)
+					player.aiming = Player.AIMING.DOWNRIGHT;
+				else if(player.aiming == Player.AIMING.DOWNRIGHT)
+					player.aiming = Player.AIMING.DOWNRIGHT;
+				else if(player.aiming == Player.AIMING.LEFT)
+					player.aiming = Player.AIMING.IDLE;
+				else if(player.aiming == Player.AIMING.RIGHT)
+					player.aiming = Player.AIMING.RIGHT;
+				else if(player.aiming == Player.AIMING.UP)
+					player.aiming = Player.AIMING.UPRIGHT;
+				else if(player.aiming == Player.AIMING.UPLEFT)
+					player.aiming = Player.AIMING.UPRIGHT;
+				else if(player.aiming == Player.AIMING.UPRIGHT)
+					player.aiming = Player.AIMING.UPRIGHT;
+			} else {
+				if(player.state == Player.STATE.IDLE)
+					player.state = Player.STATE.RIGHT;
+				else if(player.state == Player.STATE.DOWN)
+					player.state = Player.STATE.DOWNRIGHT;
+				else if(player.state == Player.STATE.DOWNLEFT)
+					player.state = Player.STATE.DOWNRIGHT;
+				else if(player.state == Player.STATE.DOWNRIGHT)
+					player.state = Player.STATE.DOWNRIGHT;
+				else if(player.state == Player.STATE.LEFT)
+					player.state = Player.STATE.IDLE;
+				else if(player.state == Player.STATE.RIGHT)
+					player.state = Player.STATE.RIGHT;
+				else if(player.state == Player.STATE.UP)
+					player.state = Player.STATE.UPRIGHT;
+				else if(player.state == Player.STATE.UPLEFT)
+					player.state = Player.STATE.UPRIGHT;
+				else if(player.state == Player.STATE.UPRIGHT)
+					player.state = Player.STATE.UPRIGHT;
+			}
 		}
 		if (keycode == Input.Keys.W) {
-			if(player.state == Player.STATE.IDLE)
-				player.state = Player.STATE.UP;
-			else if(player.state == Player.STATE.DOWN)
-				player.state = Player.STATE.IDLE;
-			else if(player.state == Player.STATE.DOWNLEFT)
-				player.state = Player.STATE.UPLEFT;
-			else if(player.state == Player.STATE.DOWNRIGHT)
-				player.state = Player.STATE.UPRIGHT;
-			else if(player.state == Player.STATE.LEFT)
-				player.state = Player.STATE.UPLEFT;
-			else if(player.state == Player.STATE.RIGHT)
-				player.state = Player.STATE.UPRIGHT;
-			else if(player.state == Player.STATE.UP)
-				player.state = Player.STATE.UP;
-			else if(player.state == Player.STATE.UPLEFT)
-				player.state = Player.STATE.UPLEFT;
-			else if(player.state == Player.STATE.UPRIGHT)
-				player.state = Player.STATE.UPRIGHT;
+			if(player.state == Player.STATE.AIMING)  {
+				if(player.aiming == Player.AIMING.IDLE)
+					player.aiming = Player.AIMING.UP;
+				else if(player.aiming == Player.AIMING.DOWN)
+					player.aiming = Player.AIMING.IDLE;
+				else if(player.aiming == Player.AIMING.DOWNLEFT)
+					player.aiming = Player.AIMING.UPLEFT;
+				else if(player.aiming == Player.AIMING.DOWNRIGHT)
+					player.aiming = Player.AIMING.UPRIGHT;
+				else if(player.aiming == Player.AIMING.LEFT)
+					player.aiming = Player.AIMING.UPLEFT;
+				else if(player.aiming == Player.AIMING.RIGHT)
+					player.aiming = Player.AIMING.UPRIGHT;
+				else if(player.aiming == Player.AIMING.UP)
+					player.aiming = Player.AIMING.UP;
+				else if(player.aiming == Player.AIMING.UPLEFT)
+					player.aiming = Player.AIMING.UPLEFT;
+				else if(player.aiming == Player.AIMING.UPRIGHT)
+					player.aiming = Player.AIMING.UPRIGHT;
+			} else {
+				if(player.state == Player.STATE.IDLE)
+					player.state = Player.STATE.UP;
+				else if(player.state == Player.STATE.DOWN)
+					player.state = Player.STATE.IDLE;
+				else if(player.state == Player.STATE.DOWNLEFT)
+					player.state = Player.STATE.UPLEFT;
+				else if(player.state == Player.STATE.DOWNRIGHT)
+					player.state = Player.STATE.UPRIGHT;
+				else if(player.state == Player.STATE.LEFT)
+					player.state = Player.STATE.UPLEFT;
+				else if(player.state == Player.STATE.RIGHT)
+					player.state = Player.STATE.UPRIGHT;
+				else if(player.state == Player.STATE.UP)
+					player.state = Player.STATE.UP;
+				else if(player.state == Player.STATE.UPLEFT)
+					player.state = Player.STATE.UPLEFT;
+				else if(player.state == Player.STATE.UPRIGHT)
+					player.state = Player.STATE.UPRIGHT;
+			}
 		}	
 		if (keycode == Input.Keys.S) {
-			if(player.state == Player.STATE.IDLE)
-				player.state = Player.STATE.DOWN;
-			else if(player.state == Player.STATE.DOWN)
-				player.state = Player.STATE.DOWN;
-			else if(player.state == Player.STATE.DOWNLEFT)
-				player.state = Player.STATE.DOWNLEFT;
-			else if(player.state == Player.STATE.DOWNRIGHT)
-				player.state = Player.STATE.DOWNRIGHT;
-			else if(player.state == Player.STATE.LEFT)
-				player.state = Player.STATE.DOWNLEFT;
-			else if(player.state == Player.STATE.RIGHT)
-				player.state = Player.STATE.DOWNRIGHT;
-			else if(player.state == Player.STATE.UP)
-				player.state = Player.STATE.IDLE;
-			else if(player.state == Player.STATE.UPLEFT)
-				player.state = Player.STATE.DOWNLEFT;
-			else if(player.state == Player.STATE.UPRIGHT)
-				player.state = Player.STATE.DOWNRIGHT;
+			if(player.state == Player.STATE.AIMING)  {
+				if(player.aiming == Player.AIMING.IDLE)
+					player.aiming = Player.AIMING.DOWN;
+				else if(player.aiming == Player.AIMING.DOWN)
+					player.aiming = Player.AIMING.DOWN;
+				else if(player.aiming == Player.AIMING.DOWNLEFT)
+					player.aiming = Player.AIMING.DOWNLEFT;
+				else if(player.aiming == Player.AIMING.DOWNRIGHT)
+					player.aiming = Player.AIMING.DOWNRIGHT;
+				else if(player.aiming == Player.AIMING.LEFT)
+					player.aiming = Player.AIMING.DOWNLEFT;
+				else if(player.aiming == Player.AIMING.RIGHT)
+					player.aiming = Player.AIMING.DOWNRIGHT;
+				else if(player.aiming == Player.AIMING.UP)
+					player.aiming = Player.AIMING.IDLE;
+				else if(player.aiming == Player.AIMING.UPLEFT)
+					player.aiming = Player.AIMING.DOWNLEFT;
+				else if(player.aiming == Player.AIMING.UPRIGHT)
+					player.aiming = Player.AIMING.DOWNRIGHT;
+			} else {
+				if(player.state == Player.STATE.IDLE)
+					player.state = Player.STATE.DOWN;
+				else if(player.state == Player.STATE.DOWN)
+					player.state = Player.STATE.DOWN;
+				else if(player.state == Player.STATE.DOWNLEFT)
+					player.state = Player.STATE.DOWNLEFT;
+				else if(player.state == Player.STATE.DOWNRIGHT)
+					player.state = Player.STATE.DOWNRIGHT;
+				else if(player.state == Player.STATE.LEFT)
+					player.state = Player.STATE.DOWNLEFT;
+				else if(player.state == Player.STATE.RIGHT)
+					player.state = Player.STATE.DOWNRIGHT;
+				else if(player.state == Player.STATE.UP)
+					player.state = Player.STATE.IDLE;
+				else if(player.state == Player.STATE.UPLEFT)
+					player.state = Player.STATE.DOWNLEFT;
+				else if(player.state == Player.STATE.UPRIGHT)
+					player.state = Player.STATE.DOWNRIGHT;
+			}
 		}	
 		if (keycode == Input.Keys.CONTROL_LEFT) {
-			if(player.position.dst(birdie.position) < 1.3f && birdie.state != Birdie.STATE.HIT) {
-				birdie.state = Birdie.STATE.HIT;
-				birdie.hit(player.direction,false);
+			if(birdie.state == Birdie.STATE.HELD) {
+				birdie.state = Birdie.STATE.PREPARED;
+				player.state = Player.STATE.AIMING;
+			} else {
+				player.state = Player.STATE.AIMING;
+				if(player.position.dst(birdie.position) < 1.3f && birdie.state != Birdie.STATE.HIT) {
+					birdie.state = Birdie.STATE.HIT;
+					birdie.hit(player.direction,false);
+				}
 			}
 		}
 		if (keycode == Input.Keys.SHIFT_LEFT) {
+			player.state = Player.STATE.AIMING;
 			if(player.position.dst(birdie.position) < 1.3f && birdie.state != Birdie.STATE.HIT) {
 				birdie.state = Birdie.STATE.HIT;
 				birdie.hit(player.direction, true);
@@ -602,6 +701,31 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				else
 					player.state = Player.STATE.RIGHT;
 			}
+		}
+		
+		if (keycode == Input.Keys.CONTROL_LEFT) {	
+			if(player.position.dst(birdie.position) < 1.3f && birdie.state != Birdie.STATE.HIT) {
+				birdie.state = Birdie.STATE.HIT;
+				//IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT, UPRIGHT;
+				if(player.aiming == Player.AIMING.UP) 
+					birdie.hit(new Vector3(0,-1,0),false);
+				else if(player.aiming == Player.AIMING.LEFT)
+					birdie.hit(new Vector3(-1,-0.5f,0),false);
+				else if(player.aiming == Player.AIMING.RIGHT)
+					birdie.hit(new Vector3(1,-0.5f,0),false);
+				else if(player.aiming == Player.AIMING.UPLEFT)
+					birdie.hit(new Vector3(-1,-1,0),false);
+				else if(player.aiming == Player.AIMING.UPRIGHT)
+					birdie.hit(new Vector3(1,-1,0),false);
+			}
+			player.state = Player.STATE.IDLE;
+		}
+		if (keycode == Input.Keys.SHIFT_LEFT) {
+			if(player.position.dst(birdie.position) < 1.3f && birdie.state != Birdie.STATE.HIT) {
+				birdie.state = Birdie.STATE.HIT;
+				birdie.hit(player.direction, true);
+			}
+			player.state = Player.STATE.IDLE;
 		}
 				
 		return false;

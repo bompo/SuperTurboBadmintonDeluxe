@@ -24,14 +24,14 @@ public class Opponent {
 
 	public void update(Vector3 playerposition) {
 		
-		Vector3 distance = position.cpy().sub(Resources.getInstance().birdie.position.cpy());
+		Vector3 distance = position.cpy().sub(Resources.getInstance().birdie.currentPosition.cpy());
 		Vector3 tmp = playerposition.cpy();
 		tmp.x = - playerposition.x;
 		tmp.y = 10 - playerposition.y;
 		direction = position.cpy().sub(tmp).mul(-1);
 		direction.nor();
 		
-		if(Resources.getInstance().birdie.state == Birdie.STATE.HIT || Resources.getInstance().birdie.position.cpy().y < 0) {
+		if(Resources.getInstance().birdie.state == Birdie.STATE.HIT || Resources.getInstance().birdie.currentPosition.cpy().y < 0) {
 			if(position.y < 0) {
 				position.x = position.x - distance.x * Gdx.graphics.getDeltaTime() / 4;
 				position.y = position.y - distance.y * Gdx.graphics.getDeltaTime() / 4;

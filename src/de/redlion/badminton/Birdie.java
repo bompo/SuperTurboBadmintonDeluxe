@@ -3,6 +3,8 @@ package de.redlion.badminton;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 
+import de.redlion.badminton.Player.AIMING;
+
 public class Birdie {
 
 	public enum STATE {
@@ -10,8 +12,11 @@ public class Birdie {
 	}
 
 	public Vector3 direction = new Vector3(0, 0, -1);
-	public Vector3 position = new Vector3(-2, 7, -0.5f);
+	public Vector3 currentPosition = new Vector3(-2, 7, -0.5f);
+	public Vector3 fromPosition = new Vector3(-2, 7, -0.5f);
+	public Vector3 toPosition = new Vector3(-2, 7, -0.5f);
 	public Vector3 velocity = new Vector3(0, 0, 0);
+	
 
 	float acceleration = 6.0f;
 
@@ -22,16 +27,18 @@ public class Birdie {
 
 	public void update(Player player) {
 		if (state == STATE.HELD || state == STATE.PREPARED) {
-			position = Resources.getInstance().player.position.cpy().add(-0.5f,
+			currentPosition = Resources.getInstance().player.position.cpy().add(-0.5f,
 					0, 0);
 		} else {
-			velocity.mul((float) Math.pow(0.97f,
-					Gdx.graphics.getDeltaTime() * 30.f));
-			position.add(velocity.x * Gdx.graphics.getDeltaTime(), velocity.y
-					* Gdx.graphics.getDeltaTime(),
-					velocity.z * Gdx.graphics.getDeltaTime());
-			if (position.z < 0) {
-				position.z = position.z + (Gdx.graphics.getDeltaTime() * 2.f);
+			velocity.mul((float) Math.pow(0.97f, Gdx.graphics.getDeltaTime() * 30.f));			
+			
+			//TODO: http://www.real-world-physics-problems.com/physics-of-volleyball.html			
+			currentPosition.x = fromPosition.x * velocity.x  + (1 - toPosition.x);
+			currentPosition.y = fromPosition.y * velocity.y  + (1 - toPosition.y);
+			currentPosition.z = fromPosition.z * velocity.z  + (1 - toPosition.z);
+			
+			if (currentPosition.z < 0) {
+				currentPosition.z = currentPosition.z + (Gdx.graphics.getDeltaTime() * 2.f);
 			} else {
 				state = STATE.NONHIT;
 				score();
@@ -42,9 +49,9 @@ public class Birdie {
 	}
 
 	public void score() {
-		if (position.y < 0) {
-			if (Math.abs(position.x) < 3) {
-				if (Math.abs(position.y) < 7.5) {
+		if (currentPosition.y < 0) {
+			if (Math.abs(currentPosition.x) < 3) {
+				if (Math.abs(currentPosition.y) < 7.5) {
 					Resources.getInstance().playerScore++;
 				} else {
 					Resources.getInstance().opponentScore++;
@@ -54,9 +61,9 @@ public class Birdie {
 			}
 		}
 
-		if (position.y > 0) {
-			if (Math.abs(position.x) < 3)
-				if (Math.abs(position.y) < 7.5)
+		if (currentPosition.y > 0) {
+			if (Math.abs(currentPosition.x) < 3)
+				if (Math.abs(currentPosition.y) < 7.5)
 					Resources.getInstance().opponentScore++;
 				else
 					Resources.getInstance().playerScore++;
@@ -66,35 +73,36 @@ public class Birdie {
 	}
 
 	public void reset() {
-		if (position.y < 0)
-			position = Resources.getInstance().player.position.cpy().add(-0.5f,
-					0, 0);
-		else
-			position = Resources.getInstance().opponent.position.cpy().add(
+		if (currentPosition.y < 0) {
+			currentPosition = Resources.getInstance().player.position.cpy()
+					.add(-0.5f, 0, 0);
+			toPosition = Resources.getInstance().player.position.cpy().add(
 					-0.5f, 0, 0);
+			fromPosition = Resources.getInstance().player.position.cpy().add(
+					-0.5f, 0, 0);
+		} else {
+			currentPosition = Resources.getInstance().opponent.position.cpy()
+					.add(-0.5f, 0, 0);
+			toPosition = Resources.getInstance().opponent.position.cpy().add(
+					-0.5f, 0, 0);
+			fromPosition = Resources.getInstance().opponent.position.cpy().add(
+					-0.5f, 0, 0);
+		}
 		state = STATE.HELD;
 	}
 
-	public void hit(Vector3 direction, boolean smash) {
-		if (!smash) {
-			velocity = direction.cpy();
-			velocity.x *= acceleration / 2;
-			velocity.y *= acceleration;
-			velocity.z = -acceleration;
-			// velocity.add(direction.x * acceleration *
-			// Gdx.graphics.getDeltaTime(), direction.y * acceleration *
-			// Gdx.graphics.getDeltaTime(), direction.z * acceleration *
-			// Gdx.graphics.getDeltaTime());
-		} else {
-			velocity = direction.cpy();
-			velocity.x *= acceleration;
-			velocity.y *= acceleration * 2;
-			velocity.z = -acceleration / 4;
-		}
+	public void hit(Player player, boolean smash) {
+		fromPosition.set(currentPosition);
+		velocity = new Vector3(2, 0, 2);
+		
+		if (player.aiming == Player.AIMING.LEFT)
+			toPosition.set(2, 2, 0);
+		else if (player.aiming == Player.AIMING.RIGHT)
+			toPosition.set(-2, 2, 0);
 	}
 
 	public String toString() {
-		return "Birdie State: " + state + " Position: " + position
+		return "Birdie State: " + state + " Position: " + currentPosition
 				+ " Direction: " + direction;
 	}
 

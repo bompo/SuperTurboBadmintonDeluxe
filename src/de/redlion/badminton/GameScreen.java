@@ -186,10 +186,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		birdie.update(player);
 		opp.update(player.position);
 
-		if (opp.position.dst(birdie.position) < 1.3f
+		if (opp.position.dst(birdie.currentPosition) < 1.3f
 				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {
 			birdie.state = Birdie.STATE.HITBYOPPONENT;
-			birdie.hit(opp.direction, false);
+//			birdie.hit(opp.direction, false);
 		}
 	}
 
@@ -223,8 +223,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		tmp.setToRotation(Vector3.X, 90);
 		model.mul(tmp);
 
-		tmp.setToTranslation(birdie.position.x, birdie.position.y,
-				birdie.position.z - 0.1f);
+		tmp.setToTranslation(birdie.currentPosition.x, birdie.currentPosition.y,
+				birdie.currentPosition.z - 0.1f);
 		model.mul(tmp);
 
 		tmp.setToScaling(0.1f, 0.1f, 0.1f);
@@ -243,7 +243,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		tmp.setToRotation(Vector3.X, 90);
 		model.mul(tmp);
 
-		tmp.setToTranslation(birdie.position.x, birdie.position.y, 0.0f);
+		tmp.setToTranslation(birdie.currentPosition.x, birdie.currentPosition.y, 0.0f);
 		model.mul(tmp);
 
 		tmp.setToScaling(0.1f, 0.1f, 0.1f);
@@ -310,22 +310,13 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 		// check if player is in aiming mode and could hit birdie
 		if (player.state == Player.STATE.AIMING
-				&& player.position.dst(birdie.position) < 1.3f
+				&& player.position.dst(birdie.currentPosition) < 1.3f
 				&& birdie.state != Birdie.STATE.HIT) {
 			birdie.state = Birdie.STATE.HIT;
 			// IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT,
 			// UPRIGHT;
-			if (player.aiming == Player.AIMING.UP)
-				birdie.hit(new Vector3(0, -1, 0), false);
-			else if (player.aiming == Player.AIMING.LEFT)
-				birdie.hit(new Vector3(-1, -0.5f, 0), false);
-			else if (player.aiming == Player.AIMING.RIGHT)
-				birdie.hit(new Vector3(1, -0.5f, 0), false);
-			else if (player.aiming == Player.AIMING.UPLEFT)
-				birdie.hit(new Vector3(-1, -1, 0), false);
-			else if (player.aiming == Player.AIMING.UPRIGHT)
-				birdie.hit(new Vector3(1, -1, 0), false);
-
+			birdie.hit(player, false);
+			
 			if (player.state == Player.STATE.AIMING) {
 				if (player.aiming == Player.AIMING.UP) {
 					player.state = Player.STATE.UP;
@@ -576,10 +567,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		}
 		if (keycode == Input.Keys.SHIFT_LEFT) {
 			player.state = Player.STATE.AIMING;
-			if (player.position.dst(birdie.position) < 1.3f
+			if (player.position.dst(birdie.currentPosition) < 1.3f
 					&& birdie.state != Birdie.STATE.HIT) {
 				birdie.state = Birdie.STATE.HIT;
-				birdie.hit(player.direction, true);
+				//birdie.hit(player.direction, true);
 			}
 		}
 		if (keycode == Input.Keys.SPACE) {
@@ -587,7 +578,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				player.jump();
 		}
 		if (keycode == Input.Keys.R) {
-			birdie.position = new Vector3(2, 5, -0.5f);
+			birdie.currentPosition = new Vector3(2, 5, -0.5f);
 		}
 		// if (keycode == Input.Keys.S) {
 		// cam.position.z += 0.1;

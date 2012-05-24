@@ -12,19 +12,13 @@ public class Birdie {
 		HIT, NONHIT, HITBYOPPONENT, HELD, PREPARED;
 	}
 
-	public Vector3 direction = new Vector3(0, 0, -1);
 	public Vector3 currentPosition = new Vector3(-2, 7, -0.5f);
 	public Vector3 fromPosition = new Vector3(-2, 7, -0.5f);
 	public Vector3 via = new Vector3(0,0,-3);
 	public Vector3 toPosition = new Vector3(0, -6, -0.5f);
-	public Vector3 velocity = new Vector3(0, 0, 0);
 
-	float angle = 45.0f;
-	float acceleration = 6.0f;
-	float distance = 2.0f;
+	public float acceleration = 1;
 	
-	final float GRAVITY = 9.81f;
-
 	float t = 0;
 	public STATE state = STATE.HELD;
 
@@ -36,12 +30,6 @@ public class Birdie {
 			currentPosition = Resources.getInstance().player.position.cpy().add(-0.5f,
 					0, 0);
 		} else {
-			velocity.mul((float) Math.pow(0.97f, Gdx.graphics.getDeltaTime() * 30.f));			
-			
-			//TODO: http://www.real-world-physics-problems.com/physics-of-volleyball.html			
-//			currentPosition.x = fromPosition.x * velocity.x  + (1 - toPosition.x);
-//			currentPosition.y = fromPosition.y * velocity.y  + (1 - toPosition.y);
-//			currentPosition.z = fromPosition.z * velocity.z  + (1 - toPosition.z);
 			
 			
 			currentPosition =  fromPosition.cpy().mul((float) Math.pow(1-t, 2));
@@ -103,34 +91,53 @@ public class Birdie {
 	}
 
 	public void hit(Player player, boolean smash) {
-		
-		velocity = new Vector3(0.4f, 0.4f, 0.4f);
 
+		acceleration = player.aimTime;
 		fromPosition = currentPosition.cpy();
 		
 		if(player.aiming == Player.AIMING.LEFT) {
-			toPosition.x = -3;
-			via.x = toPosition.x + fromPosition.x;
-			via.x/=2;
+			toPosition.x = fromPosition.x - acceleration;
+			if(toPosition.x < -3)
+				toPosition.x = -3;
+			toPosition.y = -3 + (fromPosition.y /3);
 		}
 		else if(player.aiming == Player.AIMING.RIGHT) {
-			toPosition.x = 3;
-			via.x = fromPosition.x + toPosition.x;
-			via.x/=2;
+			toPosition.x = fromPosition.x + acceleration;
+			if(toPosition.x > 3)
+				toPosition.x = 3;
+			toPosition.y = -3 + (fromPosition.y /7);
 		}
-		else {
-			toPosition.x = fromPosition.x;
-			via.x = fromPosition.x;
+		else if(player.aiming == Player.AIMING.UPLEFT) {
+			toPosition.x = fromPosition.x - 0.8f * acceleration;
+			if(toPosition.x < -3)
+				toPosition.x = -3;
+			toPosition.y = -3 - acceleration + (fromPosition.y /7);
+			if(toPosition.y < -7.5)
+				toPosition.y = -7.5f;
+		}
+		else if(player.aiming == Player.AIMING.UPRIGHT) {
+			toPosition.x = fromPosition.x + 0.8f * acceleration;
+			if(toPosition.x > 3)
+				toPosition.x = 3;
+			toPosition.y = -3 - acceleration + (fromPosition.y /7);
+			if(toPosition.y < -7.5)
+				toPosition.y = -7.5f;
+		}
+		else { 
+			toPosition.x = 0;
+			toPosition.y = -2.5f * acceleration + (fromPosition.y /7);
 		}
 		
+		via.x = toPosition.x + fromPosition.x;
+		via.x/=2;
 		
-		Gdx.app.log("", via.x + "");
+		Gdx.app.log("", toPosition.x + "");
+
 		
 	}
 
 	public String toString() {
-		return "Birdie State: " + state + " Position: " + currentPosition
-				+ " Direction: " + direction;
+		return "Birdie State: " + state + " Position: " + currentPosition;
 	}
 
 }

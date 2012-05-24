@@ -22,6 +22,7 @@ public class Player {
 	public STATE state = STATE.IDLE;
 	public AIMING aiming = AIMING.IDLE;
 	public boolean jump = false;
+	public float aimTime = 1;
 
 	public Player() {
 	}
@@ -65,6 +66,7 @@ public class Player {
 		}
 		if (state == STATE.IDLE) {
 			direction = new Vector3(0, 0, 0);
+			aimTime = 1;
 		}
 		
 		if(jump){

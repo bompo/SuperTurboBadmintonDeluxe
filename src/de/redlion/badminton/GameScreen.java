@@ -183,6 +183,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		if (birdie.state != Birdie.STATE.HELD) {
 			player.update();
 		}
+		else {
+			player.state = Player.STATE.AIMING;
+			player.aimTime += Gdx.graphics.getDeltaTime() / 5;
+		}
 		birdie.update(player);
 		opp.update(player.position);
 
@@ -268,8 +272,20 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			tmp.setToTranslation(player.position.x, player.position.y,
 					player.position.z);
 		model.mul(tmp);
-
-		tmp.setToScaling(0.5f, 0.5f, 0.5f);
+		
+		
+		float scaler = 0.5f;;
+		if(player.state == Player.STATE.AIMING) {
+			float help = (player.aimTime / 2) % 0.5f;
+			
+			if(help < 0.25f)
+				scaler = 0.5f + help;
+			if(help > 0.25f)
+				scaler = 1 - help;	
+		}
+		
+		
+		tmp.setToScaling(scaler, scaler, scaler);
 		model.mul(tmp);
 
 		diffuseShader.setUniformMatrix("MMatrix", model);
@@ -311,7 +327,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		// check if player is in aiming mode and could hit birdie
 		if (player.state == Player.STATE.AIMING
 				&& player.position.dst(birdie.currentPosition) < 1.3f
-				&& birdie.state != Birdie.STATE.HIT) {
+				&& birdie.state != Birdie.STATE.HIT && birdie.state != Birdie.STATE.HELD) {
 			birdie.state = Birdie.STATE.HIT;
 			// IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT,
 			// UPRIGHT;
@@ -336,6 +352,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					player.state = Player.STATE.DOWNRIGHT;
 				}
 				player.aiming = Player.AIMING.IDLE;
+				player.state = Player.STATE.IDLE;
 			}
 		}
 
@@ -544,25 +561,32 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			}
 		}
 		if (keycode == Input.Keys.CONTROL_LEFT) {
-			if (player.state != Player.STATE.AIMING) {
-				if (player.state == Player.STATE.UP) {
-					player.aiming = Player.AIMING.UP;
-				} else if (player.state == Player.STATE.DOWN) {
-					player.aiming = Player.AIMING.DOWN;
-				}else if (player.state == Player.STATE.LEFT) {
-					player.aiming = Player.AIMING.LEFT;
-				}else if (player.state == Player.STATE.RIGHT) {
-					player.aiming = Player.AIMING.RIGHT;
-				}else if (player.state == Player.STATE.UPLEFT) {
-					player.aiming = Player.AIMING.UPLEFT;
-				}else if (player.state == Player.STATE.UPRIGHT) {
-					player.aiming = Player.AIMING.UPRIGHT;
-				}else if (player.state == Player.STATE.DOWNLEFT) {
-					player.aiming = Player.AIMING.DOWNLEFT;
-				}else if (player.state == Player.STATE.DOWNRIGHT) {
-					player.aiming = Player.AIMING.DOWNRIGHT;
+			if(birdie.state != Birdie.STATE.HELD) {
+				if (player.state != Player.STATE.AIMING) {
+					if (player.state == Player.STATE.UP) {
+						player.aiming = Player.AIMING.UP;
+					} else if (player.state == Player.STATE.DOWN) {
+						player.aiming = Player.AIMING.DOWN;
+					}else if (player.state == Player.STATE.LEFT) {
+						player.aiming = Player.AIMING.LEFT;
+					}else if (player.state == Player.STATE.RIGHT) {
+						player.aiming = Player.AIMING.RIGHT;
+					}else if (player.state == Player.STATE.UPLEFT) {
+						player.aiming = Player.AIMING.UPLEFT;
+					}else if (player.state == Player.STATE.UPRIGHT) {
+						player.aiming = Player.AIMING.UPRIGHT;
+					}else if (player.state == Player.STATE.DOWNLEFT) {
+						player.aiming = Player.AIMING.DOWNLEFT;
+					}else if (player.state == Player.STATE.DOWNRIGHT) {
+						player.aiming = Player.AIMING.DOWNRIGHT;
+					}
 				}
 				player.state = Player.STATE.AIMING;
+			}
+			else {
+				birdie.hit(player, false);
+				birdie.state = Birdie.STATE.HIT;
+				player.state = Player.STATE.IDLE;
 			}
 		}
 		if (keycode == Input.Keys.SHIFT_LEFT) {

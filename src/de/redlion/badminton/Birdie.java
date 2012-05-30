@@ -25,7 +25,7 @@ public class Birdie {
 	public Birdie() {
 	}
 
-	public void update(Player player) {
+	public void update() {
 		if (state == STATE.HELD || state == STATE.PREPARED) {
 			currentPosition = Resources.getInstance().player.position.cpy().add(-0.5f,
 					0, 0);
@@ -45,7 +45,6 @@ public class Birdie {
 				state = STATE.NONHIT;
 				score();
 				reset();
-				player.state = Player.STATE.IDLE;
 			}
 		}
 	}
@@ -88,6 +87,7 @@ public class Birdie {
 		}
 		t=0;
 		state = STATE.HELD;
+		Resources.getInstance().player.state = Player.STATE.IDLE;
 	}
 
 	public void hit(Player player, boolean smash) {

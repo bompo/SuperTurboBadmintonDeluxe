@@ -183,11 +183,13 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		if (birdie.state != Birdie.STATE.HELD) {
 			player.update();
 		}
-		else {
+		else if(player.position.dst(birdie.currentPosition) < 1.3f){
 			player.state = Player.STATE.AIMING;
 			player.aimTime += Gdx.graphics.getDeltaTime() / 5;
 		}
-		birdie.update(player);
+		else
+			player.update();
+		birdie.update();
 		opp.update(player.position);
 
 		if (opp.position.dst(birdie.currentPosition) < 1.0f
@@ -590,6 +592,14 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				birdie.hit(player, false);
 				birdie.state = Birdie.STATE.HIT;
 				player.state = Player.STATE.IDLE;
+			}
+			else if(player.position.dst(birdie.currentPosition) > 1.3f && player.aimTime > 1.1f) {
+				
+				player.state = Player.STATE.IDLE;
+				int tmp = player.aiming.ordinal();
+				player.state = Player.STATE.values()[tmp];
+				player.aiming = Player.AIMING.IDLE;
+				
 			}
 				
 		}

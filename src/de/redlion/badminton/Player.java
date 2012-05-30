@@ -23,6 +23,7 @@ public class Player {
 	public AIMING aiming = AIMING.IDLE;
 	public boolean jump = false;
 	public float aimTime = 1;
+	public float momentum = 63.3f;
 
 	public Player() {
 	}
@@ -65,13 +66,17 @@ public class Player {
 			direction = new Vector3(1, -1, 0);
 		}
 		if (state == STATE.IDLE) {
-			direction = new Vector3(0, 0, 0);
-			aimTime = 1;
+			if(Math.abs(direction.x) < 0.001f && Math.abs(direction.y) < 0.001f)
+				direction = new Vector3(0, 0, 0);
 		}
 		if(state == STATE.AIMING) {
 			aimTime += Gdx.graphics.getDeltaTime() / 5;
 		}
 		
+		direction.mul( (float) Math.pow(0.97f, Gdx.graphics.getDeltaTime() * momentum));
+		position.add(direction.cpy().mul(Gdx.graphics.getDeltaTime()));
+		
+		Gdx.app.log("", direction.toString());
 		
 		if(jump){
 			velocity.mul( (float) Math.pow(0.97f, Gdx.graphics.getDeltaTime() * 35.f));

@@ -284,7 +284,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				scaler = 1 - help;	
 		}
 		
-		
 		tmp.setToScaling(scaler, scaler, scaler);
 		model.mul(tmp);
 
@@ -586,13 +585,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			
 			if(player.position.dst(birdie.currentPosition) < 1.3f && player.state == Player.STATE.AIMING){
 				collisionTest();
-				Gdx.app.log("", "d");
 			}
 			else if(player.position.dst(birdie.currentPosition) < 1.3f && player.state != Player.STATE.AIMING) {
 				birdie.hit(player, false);
 				birdie.state = Birdie.STATE.HIT;
 				player.state = Player.STATE.IDLE;
-				Gdx.app.log("", "a");
 			}
 				
 		}

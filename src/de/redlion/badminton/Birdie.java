@@ -132,9 +132,6 @@ public class Birdie {
 		via.x = toPosition.x + fromPosition.x;
 		via.x/=2;
 		
-		
-		Gdx.app.log("", "" + acceleration);
-		
 	}
 	
 	//placeholder for opponent hit

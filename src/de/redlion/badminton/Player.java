@@ -16,7 +16,7 @@ public class Player {
 		IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT, UPRIGHT;
 	}
 
-	public Vector3 direction = new Vector3(0, 0, -1);
+	public Vector3 direction = new Vector3(0, 0, 0);
 	public Vector3 position = new Vector3(-2, 7, -0.5f);
 	public Vector3 velocity = new Vector3(0,0,0); //for jumps
 	public STATE state = STATE.IDLE;

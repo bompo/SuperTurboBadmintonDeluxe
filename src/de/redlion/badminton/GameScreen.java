@@ -180,15 +180,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	}
 
 	private void updateAI() {
-		if (birdie.state != Birdie.STATE.HELD) {
-			player.update();
-		}
-		else if(player.position.dst(birdie.currentPosition) < 1.3f){
+
+		
+		
+		if (birdie.state == Birdie.STATE.HELD && player.position.dst(birdie.currentPosition) < 1.3f)
 			player.state = Player.STATE.AIMING;
-			player.aimTime += Gdx.graphics.getDeltaTime() / 5;
-		}
-		else
-			player.update();
+		player.update();
 		birdie.update();
 		opp.update(player.position);
 

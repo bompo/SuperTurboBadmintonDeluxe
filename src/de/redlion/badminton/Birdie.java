@@ -29,8 +29,10 @@ public class Birdie {
 		if (state == STATE.HELD || state == STATE.PREPARED) {
 			currentPosition = Resources.getInstance().player.position.cpy().add(-0.5f,
 					0, 0);
-		} else {
 			
+			Gdx.app.log("", currentPosition.z + "");
+		} else {
+		
 			
 			currentPosition =  fromPosition.cpy().mul((float) Math.pow(1-t, 2));
 			currentPosition.add(via.cpy().mul(2*t*(1-t)));
@@ -78,10 +80,12 @@ public class Birdie {
 		if (currentPosition.y < 0) {
 			currentPosition = Resources.getInstance().player.position.cpy()
 					.add(-0.5f, 0, 0);
+			currentPosition.z = -0.5f;
 			toPosition = new Vector3(0, -6, -0.5f);
 		} else {
 			currentPosition = Resources.getInstance().opponent.position.cpy()
 					.add(-0.5f, 0, 0);
+			currentPosition.z = -0.5f;
 			toPosition = new Vector3(0, -6, -0.5f);
 			
 		}

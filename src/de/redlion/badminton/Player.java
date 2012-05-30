@@ -68,6 +68,10 @@ public class Player {
 			direction = new Vector3(0, 0, 0);
 			aimTime = 1;
 		}
+		if(state == STATE.AIMING) {
+			aimTime += Gdx.graphics.getDeltaTime() / 5;
+		}
+		
 		
 		if(jump){
 			velocity.mul( (float) Math.pow(0.97f, Gdx.graphics.getDeltaTime() * 35.f));

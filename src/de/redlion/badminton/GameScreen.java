@@ -139,7 +139,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 		cam.update();
 
-		collisionTest();
+		//collisionTest();
 		updateAI();
 		renderScene();
 
@@ -190,10 +190,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		birdie.update(player);
 		opp.update(player.position);
 
-		if (opp.position.dst(birdie.currentPosition) < 1.3f
+		if (opp.position.dst(birdie.currentPosition) < 1.0f
 				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {
 			birdie.state = Birdie.STATE.HITBYOPPONENT;
-//			birdie.hit(opp.direction, false);
+			birdie.hit(false);
 		}
 	}
 
@@ -327,7 +327,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		// check if player is in aiming mode and could hit birdie
 		if (player.state == Player.STATE.AIMING
 				&& player.position.dst(birdie.currentPosition) < 1.3f
-				&& birdie.state != Birdie.STATE.HIT && birdie.state != Birdie.STATE.HELD) {
+				&& birdie.state != Birdie.STATE.HIT) {
 			birdie.state = Birdie.STATE.HIT;
 			// IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT,
 			// UPRIGHT;
@@ -561,7 +561,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			}
 		}
 		if (keycode == Input.Keys.CONTROL_LEFT) {
-			if(birdie.state != Birdie.STATE.HELD) {
+			if(birdie.state != Birdie.STATE.HELD && player.position.dst(birdie.currentPosition) >= 1.3f) {
 				if (player.state != Player.STATE.AIMING) {
 					if (player.state == Player.STATE.UP) {
 						player.aiming = Player.AIMING.UP;
@@ -583,11 +583,18 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				}
 				player.state = Player.STATE.AIMING;
 			}
-			else {
+			
+			if(player.position.dst(birdie.currentPosition) < 1.3f && player.state == Player.STATE.AIMING){
+				collisionTest();
+				Gdx.app.log("", "d");
+			}
+			else if(player.position.dst(birdie.currentPosition) < 1.3f && player.state != Player.STATE.AIMING) {
 				birdie.hit(player, false);
 				birdie.state = Birdie.STATE.HIT;
 				player.state = Player.STATE.IDLE;
+				Gdx.app.log("", "a");
 			}
+				
 		}
 		if (keycode == Input.Keys.SHIFT_LEFT) {
 			player.state = Player.STATE.AIMING;

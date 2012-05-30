@@ -93,6 +93,7 @@ public class Birdie {
 	public void hit(Player player, boolean smash) {
 
 		acceleration = player.aimTime;
+		t=0;
 		fromPosition = currentPosition.cpy();
 		
 		if(player.aiming == Player.AIMING.LEFT) {
@@ -131,9 +132,20 @@ public class Birdie {
 		via.x = toPosition.x + fromPosition.x;
 		via.x/=2;
 		
-		Gdx.app.log("", toPosition.x + "");
-
 		
+		Gdx.app.log("", "" + acceleration);
+		
+	}
+	
+	//placeholder for opponent hit
+	public void hit(boolean smash) {
+		t=0;
+		fromPosition = currentPosition.cpy();
+		acceleration = 1;
+		toPosition.x = 0;
+		toPosition.y = 3.5f;
+		via.x = toPosition.x + fromPosition.x;
+		via.x/=2;
 	}
 
 	public String toString() {

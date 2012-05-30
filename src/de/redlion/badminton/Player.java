@@ -72,6 +72,36 @@ public class Player {
 		}
 		if(state == STATE.AIMING) {
 			aimTime += Gdx.graphics.getDeltaTime() / 5;
+			
+			if (aiming == AIMING.LEFT) {
+				position.x = position.x - Gdx.graphics.getDeltaTime() * 0.5f;
+			}
+			if (aiming == AIMING.RIGHT) {
+				position.x = position.x + Gdx.graphics.getDeltaTime() * 0.5f;
+			}
+			if (aiming == AIMING.UP) {
+				position.y = position.y - Gdx.graphics.getDeltaTime() * 0.5f;
+			}
+			if (aiming == AIMING.DOWN) {
+				position.y = position.y + Gdx.graphics.getDeltaTime() * 0.5f;
+			}
+			if (aiming == AIMING.DOWNLEFT) {
+				position.x = position.x - Gdx.graphics.getDeltaTime() * 0.4375f;
+				position.y = position.y + Gdx.graphics.getDeltaTime() * 0.4375f;
+			}
+			if (aiming == AIMING.UPLEFT) {
+				position.x = position.x - Gdx.graphics.getDeltaTime() * 0.4375f;
+				position.y = position.y - Gdx.graphics.getDeltaTime() * 0.4375f;
+			}
+			if (aiming == AIMING.DOWNRIGHT) {
+				position.x = position.x + Gdx.graphics.getDeltaTime() * 0.4375f;
+				position.y = position.y + Gdx.graphics.getDeltaTime() * 0.4375f;
+			}
+			if (aiming == AIMING.UPRIGHT) {
+				position.x = position.x + Gdx.graphics.getDeltaTime() * 0.4375f;
+				position.y = position.y - Gdx.graphics.getDeltaTime() * 0.4375f;
+			}
+			
 		}
 		
 		direction.mul( (float) Math.pow(0.97f, Gdx.graphics.getDeltaTime() * momentum));

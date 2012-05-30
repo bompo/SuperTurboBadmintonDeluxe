@@ -352,8 +352,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				}else if (player.aiming == Player.AIMING.DOWNRIGHT) {
 					player.state = Player.STATE.DOWNRIGHT;
 				}
+				int tmp = player.aiming.ordinal();
+				player.aimTime = 1;
 				player.aiming = Player.AIMING.IDLE;
 				player.state = Player.STATE.IDLE;
+				
+				player.state = Player.STATE.values()[tmp];
 			}
 		}
 
@@ -593,9 +597,10 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				birdie.state = Birdie.STATE.HIT;
 				player.state = Player.STATE.IDLE;
 			}
-			else if(player.position.dst(birdie.currentPosition) > 1.3f && player.aimTime > 1.1f) {
+			else if(player.position.dst(birdie.currentPosition) > 1.3f && player.aimTime >= 1.1f) {
 				
 				player.state = Player.STATE.IDLE;
+				player.aimTime = 1;
 				int tmp = player.aiming.ordinal();
 				player.state = Player.STATE.values()[tmp];
 				player.aiming = Player.AIMING.IDLE;

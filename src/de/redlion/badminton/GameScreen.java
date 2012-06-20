@@ -36,6 +36,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 	StillModel modelPlaneObj;
 	Texture modelPlaneTex;
+	
+	StillModel modelBirdieObj;
+	Texture modelBirdieTex;
 
 	Player player = Resources.getInstance().player;
 	Birdie birdie = Resources.getInstance().birdie;
@@ -77,6 +80,14 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		modelPlaneTex.setFilter(TextureFilter.MipMapLinearLinear,
 				TextureFilter.Linear);
 		modelPlaneTex.getTextureData().useMipMaps();
+		
+		modelBirdieObj = ModelLoaderRegistry.loadStillModel(Gdx.files
+				.internal("data/birdie.g3dt"));
+		modelBirdieTex = new Texture(
+				Gdx.files.internal("data/birdie_diff.png"), true);
+		modelBirdieTex.setFilter(TextureFilter.MipMapLinearLinear,
+				TextureFilter.Linear);
+		modelBirdieTex.getTextureData().useMipMaps();
 
 		diffuseShader = Resources.getInstance().diffuseShader;
 
@@ -237,8 +248,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		diffuseShader.setUniformMatrix("MMatrix", model);
 		diffuseShader.setUniformi("uSampler", 0);
 
-		modelPlaneTex.bind(0);
-		modelPlaneObj.render(diffuseShader);
+		modelBirdieTex.bind(0);
+		modelBirdieObj.render(diffuseShader);
 
 		// render birdie trajectory
 		Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -271,8 +282,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 //					System.out.println(Helper.map(i, trajectoryCnt - 20, trajectoryCnt,0,1));
 					diffuseShader.setUniformf("alpha", Helper.map(i, trajectoryCnt - 20, trajectoryCnt,0,1));
 			
-					modelPlaneTex.bind(0);
-					modelPlaneObj.render(diffuseShader);
+					modelBirdieTex.bind(0);
+					modelBirdieObj.render(diffuseShader);
 				}
 				
 			}

@@ -139,7 +139,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 		cam.update();
 
-		collisionTest();
+		//collisionTest();
 		updateAI();
 		renderScene();
 
@@ -180,16 +180,19 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	}
 
 	private void updateAI() {
-		if (birdie.state != Birdie.STATE.HELD) {
-			player.update();
-		}
-		birdie.update(player);
+
+		
+		
+		if (birdie.state == Birdie.STATE.HELD && player.position.dst(birdie.currentPosition) < 1.3f)
+			player.state = Player.STATE.AIMING;
+		player.update();
+		birdie.update();
 		opp.update(player.position);
 
-		if (opp.position.dst(birdie.currentPosition) < 1.3f
+		if (opp.position.dst(birdie.currentPosition) < 1.0f
 				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {
 			birdie.state = Birdie.STATE.HITBYOPPONENT;
-//			birdie.hit(opp.direction, false);
+			birdie.hit(false);
 		}
 	}
 
@@ -235,6 +238,39 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 		modelPlaneTex.bind(0);
 		modelPlaneObj.render(diffuseShader);
+		
+		// render birdie trajectory
+		if(birdie.trajectoryPath.size > 0) {
+			int asd = birdie.trajectoryPath.indexOf(birdie.currentPosition, false);
+			for(int i = asd; i > asd - 20; i--) {
+				if(i>0) {
+					tmp.idt();
+					model.idt();
+			
+					tmp.setToRotation(Vector3.X, 90);
+					model.mul(tmp);
+			
+					//Vector3 tmpV = birdie.currentPosition;
+					
+					//if(birdie.trajectoryPath.indexOf(birdie.currentPosition, false) - birdie.trajectoryPath.indexOf(vex, false) < 21)
+					Vector3	tmpV = birdie.trajectoryPath.get(i);
+					
+					tmp.setToTranslation(tmpV.x, tmpV.y,
+							tmpV.z - 0.1f);
+					model.mul(tmp);
+					
+					tmp.setToScaling(0.1f, 0.1f, 0.1f);
+					model.mul(tmp);
+			
+					diffuseShader.setUniformMatrix("MMatrix", model);
+					diffuseShader.setUniformi("uSampler", 0);
+			
+					modelPlaneTex.bind(0);
+					modelPlaneObj.render(diffuseShader);
+				}
+				
+			}
+		}
 
 		// render shadow
 		tmp.idt();
@@ -268,8 +304,19 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			tmp.setToTranslation(player.position.x, player.position.y,
 					player.position.z);
 		model.mul(tmp);
-
-		tmp.setToScaling(0.5f, 0.5f, 0.5f);
+		
+		
+		float scaler = 0.5f;;
+		if(player.state == Player.STATE.AIMING) {
+			float help = (player.aimTime / 2) % 0.5f;
+			
+			if(help < 0.25f)
+				scaler = 0.5f + help;
+			if(help > 0.25f)
+				scaler = 1 - help;	
+		}
+		
+		tmp.setToScaling(scaler, scaler, scaler);
 		model.mul(tmp);
 
 		diffuseShader.setUniformMatrix("MMatrix", model);
@@ -335,7 +382,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				}else if (player.aiming == Player.AIMING.DOWNRIGHT) {
 					player.state = Player.STATE.DOWNRIGHT;
 				}
+				int tmp = player.aiming.ordinal();
+				player.aimTime = 1;
 				player.aiming = Player.AIMING.IDLE;
+				player.state = Player.STATE.IDLE;
+				
+				player.state = Player.STATE.values()[tmp];
 			}
 		}
 
@@ -544,26 +596,47 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			}
 		}
 		if (keycode == Input.Keys.CONTROL_LEFT) {
-			if (player.state != Player.STATE.AIMING) {
-				if (player.state == Player.STATE.UP) {
-					player.aiming = Player.AIMING.UP;
-				} else if (player.state == Player.STATE.DOWN) {
-					player.aiming = Player.AIMING.DOWN;
-				}else if (player.state == Player.STATE.LEFT) {
-					player.aiming = Player.AIMING.LEFT;
-				}else if (player.state == Player.STATE.RIGHT) {
-					player.aiming = Player.AIMING.RIGHT;
-				}else if (player.state == Player.STATE.UPLEFT) {
-					player.aiming = Player.AIMING.UPLEFT;
-				}else if (player.state == Player.STATE.UPRIGHT) {
-					player.aiming = Player.AIMING.UPRIGHT;
-				}else if (player.state == Player.STATE.DOWNLEFT) {
-					player.aiming = Player.AIMING.DOWNLEFT;
-				}else if (player.state == Player.STATE.DOWNRIGHT) {
-					player.aiming = Player.AIMING.DOWNRIGHT;
+			if(birdie.state != Birdie.STATE.HELD && player.position.dst(birdie.currentPosition) >= 1.3f) {
+				if (player.state != Player.STATE.AIMING) {
+					if (player.state == Player.STATE.UP) {
+						player.aiming = Player.AIMING.UP;
+					} else if (player.state == Player.STATE.DOWN) {
+						player.aiming = Player.AIMING.DOWN;
+					}else if (player.state == Player.STATE.LEFT) {
+						player.aiming = Player.AIMING.LEFT;
+					}else if (player.state == Player.STATE.RIGHT) {
+						player.aiming = Player.AIMING.RIGHT;
+					}else if (player.state == Player.STATE.UPLEFT) {
+						player.aiming = Player.AIMING.UPLEFT;
+					}else if (player.state == Player.STATE.UPRIGHT) {
+						player.aiming = Player.AIMING.UPRIGHT;
+					}else if (player.state == Player.STATE.DOWNLEFT) {
+						player.aiming = Player.AIMING.DOWNLEFT;
+					}else if (player.state == Player.STATE.DOWNRIGHT) {
+						player.aiming = Player.AIMING.DOWNRIGHT;
+					}
 				}
 				player.state = Player.STATE.AIMING;
 			}
+			
+			if(player.position.dst(birdie.currentPosition) < 1.3f && player.state == Player.STATE.AIMING){
+				collisionTest();
+			}
+			else if(player.position.dst(birdie.currentPosition) < 1.3f && player.state != Player.STATE.AIMING) {
+				birdie.hit(player, false);
+				birdie.state = Birdie.STATE.HIT;
+				player.state = Player.STATE.IDLE;
+			}
+			else if(player.position.dst(birdie.currentPosition) > 1.3f && player.aimTime >= 1.1f) {
+				
+				player.state = Player.STATE.IDLE;
+				player.aimTime = 1;
+				int tmp = player.aiming.ordinal();
+				player.state = Player.STATE.values()[tmp];
+				player.aiming = Player.AIMING.IDLE;
+				
+			}
+				
 		}
 		if (keycode == Input.Keys.SHIFT_LEFT) {
 			player.state = Player.STATE.AIMING;

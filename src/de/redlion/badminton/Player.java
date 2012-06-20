@@ -16,12 +16,14 @@ public class Player {
 		IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT, UPRIGHT;
 	}
 
-	public Vector3 direction = new Vector3(0, 0, -1);
+	public Vector3 direction = new Vector3(0, 0, 0);
 	public Vector3 position = new Vector3(-2, 7, -0.5f);
 	public Vector3 velocity = new Vector3(0,0,0); //for jumps
 	public STATE state = STATE.IDLE;
 	public AIMING aiming = AIMING.IDLE;
 	public boolean jump = false;
+	public float aimTime = 1;
+	public float momentum = 63.3f;
 
 	public Player() {
 	}
@@ -64,8 +66,47 @@ public class Player {
 			direction = new Vector3(1, -1, 0);
 		}
 		if (state == STATE.IDLE) {
-			direction = new Vector3(0, 0, 0);
+			aimTime=1;
+			if(Math.abs(direction.x) < 0.001f && Math.abs(direction.y) < 0.001f)
+				direction = new Vector3(0, 0, 0);
 		}
+		if(state == STATE.AIMING) {
+			aimTime += Gdx.graphics.getDeltaTime() / 5;
+			
+			if (aiming == AIMING.LEFT) {
+				position.x = position.x - Gdx.graphics.getDeltaTime() * 0.5f;
+			}
+			if (aiming == AIMING.RIGHT) {
+				position.x = position.x + Gdx.graphics.getDeltaTime() * 0.5f;
+			}
+			if (aiming == AIMING.UP) {
+				position.y = position.y - Gdx.graphics.getDeltaTime() * 0.5f;
+			}
+			if (aiming == AIMING.DOWN) {
+				position.y = position.y + Gdx.graphics.getDeltaTime() * 0.5f;
+			}
+			if (aiming == AIMING.DOWNLEFT) {
+				position.x = position.x - Gdx.graphics.getDeltaTime() * 0.4375f;
+				position.y = position.y + Gdx.graphics.getDeltaTime() * 0.4375f;
+			}
+			if (aiming == AIMING.UPLEFT) {
+				position.x = position.x - Gdx.graphics.getDeltaTime() * 0.4375f;
+				position.y = position.y - Gdx.graphics.getDeltaTime() * 0.4375f;
+			}
+			if (aiming == AIMING.DOWNRIGHT) {
+				position.x = position.x + Gdx.graphics.getDeltaTime() * 0.4375f;
+				position.y = position.y + Gdx.graphics.getDeltaTime() * 0.4375f;
+			}
+			if (aiming == AIMING.UPRIGHT) {
+				position.x = position.x + Gdx.graphics.getDeltaTime() * 0.4375f;
+				position.y = position.y - Gdx.graphics.getDeltaTime() * 0.4375f;
+			}
+			
+		}
+		
+		direction.mul( (float) Math.pow(0.97f, Gdx.graphics.getDeltaTime() * momentum));
+		position.add(direction.cpy().mul(Gdx.graphics.getDeltaTime()));
+		
 		
 		if(jump){
 			velocity.mul( (float) Math.pow(0.97f, Gdx.graphics.getDeltaTime() * 35.f));

@@ -18,6 +18,9 @@ public class Birdie {
 	public Vector3 via = new Vector3(0,0,-3);
 	public Vector3 toPosition = new Vector3(0, -6, -0.5f);
 	
+	public Vector3 tangent = new Vector3(0,0,0);
+	public Vector3 up = new Vector3(0,0,0);
+	
 	public Array<Vector3> trajectoryPath = new Array<Vector3>();
 
 	public float acceleration = 1;
@@ -39,6 +42,19 @@ public class Birdie {
 			currentPosition =  fromPosition.cpy().mul((float) Math.pow(1-t, 2));
 			currentPosition.add(via.cpy().mul(2*t*(1-t)));
 			currentPosition.add(toPosition.cpy().mul((float) Math.pow(t, 2)));
+			
+			Vector3 qZero = (fromPosition.cpy().sub(via.cpy())).mul(t);
+			qZero.nor();
+			Vector3 qOne = (via.cpy().sub(toPosition.cpy())).mul(t);
+			qOne.nor();
+			
+			tangent = qZero.cpy().sub(qOne.cpy());
+			tangent.nor();
+			if(t<=0.5)
+				up = tangent.cpy().crs(via.cpy());
+			else
+				up = tangent.cpy().crs(toPosition.cpy());
+			up.nor();
 			
 			t+= Gdx.graphics.getDeltaTime() / 2;
 			

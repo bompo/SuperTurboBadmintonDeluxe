@@ -234,15 +234,18 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		// render birdie
 		tmp.idt();
 		model.idt();
-
+		
 		tmp.setToRotation(Vector3.X, 90);
 		model.mul(tmp);
-
+		
 		tmp.setToTranslation(birdie.currentPosition.x, birdie.currentPosition.y,
 				birdie.currentPosition.z - 0.1f);
 		model.mul(tmp);
-
+		
 		tmp.setToScaling(0.1f, 0.1f, 0.1f);
+		model.mul(tmp);
+		
+		tmp.setToLookAt(birdie.currentPosition, birdie.tangent, birdie.up);
 		model.mul(tmp);
 
 		diffuseShader.setUniformMatrix("MMatrix", model);
@@ -264,9 +267,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					tmp.setToRotation(Vector3.X, 90);
 					model.mul(tmp);
 			
-					//Vector3 tmpV = birdie.currentPosition;
-					
-					//if(birdie.trajectoryPath.indexOf(birdie.currentPosition, false) - birdie.trajectoryPath.indexOf(vex, false) < 21)
 					Vector3	tmpV = birdie.trajectoryPath.get(i);
 					
 					tmp.setToTranslation(tmpV.x, tmpV.y,
@@ -274,6 +274,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					model.mul(tmp);
 					
 					tmp.setToScaling(0.1f, 0.1f, 0.1f);
+					model.mul(tmp);
+					
+					tmp.setToLookAt(birdie.currentPosition, birdie.tangent, birdie.up);
 					model.mul(tmp);
 			
 					diffuseShader.setUniformMatrix("MMatrix", model);

@@ -18,9 +18,11 @@ public class DiffuseShader {
         "precision mediump float;\n" +
         "#endif\n" +
         "uniform vec4 a_color;\n"+
+        "uniform float alpha;\n"+
         "varying vec2 vTextureCoord;\n"+
         "uniform sampler2D uSampler;\n"+
     	"void main() {\n"+
-        "gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));\n"+
+    	"vec4 color = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));\n"+
+        "gl_FragColor = vec4(color.rgb, alpha);\n"+
         "}\n"; 
 }

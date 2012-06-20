@@ -202,6 +202,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		diffuseShader.begin();
 		diffuseShader.setUniformMatrix("VPMatrix", cam.combined);
 		diffuseShader.setUniformi("uSampler", 0);
+		diffuseShader.setUniformf("alpha", 1);
 
 		// render court
 		tmp.idt();
@@ -238,11 +239,13 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 		modelPlaneTex.bind(0);
 		modelPlaneObj.render(diffuseShader);
-		
+
 		// render birdie trajectory
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		if(birdie.trajectoryPath.size > 0) {
-			int asd = birdie.trajectoryPath.indexOf(birdie.currentPosition, false);
-			for(int i = asd; i > asd - 20; i--) {
+			int trajectoryCnt = birdie.trajectoryPath.indexOf(birdie.currentPosition, false);
+			for(int i = trajectoryCnt; i > trajectoryCnt - 20; i--) {
 				if(i>0) {
 					tmp.idt();
 					model.idt();
@@ -264,6 +267,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			
 					diffuseShader.setUniformMatrix("MMatrix", model);
 					diffuseShader.setUniformi("uSampler", 0);
+					
+//					System.out.println(Helper.map(i, trajectoryCnt - 20, trajectoryCnt,0,1));
+					diffuseShader.setUniformf("alpha", Helper.map(i, trajectoryCnt - 20, trajectoryCnt,0,1));
 			
 					modelPlaneTex.bind(0);
 					modelPlaneObj.render(diffuseShader);
@@ -271,6 +277,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				
 			}
 		}
+		diffuseShader.setUniformf("alpha", 1);
+		Gdx.gl.glDisable(GL20.GL_BLEND);
 
 		// render shadow
 		tmp.idt();

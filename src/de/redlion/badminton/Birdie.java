@@ -3,6 +3,7 @@ package de.redlion.badminton;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 
 import de.redlion.badminton.Player.AIMING;
 
@@ -16,6 +17,8 @@ public class Birdie {
 	public Vector3 fromPosition = new Vector3(-2, 7, -0.5f);
 	public Vector3 via = new Vector3(0,0,-3);
 	public Vector3 toPosition = new Vector3(0, -6, -0.5f);
+	
+	public Array<Vector3> trajectoryPath = new Array<Vector3>();
 
 	public float acceleration = 1;
 	
@@ -29,8 +32,7 @@ public class Birdie {
 		if (state == STATE.HELD || state == STATE.PREPARED) {
 			currentPosition = Resources.getInstance().player.position.cpy().add(-0.5f,
 					0, 0);
-			
-			Gdx.app.log("", currentPosition.z + "");
+
 		} else {
 		
 			
@@ -39,6 +41,11 @@ public class Birdie {
 			currentPosition.add(toPosition.cpy().mul((float) Math.pow(t, 2)));
 			
 			t+= Gdx.graphics.getDeltaTime() / 2;
+			
+			if(acceleration > 1.2f)
+				trajectoryPath.add(currentPosition);
+			else
+				trajectoryPath.clear();
 			
 			
 			if (currentPosition.z < 0) {
@@ -92,6 +99,8 @@ public class Birdie {
 		t=0;
 		state = STATE.HELD;
 		Resources.getInstance().player.state = Player.STATE.IDLE;
+		
+		trajectoryPath.clear();
 	}
 
 	public void hit(Player player, boolean smash) {

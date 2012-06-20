@@ -238,6 +238,36 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 		modelPlaneTex.bind(0);
 		modelPlaneObj.render(diffuseShader);
+		
+		// render birdie trajectory
+		if(birdie.trajectoryPath.size > 0) {
+			for(Vector3 vex : birdie.trajectoryPath) {
+				tmp.idt();
+				model.idt();
+		
+				tmp.setToRotation(Vector3.X, 90);
+				model.mul(tmp);
+		
+				Vector3 tmpV = birdie.currentPosition;
+				
+				if(birdie.trajectoryPath.indexOf(birdie.currentPosition, false) - birdie.trajectoryPath.indexOf(vex, false) < 21)
+					tmpV = vex;
+				
+				tmp.setToTranslation(tmpV.x, tmpV.y,
+						tmpV.z - 0.1f);
+				model.mul(tmp);
+				
+				tmp.setToScaling(0.1f, 0.1f, 0.1f);
+				model.mul(tmp);
+		
+				diffuseShader.setUniformMatrix("MMatrix", model);
+				diffuseShader.setUniformi("uSampler", 0);
+		
+				modelPlaneTex.bind(0);
+				modelPlaneObj.render(diffuseShader);
+				
+		}
+		}
 
 		// render shadow
 		tmp.idt();

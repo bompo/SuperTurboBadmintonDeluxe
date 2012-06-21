@@ -238,6 +238,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		tmp.setToRotation(Vector3.X, 90);
 		model.mul(tmp);
 		
+		
 		tmp.setToTranslation(birdie.currentPosition.x, birdie.currentPosition.y,
 				birdie.currentPosition.z - 0.1f);
 		model.mul(tmp);
@@ -245,14 +246,15 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		tmp.setToScaling(0.1f, 0.1f, 0.1f);
 		model.mul(tmp);
 		
-		tmp.setToLookAt(birdie.currentPosition, birdie.tangent, birdie.up);
-		model.mul(tmp);
+//		tmp.setToLookAt(birdie.tangent, birdie.currentPosition.cpy().crs(birdie.tangent));
+//		model.mul(tmp);
 
 		diffuseShader.setUniformMatrix("MMatrix", model);
 		diffuseShader.setUniformi("uSampler", 0);
 
 		modelBirdieTex.bind(0);
 		modelBirdieObj.render(diffuseShader);
+
 
 		// render birdie trajectory
 		Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -276,7 +278,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					tmp.setToScaling(0.1f, 0.1f, 0.1f);
 					model.mul(tmp);
 					
-					tmp.setToLookAt(birdie.currentPosition, birdie.tangent, birdie.up);
+					tmp.setToLookAt(birdie.currentPosition, birdie.currentPosition.cpy().add(birdie.tangent), Vector3.Z);
 					model.mul(tmp);
 			
 					diffuseShader.setUniformMatrix("MMatrix", model);

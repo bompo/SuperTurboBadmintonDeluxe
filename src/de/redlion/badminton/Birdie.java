@@ -43,18 +43,34 @@ public class Birdie {
 			currentPosition.add(via.cpy().mul(2*t*(1-t)));
 			currentPosition.add(toPosition.cpy().mul((float) Math.pow(t, 2)));
 			
-			Vector3 qZero = (fromPosition.cpy().sub(via.cpy())).mul(t);
+//			Vector3 qZero = (fromPosition.cpy().sub(via.cpy())).mul(t);
+//			qZero.nor();
+//			Vector3 qOne = (via.cpy().sub(toPosition.cpy())).mul(t);
+//			qOne.nor();
+//			
+//			tangent = qZero.cpy().sub(qOne.cpy());
+//			tangent.nor();
+			
+//			tangent = fromPosition.cpy().sub(via.cpy().mul(2)).add(toPosition.cpy()).mul(2*t);
+//			tangent.add(via.cpy().mul(2));
+//			tangent.sub(fromPosition.cpy().mul(2));
+//			tangent.nor();
+			
+			Vector3 qZero = (via.cpy().sub(fromPosition.cpy())).mul(2*(1-t));
 			qZero.nor();
-			Vector3 qOne = (via.cpy().sub(toPosition.cpy())).mul(t);
+			Vector3 qOne = (toPosition.cpy().sub(via.cpy())).mul(2*t);
 			qOne.nor();
 			
-			tangent = qZero.cpy().sub(qOne.cpy());
+			tangent = qZero.cpy().add(qOne);
 			tangent.nor();
-			if(t<=0.5)
-				up = tangent.cpy().crs(via.cpy());
-			else
-				up = tangent.cpy().crs(toPosition.cpy());
-			up.nor();
+			
+//			if(t<=0.5)
+//				up = tangent.cpy().crs(via.cpy());
+//			else
+//				up = tangent.cpy().crs(toPosition.cpy());
+//			up.nor();
+			
+			up= via.cpy().mul(2).sub(fromPosition.cpy().mul(2));
 			
 			t+= Gdx.graphics.getDeltaTime() / 2;
 			

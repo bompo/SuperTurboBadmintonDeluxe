@@ -1,11 +1,8 @@
 package de.redlion.badminton;
 
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-
-import de.redlion.badminton.Player.AIMING;
 
 public class Birdie {
 
@@ -15,8 +12,10 @@ public class Birdie {
 
 	public Vector3 currentPosition = new Vector3(-2, 7, -0.5f);
 	public Vector3 fromPosition = new Vector3(-2, 7, -0.5f);
-	public Vector3 via = new Vector3(0,0,-3);
+	public Vector3 via1 = new Vector3(0,1,-3);
+	public Vector3 via2 = new Vector3(0,-1,-3);
 	public Vector3 toPosition = new Vector3(0, -6, -0.5f);
+
 	
 	public Vector3 tangent = new Vector3(0,0,0);
 	public Vector3 up = new Vector3(0,0,0);
@@ -39,38 +38,33 @@ public class Birdie {
 		} else {
 		
 			
-			currentPosition =  fromPosition.cpy().mul((float) Math.pow(1-t, 2));
-			currentPosition.add(via.cpy().mul(2*t*(1-t)));
-			currentPosition.add(toPosition.cpy().mul((float) Math.pow(t, 2)));
-			
-//			Vector3 qZero = (fromPosition.cpy().sub(via.cpy())).mul(t);
-//			qZero.nor();
-//			Vector3 qOne = (via.cpy().sub(toPosition.cpy())).mul(t);
-//			qOne.nor();
+//			currentPosition =  fromPosition.cpy().mul((float) Math.pow(1-t, 2));
+//			currentPosition.add(via.cpy().mul(2*t*(1-t)));
+//			currentPosition.add(toPosition.cpy().mul((float) Math.pow(t, 2)));
 //			
-//			tangent = qZero.cpy().sub(qOne.cpy());
-//			tangent.nor();
-			
 //			tangent = fromPosition.cpy().sub(via.cpy().mul(2)).add(toPosition.cpy()).mul(2*t);
 //			tangent.add(via.cpy().mul(2));
 //			tangent.sub(fromPosition.cpy().mul(2));
 //			tangent.nor();
+//			
+//			up= fromPosition.cpy().sub(via.cpy().mul(2)).add(toPosition).mul(2);
+//			up.nor();
+//			
+//			t+= Gdx.graphics.getDeltaTime() / 2;
 			
-			Vector3 qZero = (via.cpy().sub(fromPosition.cpy())).mul(2*(1-t));
-			qZero.nor();
-			Vector3 qOne = (toPosition.cpy().sub(via.cpy())).mul(2*t);
-			qOne.nor();
+			currentPosition = fromPosition.cpy().mul((float) Math.pow(1-t, 3));
+			currentPosition.add(via1.cpy().mul(3*t).mul((float) Math.pow(1-t, 2)));
+			currentPosition.add(via2.cpy().mul((float) (3*Math.pow(t, 2))).mul(1-t));
+			currentPosition.add(toPosition.cpy().mul((float) Math.pow(t, 3)));
 			
-			tangent = qZero.cpy().add(qOne);
+			tangent = via1.cpy().mul((float) (-3*Math.pow(t, 2)) + 4*t -1);
+			tangent.add(fromPosition.cpy().mul((float) Math.pow(t-1, 2)));
+			tangent.add((via2.cpy().mul(3*t - 2).sub(toPosition.cpy().mul(t))).mul(t));
+			tangent.mul(-3);
 			tangent.nor();
 			
-//			if(t<=0.5)
-//				up = tangent.cpy().crs(via.cpy());
-//			else
-//				up = tangent.cpy().crs(toPosition.cpy());
-//			up.nor();
-			
-			up= via.cpy().mul(2).sub(fromPosition.cpy().mul(2));
+			up= (fromPosition.cpy().mul(t-1).add(via1.cpy().mul(2-3*t)).add(via2.cpy().mul(3*t)).sub(toPosition.cpy().mul(t)).sub(via2)).mul(-6);
+			up.nor();
 			
 			t+= Gdx.graphics.getDeltaTime() / 2;
 			
@@ -174,8 +168,28 @@ public class Birdie {
 			toPosition.y = -2.5f * acceleration + (fromPosition.y /7);
 		}
 		
-		via.x = toPosition.x + fromPosition.x;
-		via.x/=2;
+		float middleY = (fromPosition.y + toPosition.y) / 2;
+		
+		via1.y = fromPosition.y + middleY/2;
+		via2.y = toPosition.y + middleY/2;
+		
+		float middleX = (fromPosition.x + toPosition.x) / 2;
+		
+		via1.x = fromPosition.x * 0.7f + middleX * 0.3f;
+		via2.x = toPosition.x * 0.7f + middleX * 0.3f;
+		
+		Gdx.app.log("from", fromPosition.toString());
+		Gdx.app.log("via1", via1.toString());
+		Gdx.app.log("via2", via2.toString());
+		Gdx.app.log("to", toPosition.toString());
+		Gdx.app.log("middleY", "" + middleY);
+		Gdx.app.log("middleX", "" + middleX);
+		
+//		via1.x = 1/3 * toPosition.x + fromPosition.x;
+////		via1.x *= 1/3;
+//		
+//		via2.x = toPosition.x + 1/3 * fromPosition.x;
+////		via2.x *= 2/3;
 		
 	}
 	
@@ -186,8 +200,17 @@ public class Birdie {
 		acceleration = 1;
 		toPosition.x = 0;
 		toPosition.y = 3.5f;
-		via.x = toPosition.x + fromPosition.x;
-		via.x/=2;
+		
+		float middleY = (fromPosition.y + toPosition.y) / 2;
+		
+		via1.y = fromPosition.y + middleY/2;
+		via2.y = toPosition.y + middleY/2;
+		
+		via1.x = 1/3 * toPosition.x + fromPosition.x;
+//		via1.x *= 1/3;
+		
+		via2.x = toPosition.x + 1/3 * fromPosition.x;
+//		via2.x *= 2/3;
 	}
 
 	public String toString() {

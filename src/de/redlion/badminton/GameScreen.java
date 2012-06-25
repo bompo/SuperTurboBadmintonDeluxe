@@ -21,6 +21,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
+import de.redlion.badminton.Birdie.STATE;
 import de.redlion.badminton.Player.AIMING;
 
 public class GameScreen extends DefaultScreen implements InputProcessor {
@@ -243,9 +244,19 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		model.mul(tmp);
 		
 		tmp.setToScaling(0.1f, 0.1f, 0.1f);
-		model.mul(tmp);
+		model.mul(tmp);	
 		
-		tmp.setToLookAt(birdie.currentPosition, birdie.currentPosition.cpy().add(birdie.tangent), birdie.up);
+		//Gamescon Hotfix! TODO fix me!
+		if(birdie.state == Birdie.STATE.HIT) {
+			tmp.setToLookAt(birdie.tangent, birdie.up);
+			model.mul(tmp);			
+		}
+		if(birdie.state == Birdie.STATE.HITBYOPPONENT) {
+			tmp.setToLookAt(birdie.tangent, birdie.up.cpy().mul(-1));
+			model.mul(tmp);
+		}
+		
+		tmp.setToRotation(Vector3.X, 90);
 		model.mul(tmp);
 
 		diffuseShader.setUniformMatrix("MMatrix", model);
@@ -277,7 +288,17 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					tmp.setToScaling(0.1f, 0.1f, 0.1f);
 					model.mul(tmp);
 					
-					tmp.setToLookAt(birdie.currentPosition, birdie.currentPosition.cpy().add(birdie.tangent), Vector3.Z);
+					//Gamescon Hotfix! TODO fix me!
+					if(birdie.state == Birdie.STATE.HIT) {
+						tmp.setToLookAt(birdie.tangent, birdie.up);
+						model.mul(tmp);			
+					}
+					if(birdie.state == Birdie.STATE.HITBYOPPONENT) {
+						tmp.setToLookAt(birdie.tangent, birdie.up.cpy().mul(-1));
+						model.mul(tmp);
+					}
+					
+					tmp.setToRotation(Vector3.X, 90);
 					model.mul(tmp);
 			
 					diffuseShader.setUniformMatrix("MMatrix", model);

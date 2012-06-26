@@ -64,6 +64,8 @@ public class Birdie {
 			tangent.nor();
 			
 			up= (fromPosition.cpy().mul(t-1).add(via1.cpy().mul(2-3*t)).add(via2.cpy().mul(3*t)).sub(toPosition.cpy().mul(t)).sub(via2)).mul(-6);
+			if(state == Birdie.STATE.HITBYOPPONENT)
+				up.mul(-1);
 			up.nor();
 			
 			t+= Gdx.graphics.getDeltaTime() / 2;
@@ -178,19 +180,6 @@ public class Birdie {
 		via1.x = fromPosition.x * 0.7f + middleX * 0.3f;
 		via2.x = toPosition.x * 0.7f + middleX * 0.3f;
 		
-		Gdx.app.log("from", fromPosition.toString());
-		Gdx.app.log("via1", via1.toString());
-		Gdx.app.log("via2", via2.toString());
-		Gdx.app.log("to", toPosition.toString());
-		Gdx.app.log("middleY", "" + middleY);
-		Gdx.app.log("middleX", "" + middleX);
-		
-//		via1.x = 1/3 * toPosition.x + fromPosition.x;
-////		via1.x *= 1/3;
-//		
-//		via2.x = toPosition.x + 1/3 * fromPosition.x;
-////		via2.x *= 2/3;
-		
 	}
 	
 	//placeholder for opponent hit
@@ -207,10 +196,9 @@ public class Birdie {
 		via2.y = toPosition.y + middleY/2;
 		
 		via1.x = 1/3 * toPosition.x + fromPosition.x;
-//		via1.x *= 1/3;
 		
 		via2.x = toPosition.x + 1/3 * fromPosition.x;
-//		via2.x *= 2/3;
+
 	}
 
 	public String toString() {

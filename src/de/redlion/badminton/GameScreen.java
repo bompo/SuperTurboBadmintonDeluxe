@@ -245,16 +245,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		
 		tmp.setToScaling(0.1f, 0.1f, 0.1f);
 		model.mul(tmp);	
-		
-		//Gamescon Hotfix! TODO fix me!
-		if(birdie.state == Birdie.STATE.HIT) {
-			tmp.setToLookAt(birdie.tangent, birdie.up);
-			model.mul(tmp);			
-		}
-		if(birdie.state == Birdie.STATE.HITBYOPPONENT) {
-			tmp.setToLookAt(birdie.tangent, birdie.up.cpy().mul(-1));
-			model.mul(tmp);
-		}
+
+		tmp.setToLookAt(birdie.tangent, birdie.up);
+		model.mul(tmp);			
 		
 		tmp.setToRotation(Vector3.X, 90);
 		model.mul(tmp);
@@ -288,15 +281,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					tmp.setToScaling(0.1f, 0.1f, 0.1f);
 					model.mul(tmp);
 					
-					//Gamescon Hotfix! TODO fix me!
-					if(birdie.state == Birdie.STATE.HIT) {
-						tmp.setToLookAt(birdie.tangent, birdie.up);
-						model.mul(tmp);			
-					}
-					if(birdie.state == Birdie.STATE.HITBYOPPONENT) {
-						tmp.setToLookAt(birdie.tangent, birdie.up.cpy().mul(-1));
-						model.mul(tmp);
-					}
+
+					tmp.setToLookAt(birdie.tangent, birdie.up);
+					model.mul(tmp);			
 					
 					tmp.setToRotation(Vector3.X, 90);
 					model.mul(tmp);

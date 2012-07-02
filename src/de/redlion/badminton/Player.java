@@ -24,7 +24,7 @@ public class Player {
 	public boolean jump = false;
 	public float aimTime = 1;
 	public float moveTime = 0; //currently only used for sliding diagonally  when player didn't release both keys at the same time
-	public float momentum = 63.3f;
+	public float momentum =0.97f;
 
 	public Player() {
 	}
@@ -105,7 +105,7 @@ public class Player {
 				else
 					moveTime = 0;
 				
-				if(Math.abs(direction.x) < 0.001f && Math.abs(direction.y) < 0.001f)
+				if(Math.abs(direction.x) < 0.01f && Math.abs(direction.y) < 0.01f)
 					direction = new Vector3(0, 0, 0);
 			}
 			if(moveTime > 1.0f)
@@ -154,7 +154,7 @@ public class Player {
 				moveTime += Gdx.graphics.getDeltaTime() * 14;
 		}
 		
-		direction.mul( (float) Math.pow(0.97f, Gdx.graphics.getDeltaTime() * momentum));
+		direction.mul(momentum);
 		position.add(direction.cpy().mul(Gdx.graphics.getDeltaTime()));
 		
 		if(jump){

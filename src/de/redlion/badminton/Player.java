@@ -17,107 +17,127 @@ public class Player {
 	}
 
 	public Vector3 direction = new Vector3(0, 0, 0);
+	public Vector3 lastDirection = new Vector3(0, 0, 0);
 	public Vector3 position = new Vector3(-2, 7, -0.5f);
-	public Vector3 velocity = new Vector3(0,0,0); //for jumps
+	public Vector3 velocity = new Vector3(0,0,0);
 	public STATE state = STATE.IDLE;
 	public AIMING aiming = AIMING.IDLE;
 	public boolean jump = false;
 	public float aimTime = 1;
-	public float moveTime = 0; //currently only used for sliding diagonally  when player didn't release both keys at the same time
+	public float diagonalTime = 0; //currently only used for sliding diagonally  when player didn't release both keys at the same time
+	public float moveTime = 0.0f;
 	public float momentum =0.97f;
 
 	public Player() {
 	}
 
-	public void update() {
+	public void update() {		
 		if(state != STATE.AIMING) {
 			
-			Vector3 directCopy = direction.cpy();
-			directCopy.x =  (float) Math.ceil(Math.abs(directCopy.x)) * Math.signum(directCopy.x);
-			directCopy.y =  (float) Math.ceil(Math.abs(directCopy.y)) * Math.signum(directCopy.y);
-			
 			if (state == STATE.LEFT) {
-				position.x = position.x - Gdx.graphics.getDeltaTime() * 4;
-				if(moveTime > 1.0f && (directCopy.idt(new Vector3(-1,1,0)) || directCopy.idt(new Vector3(-1,-1,0)))) {
+				position.x = position.x - Gdx.graphics.getDeltaTime() * 4 + velocity.x;
+				if(diagonalTime > 1.0f && (direction.idt(new Vector3(-1,1,0)) || direction.idt(new Vector3(-1,-1,0)))) {
 					direction = new Vector3(-1, 0, 0);
-					moveTime = -1;
+					diagonalTime = -1;
 				}
-				else if (!directCopy.idt(new Vector3(-1,1,0)) && !directCopy.idt(new Vector3(-1,-1,0)))
+				else if (!direction.idt(new Vector3(-1,1,0)) && !direction.idt(new Vector3(-1,-1,0)))
 					direction = new Vector3(-1, 0, 0);
 			}
 			if (state == STATE.RIGHT) {
-				position.x = position.x + Gdx.graphics.getDeltaTime() * 4;
-				if(moveTime > 1.0f && (directCopy.idt(new Vector3(1,1,0)) || directCopy.idt(new Vector3(1,-1,0)))) {
+				position.x = position.x + Gdx.graphics.getDeltaTime() * 4 + velocity.x;
+				if(diagonalTime > 1.0f && (direction.idt(new Vector3(1,1,0)) || direction.idt(new Vector3(1,-1,0)))) {
 					direction = new Vector3(1, 0, 0);
-					moveTime = -1;
+					diagonalTime = -1;
 				}
-				else if(!directCopy.idt(new Vector3(1,1,0)) && !directCopy.idt(new Vector3(1,-1,0)))
+				else if(!direction.idt(new Vector3(1,1,0)) && !direction.idt(new Vector3(1,-1,0)))
 					direction = new Vector3(1, 0, 0);
 			}
 			if (state == STATE.UP) {
-				position.y = position.y - Gdx.graphics.getDeltaTime() * 4;
-				if(moveTime > 1.0f && (directCopy.idt(new Vector3(-1,-1,0)) || directCopy.idt(new Vector3(1,-1,0)))) {
+				position.y = position.y - Gdx.graphics.getDeltaTime() * 4 + velocity.y;
+				if(diagonalTime > 1.0f && (direction.idt(new Vector3(-1,-1,0)) || direction.idt(new Vector3(1,-1,0)))) {
 					direction = new Vector3(0, -1, 0);
-					moveTime = -1;
+					diagonalTime = -1;
 				}
-				else if(!directCopy.idt(new Vector3(-1,-1,0)) && !directCopy.idt(new Vector3(1,-1,0))) {
+				else if(!direction.idt(new Vector3(-1,-1,0)) && !direction.idt(new Vector3(1,-1,0))) {
 					direction = new Vector3(0, -1, 0);
 				}
 			}
 			if (state == STATE.DOWN) {
-				position.y = position.y + Gdx.graphics.getDeltaTime() * 4;
-				if(moveTime > 1.0f && (direction.idt(new Vector3(-1,1,0)) || direction.idt(new Vector3(1,1,0)))) {
+				position.y = position.y + Gdx.graphics.getDeltaTime() * 4 + velocity.y;
+				if(diagonalTime > 1.0f && (direction.idt(new Vector3(-1,1,0)) || direction.idt(new Vector3(1,1,0)))) {
 					direction = new Vector3(0, 1, 0);
-					moveTime = -1;
+					diagonalTime = -1;
 				}
 				else if(!direction.idt(new Vector3(-1,1,0)) && !direction.idt(new Vector3(1,1,0)))
 					direction = new Vector3(0, 1, 0);
 			}
 			if (state == STATE.DOWNLEFT) {
-				position.x = position.x - Gdx.graphics.getDeltaTime() * 3.5f;
-				position.y = position.y + Gdx.graphics.getDeltaTime() * 3.5f;
+				position.x = position.x - Gdx.graphics.getDeltaTime() * 3.5f + velocity.x;
+				position.y = position.y + Gdx.graphics.getDeltaTime() * 3.5f + velocity.y;
 				direction = new Vector3(-1, 1, 0);
-				moveTime = 0;
+				diagonalTime = 0;
 			}
 			if (state == STATE.UPLEFT) {
-				position.x = position.x - Gdx.graphics.getDeltaTime() * 3.5f;
-				position.y = position.y - Gdx.graphics.getDeltaTime() * 3.5f;
+				position.x = position.x - Gdx.graphics.getDeltaTime() * 3.5f + velocity.x;
+				position.y = position.y - Gdx.graphics.getDeltaTime() * 3.5f + velocity.y;
 				direction = new Vector3(-1, -1, 0);
-				moveTime = 0;
+				diagonalTime = 0;
 			}
 			if (state == STATE.DOWNRIGHT) {
-				position.x = position.x + Gdx.graphics.getDeltaTime() * 3.5f;
-				position.y = position.y + Gdx.graphics.getDeltaTime() * 3.5f;
+				position.x = position.x + Gdx.graphics.getDeltaTime() * 3.5f + velocity.x;
+				position.y = position.y + Gdx.graphics.getDeltaTime() * 3.5f + velocity.y;
 				direction = new Vector3(1, 1, 0);
-				moveTime = 0;
+				diagonalTime = 0;
 			}
 			if (state == STATE.UPRIGHT) {
-				position.x = position.x + Gdx.graphics.getDeltaTime() * 3.5f;
-				position.y = position.y - Gdx.graphics.getDeltaTime() * 3.5f;
+				position.x = position.x + Gdx.graphics.getDeltaTime() * 3.5f + velocity.x;
+				position.y = position.y - Gdx.graphics.getDeltaTime() * 3.5f + velocity.y;
 				direction = new Vector3(1, -1, 0);
-				moveTime = 0;
+				diagonalTime = 0;
 			}
 			if (state == STATE.IDLE) {
 				aimTime=1;
 				
-				if(moveTime > 0.0f)
-					moveTime -= Gdx.graphics.getDeltaTime() / 2;
-				else
-					moveTime = 0;
+				velocity.mul(momentum);
+				position.x += velocity.x;
+				position.y += velocity.y;
 				
-				if(Math.abs(direction.x) < 0.01f && Math.abs(direction.y) < 0.01f)
+				if(diagonalTime > 0.0f)
+					diagonalTime -= Gdx.graphics.getDeltaTime() / 2;
+				else
+					diagonalTime = 0;
+				
+				if(Math.abs(velocity.x) < 0.01f && Math.abs(velocity.y) < 0.01f) {
 					direction = new Vector3(0, 0, 0);
+					velocity = new Vector3(0, 0, 0);
+					moveTime = 0.0f;
+				}
 			}
-			if(moveTime > 1.0f)
-				moveTime = -1;
+			else {
+				moveTime += Gdx.graphics.getDeltaTime();
+				velocity.add(direction.cpy().mul(Gdx.graphics.getDeltaTime()  * moveTime * 0.5f));
+				if(direction.x == 0)
+					velocity.x = 0;
+				if(direction.y == 0)
+					velocity.y = 0;
+				if(Math.abs(velocity.x) > 0.1f)
+					velocity.x = Math.signum(velocity.x) * 0.1f;
+				if(Math.abs(velocity.y) > 0.15f)
+					velocity.y = Math.signum(velocity.y) * 0.15f;
+			}
+			if(diagonalTime > 1.0f)
+				diagonalTime = -1;
+			if(moveTime > 0.5f)
+				moveTime = 0.5f;
+			
 		}
 		if(state == STATE.AIMING) {
 			aimTime += Gdx.graphics.getDeltaTime() / 5;
 			
-			if(moveTime > 0.0f)
-				moveTime -= Gdx.graphics.getDeltaTime();
+			if(diagonalTime > 0.0f)
+				diagonalTime -= Gdx.graphics.getDeltaTime();
 			else
-				moveTime = 0;
+				diagonalTime = 0;
 			
 			if (aiming == AIMING.LEFT) {
 				position.x = position.x - Gdx.graphics.getDeltaTime() * 0.5f;
@@ -150,12 +170,23 @@ public class Player {
 			
 		}
 		else if(state != STATE.IDLE && state != STATE.DOWNLEFT && state != STATE.UPRIGHT && state != STATE.UPLEFT && state != STATE.DOWNRIGHT) {
-			if(moveTime != -1 )
-				moveTime += Gdx.graphics.getDeltaTime() * 14;
+			if(diagonalTime != -1 )
+				diagonalTime += Gdx.graphics.getDeltaTime() * 14;
 		}
 		
-		direction.mul(momentum);
-		position.add(direction.cpy().mul(Gdx.graphics.getDeltaTime()));
+		
+		
+//		if(state == STATE.IDLE) {
+//
+//			position.add(velocity.mul(Gdx.graphics.getDeltaTime() * (moveTime * 0.96f)));
+//
+//		}
+//		else {
+//			position.add(velocity.mul(moveTime * Gdx.graphics.getDeltaTime() * 3));
+//			
+//		}
+		
+		Gdx.app.log("", velocity + "");
 		
 		if(jump){
 			velocity.mul( (float) Math.pow(0.97f, Gdx.graphics.getDeltaTime() * 35.f));

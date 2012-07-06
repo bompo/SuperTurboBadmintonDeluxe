@@ -684,6 +684,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		if (keycode == Input.Keys.R) {
 			birdie.currentPosition = new Vector3(2, 5, -0.5f);
 		}
+		
+		player.moveTime = 0.0f;
+		
 		// if (keycode == Input.Keys.S) {
 		// cam.position.z += 0.1;
 		// }
@@ -725,7 +728,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 	@Override
 	public boolean keyUp(int keycode) {
-
+		player.lastDirection = player.direction.cpy();
+		
 		if (player.state == Player.STATE.AIMING) {
 			if (keycode == Input.Keys.A) {
 				if (Gdx.input.isKeyPressed(Input.Keys.D)) {

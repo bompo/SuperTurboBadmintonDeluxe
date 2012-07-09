@@ -203,7 +203,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 		if (opp.position.dst(birdie.currentPosition) < 1.0f
 				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {
-			birdie.state = Birdie.STATE.HITBYOPPONENT;								//quote-unquote to test movements
+//			birdie.state = Birdie.STATE.HITBYOPPONENT;								//quote-unquote to test movements
 			birdie.hit(false);
 		}
 	}
@@ -671,10 +671,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		}
 		if (keycode == Input.Keys.SHIFT_LEFT) {
 			player.state = Player.STATE.AIMING;
-			if (player.position.dst(birdie.currentPosition) < 1.3f
-					&& birdie.state != Birdie.STATE.HIT) {
-				birdie.state = Birdie.STATE.HIT;
-				//birdie.hit(player.direction, true);
+			if(player.position.dst(birdie.currentPosition) < 1.3f && player.state == Player.STATE.AIMING){
+				collisionTest();
 			}
 		}
 		if (keycode == Input.Keys.SPACE) {

@@ -170,7 +170,7 @@ public class Birdie {
 			toPosition.y = -2.5f * acceleration + (fromPosition.y /7);
 		}
 		
-		float middleY = (fromPosition.y + toPosition.y) / 2;
+		float middleY = (fromPosition.y + toPosition.y) /1.5f;
 		
 		via1.y = fromPosition.y + middleY/2;
 		via2.y = toPosition.y + middleY/2;

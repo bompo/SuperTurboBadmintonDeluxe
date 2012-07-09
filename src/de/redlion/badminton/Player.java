@@ -136,7 +136,10 @@ public class Player {
 			
 		}
 		if(state == STATE.AIMING) {
-			aimTime += Gdx.graphics.getDeltaTime() / 5;
+			aimTime += Gdx.graphics.getDeltaTime() / 3;
+			
+			if(aiming != AIMING.IDLE)
+				velocity.mul(0.8f);
 			
 			if(diagonalTime > 0.0f)
 				diagonalTime -= Gdx.graphics.getDeltaTime();
@@ -144,33 +147,65 @@ public class Player {
 				diagonalTime = 0;
 			
 			if (aiming == AIMING.LEFT) {
-				position.x = position.x - Gdx.graphics.getDeltaTime() * 0.5f;
+				direction = new Vector3(-1, 0, 0);
+				position.x = position.x - Gdx.graphics.getDeltaTime() * 0.5f + velocity.x;
+				position.y += velocity.y;
 			}
 			if (aiming == AIMING.RIGHT) {
-				position.x = position.x + Gdx.graphics.getDeltaTime() * 0.5f;
+				direction = new Vector3(1, 0, 0);
+				position.x = position.x + Gdx.graphics.getDeltaTime() * 0.5f + velocity.x;
+				position.y += velocity.y;
 			}
 			if (aiming == AIMING.UP) {
-				position.y = position.y - Gdx.graphics.getDeltaTime() * 0.5f;
+				direction = new Vector3(0, -1, 0);
+				position.y += velocity.x;
+				position.y = position.y - Gdx.graphics.getDeltaTime() * 0.5f + velocity.y;
 			}
 			if (aiming == AIMING.DOWN) {
-				position.y = position.y + Gdx.graphics.getDeltaTime() * 0.5f;
+				direction = new Vector3(0, 1, 0);
+				position.y += velocity.x;
+				position.y = position.y + Gdx.graphics.getDeltaTime() * 0.5f + velocity.y;
 			}
 			if (aiming == AIMING.DOWNLEFT) {
-				position.x = position.x - Gdx.graphics.getDeltaTime() * 0.4375f;
-				position.y = position.y + Gdx.graphics.getDeltaTime() * 0.4375f;
+				direction = new Vector3(-1, 1, 0);
+				position.x = position.x - Gdx.graphics.getDeltaTime() * 0.4375f + velocity.x;
+				position.y = position.y + Gdx.graphics.getDeltaTime() * 0.4375f + velocity.y;
 			}
 			if (aiming == AIMING.UPLEFT) {
-				position.x = position.x - Gdx.graphics.getDeltaTime() * 0.4375f;
-				position.y = position.y - Gdx.graphics.getDeltaTime() * 0.4375f;
+				direction = new Vector3(-1, -1, 0);
+				position.x = position.x - Gdx.graphics.getDeltaTime() * 0.4375f + velocity.x;
+				position.y = position.y - Gdx.graphics.getDeltaTime() * 0.4375f + velocity.y;
 			}
 			if (aiming == AIMING.DOWNRIGHT) {
-				position.x = position.x + Gdx.graphics.getDeltaTime() * 0.4375f;
-				position.y = position.y + Gdx.graphics.getDeltaTime() * 0.4375f;
+				direction = new Vector3(1, 1, 0);
+				position.x = position.x + Gdx.graphics.getDeltaTime() * 0.4375f + velocity.x;
+				position.y = position.y + Gdx.graphics.getDeltaTime() * 0.4375f + velocity.y;
 			}
 			if (aiming == AIMING.UPRIGHT) {
-				position.x = position.x + Gdx.graphics.getDeltaTime() * 0.4375f;
-				position.y = position.y - Gdx.graphics.getDeltaTime() * 0.4375f;
+				direction = new Vector3(1, -1, 0);
+				position.x = position.x + Gdx.graphics.getDeltaTime() * 0.4375f + velocity.x;
+				position.y = position.y - Gdx.graphics.getDeltaTime() * 0.4375f + velocity.y;
 			}
+			
+			if(aiming == AIMING.IDLE) {
+				
+				velocity.mul(momentum);
+				position.x += velocity.x;
+				position.y += velocity.y;
+				
+				if(Math.abs(velocity.x) < 0.01f && Math.abs(velocity.y) < 0.01f) {
+					direction = new Vector3(0, 0, 0);
+					velocity = new Vector3(0, 0, 0);
+					moveTime = 0.0f;
+				}
+			}
+			
+			if(Math.abs(velocity.x) < 0.01f && Math.abs(velocity.y) < 0.01f) {
+				direction = new Vector3(0, 0, 0);
+				velocity = new Vector3(0, 0, 0);
+				moveTime = 0.0f;
+			}
+		
 			
 		}
 		else if(state != STATE.IDLE && state != STATE.DOWNLEFT && state != STATE.UPRIGHT && state != STATE.UPLEFT && state != STATE.DOWNRIGHT) {
@@ -190,7 +225,6 @@ public class Player {
 //			
 //		}
 		
-		Gdx.app.log("", velocity + "");
 		
 		if(jump){
 			velocity.mul( (float) Math.pow(0.97f, Gdx.graphics.getDeltaTime() * 35.f));

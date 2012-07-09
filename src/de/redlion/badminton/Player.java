@@ -36,6 +36,7 @@ public class Player {
 			
 			if (state == STATE.LEFT) {
 				position.x = position.x - Gdx.graphics.getDeltaTime() * 4 + velocity.x;
+				position.y += velocity.y;
 				if(diagonalTime > 1.0f && (direction.idt(new Vector3(-1,1,0)) || direction.idt(new Vector3(-1,-1,0)))) {
 					direction = new Vector3(-1, 0, 0);
 					diagonalTime = -1;
@@ -45,6 +46,7 @@ public class Player {
 			}
 			if (state == STATE.RIGHT) {
 				position.x = position.x + Gdx.graphics.getDeltaTime() * 4 + velocity.x;
+				position.y += velocity.y;
 				if(diagonalTime > 1.0f && (direction.idt(new Vector3(1,1,0)) || direction.idt(new Vector3(1,-1,0)))) {
 					direction = new Vector3(1, 0, 0);
 					diagonalTime = -1;
@@ -53,6 +55,7 @@ public class Player {
 					direction = new Vector3(1, 0, 0);
 			}
 			if (state == STATE.UP) {
+				position.x += velocity.x;
 				position.y = position.y - Gdx.graphics.getDeltaTime() * 4 + velocity.y;
 				if(diagonalTime > 1.0f && (direction.idt(new Vector3(-1,-1,0)) || direction.idt(new Vector3(1,-1,0)))) {
 					direction = new Vector3(0, -1, 0);
@@ -63,6 +66,7 @@ public class Player {
 				}
 			}
 			if (state == STATE.DOWN) {
+				position.x += velocity.x;
 				position.y = position.y + Gdx.graphics.getDeltaTime() * 4 + velocity.y;
 				if(diagonalTime > 1.0f && (direction.idt(new Vector3(-1,1,0)) || direction.idt(new Vector3(1,1,0)))) {
 					direction = new Vector3(0, 1, 0);
@@ -116,10 +120,10 @@ public class Player {
 			else {
 				moveTime += Gdx.graphics.getDeltaTime();
 				velocity.add(direction.cpy().mul(Gdx.graphics.getDeltaTime()  * moveTime * 0.5f));
-				if(direction.x == 0)
-					velocity.x = 0;
-				if(direction.y == 0)
-					velocity.y = 0;
+				if(direction.x == 0 && state != STATE.DOWNLEFT && state != STATE.DOWNRIGHT && state != STATE.UPRIGHT && state != STATE.UPLEFT)
+					velocity.x *= 0.8f;
+				if(direction.y == 0 && state != STATE.DOWNLEFT && state != STATE.DOWNRIGHT && state != STATE.UPRIGHT && state != STATE.UPLEFT)
+					velocity.y *= 0.8f;
 				if(Math.abs(velocity.x) > 0.1f)
 					velocity.x = Math.signum(velocity.x) * 0.1f;
 				if(Math.abs(velocity.y) > 0.15f)

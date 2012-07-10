@@ -203,7 +203,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 		if (opp.position.dst(birdie.currentPosition) < 1.0f
 				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {
-//			birdie.state = Birdie.STATE.HITBYOPPONENT;								//quote-unquote to test movements
+			birdie.state = Birdie.STATE.HITBYOPPONENT;								//quote-unquote to test movements
 			birdie.hit(false);
 		}
 	}

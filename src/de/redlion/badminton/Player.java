@@ -204,8 +204,7 @@ public class Player {
 				direction = new Vector3(0, 0, 0);
 				velocity = new Vector3(0, 0, 0);
 				moveTime = 0.0f;
-			}
-		
+			}	
 			
 		}
 		else if(state != STATE.IDLE && state != STATE.DOWNLEFT && state != STATE.UPRIGHT && state != STATE.UPLEFT && state != STATE.DOWNRIGHT) {

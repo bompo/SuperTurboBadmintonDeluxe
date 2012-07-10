@@ -134,6 +134,8 @@ public class Birdie {
 	public void hit(Player player, boolean smash) {
 
 		acceleration = player.aimTime;
+		if(acceleration > 2.6f)
+			acceleration = 2.6f;
 		t=0;
 		fromPosition = currentPosition.cpy();
 		
@@ -170,6 +172,8 @@ public class Birdie {
 			toPosition.y = -2.5f * acceleration + (fromPosition.y /7);
 		}
 		
+		fuzzyPosition(toPosition, 2.6f - acceleration);
+		
 		float middleY = (fromPosition.y + toPosition.y) /1.5f;
 		
 		via1.y = fromPosition.y + middleY/2;
@@ -199,6 +203,17 @@ public class Birdie {
 		
 		via2.x = toPosition.x + 1/3 * fromPosition.x;
 
+	}
+	
+	public void fuzzyPosition(Vector3 pos, float aimTime) {
+		
+		float x = (float) Math.random() * aimTime * 2 - aimTime;
+		float y = (float) Math.random() * aimTime * 2 - aimTime;
+		
+		pos.x += x;
+		pos.y += y;	
+		
+		
 	}
 
 	public String toString() {

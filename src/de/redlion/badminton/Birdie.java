@@ -131,7 +131,7 @@ public class Birdie {
 		trajectoryPath.clear();
 	}
 
-	public void hit(Player player, boolean smash) {
+	public void hit(Player player, boolean high) {
 
 		acceleration = player.aimTime;
 		if(acceleration > 2.6f)
@@ -183,6 +183,15 @@ public class Birdie {
 		
 		via1.x = fromPosition.x * 0.7f + middleX * 0.3f;
 		via2.x = toPosition.x * 0.7f + middleX * 0.3f;
+		
+		if(high) {
+			via1.z = -4;
+			via2.z = -4;
+		}
+		else {
+			via1.z = -3;
+			via2.z = -3;
+		}
 		
 	}
 	

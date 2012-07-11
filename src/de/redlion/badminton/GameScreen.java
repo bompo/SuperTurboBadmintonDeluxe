@@ -384,7 +384,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	private void processInput() {
 	}
 
-	private void collisionTest() {
+	private void collisionTest(boolean high) {
 
 		// check if player is in aiming mode and could hit birdie
 		if (player.state == Player.STATE.AIMING
@@ -393,7 +393,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			birdie.state = Birdie.STATE.HIT;
 			// IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT,
 			// UPRIGHT;
-			birdie.hit(player, false);
+			birdie.hit(player, high);
 			
 			if (player.state == Player.STATE.AIMING) {
 				if (player.aiming == Player.AIMING.UP) {
@@ -651,7 +651,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 			}
 			
 			if(player.position.dst(birdie.currentPosition) < 1.3f && player.state == Player.STATE.AIMING){
-				collisionTest();
+				collisionTest(false);
 			}
 			else if(player.position.dst(birdie.currentPosition) < 1.3f && player.state != Player.STATE.AIMING) {
 				birdie.hit(player, false);
@@ -670,9 +670,45 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				
 		}
 		if (keycode == Input.Keys.SHIFT_LEFT) {
-			player.state = Player.STATE.AIMING;
+			if(birdie.state != Birdie.STATE.HELD && player.position.dst(birdie.currentPosition) >= 1.3f) {
+				if (player.state != Player.STATE.AIMING) {
+					if (player.state == Player.STATE.UP) {
+						player.aiming = Player.AIMING.UP;
+					} else if (player.state == Player.STATE.DOWN) {
+						player.aiming = Player.AIMING.DOWN;
+					}else if (player.state == Player.STATE.LEFT) {
+						player.aiming = Player.AIMING.LEFT;
+					}else if (player.state == Player.STATE.RIGHT) {
+						player.aiming = Player.AIMING.RIGHT;
+					}else if (player.state == Player.STATE.UPLEFT) {
+						player.aiming = Player.AIMING.UPLEFT;
+					}else if (player.state == Player.STATE.UPRIGHT) {
+						player.aiming = Player.AIMING.UPRIGHT;
+					}else if (player.state == Player.STATE.DOWNLEFT) {
+						player.aiming = Player.AIMING.DOWNLEFT;
+					}else if (player.state == Player.STATE.DOWNRIGHT) {
+						player.aiming = Player.AIMING.DOWNRIGHT;
+					}
+				}
+				player.state = Player.STATE.AIMING;
+			}
+			
 			if(player.position.dst(birdie.currentPosition) < 1.3f && player.state == Player.STATE.AIMING){
-				collisionTest();
+				collisionTest(true);
+			}
+			else if(player.position.dst(birdie.currentPosition) < 1.3f && player.state != Player.STATE.AIMING) {
+				birdie.hit(player, true);
+				birdie.state = Birdie.STATE.HIT;
+				player.state = Player.STATE.IDLE;
+			}
+			else if(player.position.dst(birdie.currentPosition) > 1.3f && player.aimTime >= 1.1f) {
+				
+				player.state = Player.STATE.IDLE;
+				player.aimTime = 1;
+				int tmp = player.aiming.ordinal();
+				player.state = Player.STATE.values()[tmp];
+				player.aiming = Player.AIMING.IDLE;
+				
 			}
 		}
 		if (keycode == Input.Keys.SPACE) {

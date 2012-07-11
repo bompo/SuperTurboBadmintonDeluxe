@@ -14,11 +14,13 @@ public class Birdie {
 	public Vector3 fromPosition = new Vector3(-2, 7, -0.5f);
 	public Vector3 via1 = new Vector3(0,1,-3);
 	public Vector3 via2 = new Vector3(0,-1,-3);
-	public Vector3 toPosition = new Vector3(0, -6, -0.5f);
+	public Vector3 toPosition = new Vector3(0, -6, 0);
 
 	
 	public Vector3 tangent = new Vector3(0,0,0);
 	public Vector3 up = new Vector3(0,0,0);
+	
+	boolean smash = false;
 	
 	public Array<Vector3> trajectoryPath = new Array<Vector3>();
 
@@ -68,9 +70,12 @@ public class Birdie {
 				up.mul(-1);
 			up.nor();
 			
-			t+= Gdx.graphics.getDeltaTime() / 2;
+			if(!smash)
+				t+= Gdx.graphics.getDeltaTime() / 2;
+			else
+				t+= Gdx.graphics.getDeltaTime() / 1.2f;
 			
-			if(acceleration > 1.2f)
+			if(acceleration > 1.5f)
 				trajectoryPath.add(currentPosition);
 			else
 				trajectoryPath.clear();
@@ -128,11 +133,13 @@ public class Birdie {
 		state = STATE.HELD;
 		Resources.getInstance().player.state = Player.STATE.IDLE;
 		
+		smash = false;
+		
 		trajectoryPath.clear();
 	}
 
 	public void hit(Player player, boolean high) {
-
+		
 		acceleration = player.aimTime;
 		if(acceleration > 2.6f)
 			acceleration = 2.6f;
@@ -172,6 +179,11 @@ public class Birdie {
 			toPosition.y = -2.5f * acceleration + (fromPosition.y /7);
 		}
 		
+		if(acceleration > 1.5f && !high) {
+			toPosition.y -= 1;
+			toPosition.y -= 1;
+		}
+		
 		fuzzyPosition(toPosition, 2.6f - acceleration);
 		
 		float middleY = (fromPosition.y + toPosition.y) /1.5f;
@@ -191,12 +203,21 @@ public class Birdie {
 		else {
 			via1.z = -3;
 			via2.z = -3;
+			
+			if(acceleration > 1.5f) {
+				via1.z = -2.0f;
+				via2.z = -1.5f;
+				
+				smash = true;
+				Gdx.app.log("S M A S H", toPosition + "");
+			}
 		}
 		
 	}
 	
 	//placeholder for opponent hit
 	public void hit(boolean smash) {
+		smash = false;
 		t=0;
 		fromPosition = currentPosition.cpy();
 		acceleration = 1;

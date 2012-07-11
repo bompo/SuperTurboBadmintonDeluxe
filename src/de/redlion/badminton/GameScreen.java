@@ -240,7 +240,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		model.mul(tmp);
 		
 		tmp.setToTranslation(birdie.currentPosition.x, birdie.currentPosition.y,
-				birdie.currentPosition.z - 0.1f);
+				birdie.currentPosition.z);
 		model.mul(tmp);
 		
 		tmp.setToScaling(0.1f, 0.1f, 0.1f);
@@ -275,7 +275,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					Vector3	tmpV = birdie.trajectoryPath.get(i);
 					
 					tmp.setToTranslation(tmpV.x, tmpV.y,
-							tmpV.z - 0.1f);
+							tmpV.z);
 					model.mul(tmp);
 					
 					tmp.setToScaling(0.1f, 0.1f, 0.1f);

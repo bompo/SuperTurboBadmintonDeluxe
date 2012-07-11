@@ -14,7 +14,7 @@ public class Birdie {
 	public Vector3 fromPosition = new Vector3(-2, 7, -0.5f);
 	public Vector3 via1 = new Vector3(0,1,-3);
 	public Vector3 via2 = new Vector3(0,-1,-3);
-	public Vector3 toPosition = new Vector3(0, -6, 0);
+	public Vector3 toPosition = new Vector3(0, -6, 1.0f);
 
 	
 	public Vector3 tangent = new Vector3(0,0,0);
@@ -80,8 +80,7 @@ public class Birdie {
 			else
 				trajectoryPath.clear();
 			
-			
-			if (currentPosition.z < 0) {
+			if (currentPosition.z < 0 && t<=1.0f) {
 				//currentPosition.z = currentPosition.z + (Gdx.graphics.getDeltaTime() * 2.f);
 			} else {
 				state = STATE.NONHIT;

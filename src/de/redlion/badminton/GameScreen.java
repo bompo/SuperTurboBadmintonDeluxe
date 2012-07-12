@@ -40,6 +40,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	
 	StillModel modelBirdieObj;
 	Texture modelBirdieTex;
+	
+	StillModel modelStadiumObj;
+	Texture modelStadiumTex;
 
 	Player player = Resources.getInstance().player;
 	Birdie birdie = Resources.getInstance().birdie;
@@ -89,6 +92,14 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		modelBirdieTex.setFilter(TextureFilter.MipMapLinearLinear,
 				TextureFilter.Linear);
 		modelBirdieTex.getTextureData().useMipMaps();
+		
+		modelStadiumObj = ModelLoaderRegistry.loadStillModel(Gdx.files
+				.internal("data/stadium.g3dt"));
+		modelStadiumTex = new Texture(
+				Gdx.files.internal("data/uv_map.png"), true);
+		modelStadiumTex.setFilter(TextureFilter.MipMapLinearLinear,
+				TextureFilter.Linear);
+		modelStadiumTex.getTextureData().useMipMaps();
 
 		diffuseShader = Resources.getInstance().diffuseShader;
 
@@ -209,6 +220,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	}
 
 	private void renderScene() {
+		
+		Gdx.gl.glDisable(GL20.GL_CULL_FACE);
+
 
 		// 3D Stuff
 		diffuseShader.begin();
@@ -216,6 +230,8 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		diffuseShader.setUniformi("uSampler", 0);
 		diffuseShader.setUniformf("alpha", 1);
 
+
+		
 		// render court
 		tmp.idt();
 		model.idt();
@@ -377,6 +393,34 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 		modelPlaneTex.bind(0);
 		modelPlaneObj.render(diffuseShader);
+		
+		
+		// render stadium
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		
+		tmp.idt();
+		model.idt();
+		
+		tmp.setToTranslation(-0.2f, 0, 0);
+		model.mul(tmp);
+		
+		tmp.setToScaling(10, 10, 10);
+		model.mul(tmp);
+
+		tmp.setToRotation(Vector3.Y, -90);
+		model.mul(tmp);
+
+		diffuseShader.setUniformMatrix("MMatrix", model);
+		diffuseShader.setUniformi("uSampler", 0);
+
+		diffuseShader.setUniformf("alpha", 0.2f);
+
+		modelStadiumTex.bind(0);
+		modelStadiumObj.render(diffuseShader);
+		
+		Gdx.gl.glDisable(GL20.GL_BLEND);
+		
 
 		diffuseShader.end();
 	}

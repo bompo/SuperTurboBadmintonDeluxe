@@ -152,9 +152,18 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	@Override
 	public void show() {
 	}
-
+	
+	private float deltaCount = 0;	
 	@Override
 	public void render(float deltaTime) {
+		deltaCount += deltaTime;
+		if(deltaCount > 0.01) {
+			deltaCount = 0;
+			renderFrame(0.02f);
+		}
+	}
+
+	public void renderFrame(float deltaTime) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		delta = Math.min(0.1f, deltaTime);
 
@@ -214,7 +223,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 		if (opp.position.dst(birdie.currentPosition) < 1.0f
 				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {
-			birdie.state = Birdie.STATE.HITBYOPPONENT;								//quote-unquote to test movements
+//			birdie.state = Birdie.STATE.HITBYOPPONENT;								//quote-unquote to test movements
 			birdie.hit(false);
 		}
 	}

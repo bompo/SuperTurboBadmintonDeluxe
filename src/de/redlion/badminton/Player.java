@@ -1,9 +1,6 @@
 package de.redlion.badminton;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 
 public class Player {
@@ -16,6 +13,9 @@ public class Player {
 		IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT, UPRIGHT;
 	}
 
+	final static float SPEED = 2;
+	final static float MOMENTUM =0.85f;
+	
 	public Vector3 direction = new Vector3(0, 0, 0);
 	public Vector3 lastDirection = new Vector3(0, 0, 0);
 	public Vector3 position = new Vector3(-2, 7, -0.5f);
@@ -26,7 +26,6 @@ public class Player {
 	public float aimTime = 1;
 	public float diagonalTime = 0; //currently only used for sliding diagonally  when player didn't release both keys at the same time
 	public float moveTime = 0.0f;
-	public float momentum =0.97f;
 
 	public Player() {
 	}
@@ -35,7 +34,7 @@ public class Player {
 		if(state != STATE.AIMING) {
 			
 			if (state == STATE.LEFT) {
-				position.x = position.x - Gdx.graphics.getDeltaTime() * 4 + velocity.x;
+				position.x = position.x - Gdx.graphics.getDeltaTime() * SPEED + velocity.x;
 				position.y += velocity.y;
 				if(diagonalTime > 1.0f && (direction.idt(new Vector3(-1,1,0)) || direction.idt(new Vector3(-1,-1,0)))) {
 					direction = new Vector3(-1, 0, 0);
@@ -45,7 +44,7 @@ public class Player {
 					direction = new Vector3(-1, 0, 0);
 			}
 			if (state == STATE.RIGHT) {
-				position.x = position.x + Gdx.graphics.getDeltaTime() * 4 + velocity.x;
+				position.x = position.x + Gdx.graphics.getDeltaTime() * SPEED + velocity.x;
 				position.y += velocity.y;
 				if(diagonalTime > 1.0f && (direction.idt(new Vector3(1,1,0)) || direction.idt(new Vector3(1,-1,0)))) {
 					direction = new Vector3(1, 0, 0);
@@ -56,7 +55,7 @@ public class Player {
 			}
 			if (state == STATE.UP) {
 				position.x += velocity.x;
-				position.y = position.y - Gdx.graphics.getDeltaTime() * 4 + velocity.y;
+				position.y = position.y - Gdx.graphics.getDeltaTime() * SPEED * 2 + velocity.y;
 				if(diagonalTime > 1.0f && (direction.idt(new Vector3(-1,-1,0)) || direction.idt(new Vector3(1,-1,0)))) {
 					direction = new Vector3(0, -1, 0);
 					diagonalTime = -1;
@@ -67,7 +66,7 @@ public class Player {
 			}
 			if (state == STATE.DOWN) {
 				position.x += velocity.x;
-				position.y = position.y + Gdx.graphics.getDeltaTime() * 4 + velocity.y;
+				position.y = position.y + Gdx.graphics.getDeltaTime() * SPEED * 2 + velocity.y;
 				if(diagonalTime > 1.0f && (direction.idt(new Vector3(-1,1,0)) || direction.idt(new Vector3(1,1,0)))) {
 					direction = new Vector3(0, 1, 0);
 					diagonalTime = -1;
@@ -76,33 +75,33 @@ public class Player {
 					direction = new Vector3(0, 1, 0);
 			}
 			if (state == STATE.DOWNLEFT) {
-				position.x = position.x - Gdx.graphics.getDeltaTime() * 3.5f + velocity.x;
-				position.y = position.y + Gdx.graphics.getDeltaTime() * 3.5f + velocity.y;
+				position.x = position.x - Gdx.graphics.getDeltaTime() * SPEED + velocity.x;
+				position.y = position.y + Gdx.graphics.getDeltaTime() * SPEED*2 + velocity.y;
 				direction = new Vector3(-1, 1, 0);
 				diagonalTime = 0;
 			}
 			if (state == STATE.UPLEFT) {
-				position.x = position.x - Gdx.graphics.getDeltaTime() * 3.5f + velocity.x;
-				position.y = position.y - Gdx.graphics.getDeltaTime() * 3.5f + velocity.y;
+				position.x = position.x - Gdx.graphics.getDeltaTime() * SPEED + velocity.x;
+				position.y = position.y - Gdx.graphics.getDeltaTime() * SPEED*2 + velocity.y;
 				direction = new Vector3(-1, -1, 0);
 				diagonalTime = 0;
 			}
 			if (state == STATE.DOWNRIGHT) {
-				position.x = position.x + Gdx.graphics.getDeltaTime() * 3.5f + velocity.x;
-				position.y = position.y + Gdx.graphics.getDeltaTime() * 3.5f + velocity.y;
+				position.x = position.x + Gdx.graphics.getDeltaTime() * SPEED + velocity.x;
+				position.y = position.y + Gdx.graphics.getDeltaTime() * SPEED*2 + velocity.y;
 				direction = new Vector3(1, 1, 0);
 				diagonalTime = 0;
 			}
 			if (state == STATE.UPRIGHT) {
-				position.x = position.x + Gdx.graphics.getDeltaTime() * 3.5f + velocity.x;
-				position.y = position.y - Gdx.graphics.getDeltaTime() * 3.5f + velocity.y;
+				position.x = position.x + Gdx.graphics.getDeltaTime() * SPEED + velocity.x;
+				position.y = position.y - Gdx.graphics.getDeltaTime() * SPEED*2 + velocity.y;
 				direction = new Vector3(1, -1, 0);
 				diagonalTime = 0;
 			}
 			if (state == STATE.IDLE) {
 				aimTime=1;
 				
-				velocity.mul(momentum);
+				velocity.mul(MOMENTUM);
 				position.x += velocity.x;
 				position.y += velocity.y;
 				
@@ -124,10 +123,10 @@ public class Player {
 					velocity.x *= 0.8f;
 				if(direction.y == 0 && state != STATE.DOWNLEFT && state != STATE.DOWNRIGHT && state != STATE.UPRIGHT && state != STATE.UPLEFT)
 					velocity.y *= 0.8f;
-				if(Math.abs(velocity.x) > 0.1f)
-					velocity.x = Math.signum(velocity.x) * 0.1f;
-				if(Math.abs(velocity.y) > 0.15f)
-					velocity.y = Math.signum(velocity.y) * 0.15f;
+				if(Math.abs(velocity.x) > 0.05f)
+					velocity.x = Math.signum(velocity.x) * 0.05f;
+				if(Math.abs(velocity.y) > 0.1f)
+					velocity.y = Math.signum(velocity.y) * 0.1f;
 			}
 			if(diagonalTime > 1.0f)
 				diagonalTime = -1;
@@ -189,7 +188,7 @@ public class Player {
 			
 			if(aiming == AIMING.IDLE) {
 				
-				velocity.mul(momentum);
+				velocity.mul(MOMENTUM);
 				position.x += velocity.x;
 				position.y += velocity.y;
 				

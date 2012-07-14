@@ -23,6 +23,6 @@ public class DiffuseShader {
         "uniform sampler2D uSampler;\n"+
     	"void main() {\n"+
     	"vec4 color = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));\n"+
-        "gl_FragColor = vec4(color.rgb, alpha);\n"+
+        "gl_FragColor = vec4(color.rgb, color.a + alpha);\n"+
         "}\n"; 
 }

@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.g3d.loaders.ModelLoaderRegistry;
 import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
 import com.badlogic.gdx.graphics.glutils.MipMapGenerator;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
@@ -41,8 +42,13 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 	StillModel modelBirdieObj;
 	Texture modelBirdieTex;
 	
+	StillModel modelCourtObj;
+	Texture modelCourtTex;
+	
 	StillModel modelStadiumObj;
 	Texture modelStadiumTex;
+	
+	Texture modelShadowTex;
 
 	Player player = Resources.getInstance().player;
 	Birdie birdie = Resources.getInstance().birdie;
@@ -93,6 +99,11 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				TextureFilter.Linear);
 		modelBirdieTex.getTextureData().useMipMaps();
 		
+		modelCourtObj = ModelLoaderRegistry.loadStillModel(Gdx.files
+				.internal("data/court.g3dt"));
+		modelCourtTex = new Texture(
+				Gdx.files.internal("data/court_only.png"), true);
+		
 		modelStadiumObj = ModelLoaderRegistry.loadStillModel(Gdx.files
 				.internal("data/stadium.g3dt"));
 		modelStadiumTex = new Texture(
@@ -101,6 +112,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 				TextureFilter.Linear);
 		modelStadiumTex.getTextureData().useMipMaps();
 
+		modelShadowTex = new Texture(
+				Gdx.files.internal("data/shadow.png"), true);
+		modelShadowTex.setFilter(TextureFilter.MipMapLinearLinear,
+				TextureFilter.Linear);
+		modelShadowTex.getTextureData().useMipMaps();
+		
 		diffuseShader = Resources.getInstance().diffuseShader;
 
 		font = Resources.getInstance().font;
@@ -223,7 +240,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 		if (opp.position.dst(birdie.currentPosition) < 1.0f
 				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {
-//			birdie.state = Birdie.STATE.HITBYOPPONENT;								//quote-unquote to test movements
+			birdie.state = Birdie.STATE.HITBYOPPONENT;  //TODO quote-unquote to test movements
 			birdie.hit(false);
 		}
 	}
@@ -239,7 +256,13 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		diffuseShader.setUniformi("uSampler", 0);
 		diffuseShader.setUniformf("alpha", 1);
 
-
+//		cam = new PerspectiveCamera(7, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		cam.position.set(MathUtils.sin(startTime)*10, 20f, 45f);   //TODO quote-unquote to test 3d cam animation
+//		cam.position.set(0, 20f, 45f);
+		cam.lookAt(0, 0.0f, birdie.currentPosition.y/10);	
+		cam.up.set(0, 1, 0);
+		cam.near = 0.5f;
+		cam.far = 600f;
 		
 		// render court
 		tmp.idt();
@@ -247,15 +270,18 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 		tmp.setToTranslation(0, 0, 0);
 		model.mul(tmp);
-
+		
 		tmp.setToScaling(10, 10, 10);
+		model.mul(tmp);
+
+		tmp.setToRotation(Vector3.Y, -90);
 		model.mul(tmp);
 
 		diffuseShader.setUniformMatrix("MMatrix", model);
 		diffuseShader.setUniformi("uSampler", 0);
 
-		modelPlaneTex.bind(0);
-		modelPlaneObj.render(diffuseShader);
+		modelCourtTex.bind(0);
+		modelCourtObj.render(diffuseShader);
 
 		// render birdie
 		tmp.idt();
@@ -343,8 +369,9 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 
 		diffuseShader.setUniformMatrix("MMatrix", model);
 		diffuseShader.setUniformi("uSampler", 0);
+		diffuseShader.setUniformf("alpha", 0);
 
-		modelPlaneTex.bind(0);
+		modelShadowTex.bind(0);
 		modelPlaneObj.render(diffuseShader);
 
 		// render player
@@ -411,7 +438,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		tmp.idt();
 		model.idt();
 		
-		tmp.setToTranslation(-0.2f, 0, 0);
+		tmp.setToTranslation(0, 0, 0);
 		model.mul(tmp);
 		
 		tmp.setToScaling(10, 10, 10);

@@ -335,8 +335,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 					diffuseShader.setUniformMatrix("MMatrix", model);
 					diffuseShader.setUniformi("uSampler", 0);
 					
-//					System.out.println(Helper.map(i, trajectoryCnt - 20, trajectoryCnt,0,1));
-					diffuseShader.setUniformf("alpha", Helper.map(i, trajectoryCnt - 20, trajectoryCnt,0,1));
+					diffuseShader.setUniformf("alpha", -Helper.map(i, trajectoryCnt - 20, trajectoryCnt,1,0));
 			
 					modelBirdieTex.bind(0);
 					modelBirdieObj.render(diffuseShader);

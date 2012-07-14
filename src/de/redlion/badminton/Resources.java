@@ -17,7 +17,7 @@ public class Resources {
 	public Sprite background = new Sprite(new Texture(Gdx.files.internal("data/court_bg.png")));
 	public Sprite playerSprite = new Sprite(new Texture(Gdx.files.internal("data/player.png")));
 	
-	public Player player = new Player();
+	public Player player = new Player(Player.SIDE.BOTTOM);
 	public Opponent opponent = new Opponent();
 	public Birdie birdie = new Birdie();
 	

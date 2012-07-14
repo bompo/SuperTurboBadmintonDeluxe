@@ -16,14 +16,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.loaders.ModelLoaderRegistry;
 import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
-import com.badlogic.gdx.graphics.glutils.MipMapGenerator;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-
-import de.redlion.badminton.Birdie.STATE;
-import de.redlion.badminton.Player.AIMING;
 
 public class GameScreen extends DefaultScreen implements InputProcessor {
 
@@ -113,10 +109,7 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		modelStadiumTex.getTextureData().useMipMaps();
 
 		modelShadowTex = new Texture(
-				Gdx.files.internal("data/shadow.png"), true);
-		modelShadowTex.setFilter(TextureFilter.MipMapLinearLinear,
-				TextureFilter.Linear);
-		modelShadowTex.getTextureData().useMipMaps();
+				Gdx.files.internal("data/shadow.png"), false);
 		
 		diffuseShader = Resources.getInstance().diffuseShader;
 
@@ -257,12 +250,12 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		diffuseShader.setUniformf("alpha", 1);
 
 //		cam = new PerspectiveCamera(7, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.position.set(MathUtils.sin(startTime)*10, 20f, 45f);   //TODO quote-unquote to test 3d cam animation
+		cam.position.set(MathUtils.sin(birdie.currentPosition.y/10)*2, 20f, 45f);   //TODO quote-unquote to test 3d cam animation
 //		cam.position.set(0, 20f, 45f);
 		cam.lookAt(0, 0.0f, birdie.currentPosition.y/10);	
 		cam.up.set(0, 1, 0);
 		cam.near = 0.5f;
-		cam.far = 600f;
+		cam.far = 100f;
 		
 		// render court
 		tmp.idt();
@@ -354,26 +347,32 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		diffuseShader.setUniformf("alpha", 1);
 		Gdx.gl.glDisable(GL20.GL_BLEND);
 
+		
+
+		// render stadium
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		
+		
 		// render shadow
 		tmp.idt();
 		model.idt();
-
-		tmp.setToRotation(Vector3.X, 90);
+		
+		tmp.setToTranslation(birdie.currentPosition.x, 0.1f, birdie.currentPosition.y);
 		model.mul(tmp);
-
-		tmp.setToTranslation(birdie.currentPosition.x, birdie.currentPosition.y, 0.0f);
-		model.mul(tmp);
-
-		tmp.setToScaling(0.1f, 0.1f, 0.1f);
+		
+		tmp.setToScaling(0.1f - birdie.currentPosition.z/10, 0.1f - birdie.currentPosition.z/10, 0.1f - birdie.currentPosition.z/10);
 		model.mul(tmp);
 
 		diffuseShader.setUniformMatrix("MMatrix", model);
 		diffuseShader.setUniformi("uSampler", 0);
-		diffuseShader.setUniformf("alpha", 0);
+		diffuseShader.setUniformf("alpha", birdie.currentPosition.z/4f);
 
 		modelShadowTex.bind(0);
 		modelPlaneObj.render(diffuseShader);
 
+		
+		diffuseShader.setUniformf("alpha", 1);
 		// render player
 		tmp.idt();
 		model.idt();
@@ -430,10 +429,6 @@ public class GameScreen extends DefaultScreen implements InputProcessor {
 		modelPlaneTex.bind(0);
 		modelPlaneObj.render(diffuseShader);
 		
-		
-		// render stadium
-		Gdx.gl.glEnable(GL20.GL_BLEND);
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		
 		tmp.idt();
 		model.idt();

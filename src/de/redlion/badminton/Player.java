@@ -12,9 +12,15 @@ public class Player {
 	public enum AIMING {
 		IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT, UPRIGHT;
 	}
+	
+	public enum SIDE {
+		TOP, BOTTOM;
+	}
 
 	final static float SPEED = 2;
 	final static float MOMENTUM =0.85f;
+	
+	public SIDE side = SIDE.BOTTOM;
 	
 	public Vector3 direction = new Vector3(0, 0, 0);
 	public Vector3 lastDirection = new Vector3(0, 0, 0);
@@ -27,7 +33,8 @@ public class Player {
 	public float diagonalTime = 0; //currently only used for sliding diagonally  when player didn't release both keys at the same time
 	public float moveTime = 0.0f;
 
-	public Player() {
+	public Player(SIDE side) {
+		this.side = side;
 	}
 
 	public void update() {		
@@ -210,6 +217,33 @@ public class Player {
 			if(diagonalTime != -1 )
 				diagonalTime += Gdx.graphics.getDeltaTime() * 14;
 		}
+		
+		//Out of bounds?
+		if(side == SIDE.BOTTOM) {
+			if(position.y < 0.5f) {
+				position.y=0.5f;
+			}
+			
+			if(position.y > 9.0f) {
+				position.y= 9.0f;
+			}
+		}		
+		if(side == SIDE.TOP) {
+			if(position.y > 0.5f) {
+				position.y=0.5f;
+			}
+			
+			if(position.y < -9.0f) {
+				position.y= -9.0f;
+			}
+		}
+		if(position.x > 3.5f) {
+			position.x=3.5f;
+		}
+		if(position.x < -3.5f) {
+			position.x=-3.5f;
+		}
+		
 		
 		
 		

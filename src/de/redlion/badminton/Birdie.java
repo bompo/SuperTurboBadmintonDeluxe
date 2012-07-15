@@ -16,9 +16,10 @@ public class Birdie {
 	public Vector3 via2 = new Vector3(0,-1,-3);
 	public Vector3 toPosition = new Vector3(0, -6, 1.0f);
 
-	
 	public Vector3 tangent = new Vector3(0,0,0);
 	public Vector3 up = new Vector3(0,0,0);
+	
+	public float maxHeight = 0;
 	
 	boolean smash = false;
 	
@@ -71,9 +72,9 @@ public class Birdie {
 			up.nor();
 			
 			if(!smash)
-				t+= Gdx.graphics.getDeltaTime() / 2;
+				t+= (Gdx.graphics.getDeltaTime()) * acceleration;
 			else
-				t+= Gdx.graphics.getDeltaTime() / 1.2f;
+				t+= (Gdx.graphics.getDeltaTime()) *acceleration;
 			
 			if(acceleration > 1.5f)
 				trajectoryPath.add(currentPosition);
@@ -87,6 +88,19 @@ public class Birdie {
 				score();
 				reset();
 			}
+						
+			//accelerate if falling down, else decrease speed	
+			maxHeight = Math.max(maxHeight, -currentPosition.z);
+
+			if(maxHeight == -currentPosition.z) {
+				acceleration -= Gdx.graphics.getDeltaTime()/1.8f;
+			} else {
+				acceleration += Gdx.graphics.getDeltaTime()/1.8f;
+			}
+			if(acceleration<0.1) {
+				acceleration = 0.1f;
+			}
+			
 		}
 	}
 
@@ -138,10 +152,11 @@ public class Birdie {
 	}
 
 	public void hit(Player player, boolean high) {
+		maxHeight = 0;
 		
 		acceleration = player.aimTime;
-		if(acceleration > 2.6f)
-			acceleration = 2.6f;
+		if(acceleration > 1.f)
+			acceleration = 1.f;
 		t=0;
 		fromPosition = currentPosition.cpy();
 		
@@ -183,7 +198,7 @@ public class Birdie {
 			toPosition.y -= 1;
 		}
 		
-		fuzzyPosition(toPosition, 2.6f - acceleration);
+		fuzzyPosition(toPosition, 2.f - acceleration);
 		
 		float middleY = (fromPosition.y + toPosition.y) /1.5f;
 		
@@ -216,6 +231,8 @@ public class Birdie {
 	
 	//placeholder for opponent hit
 	public void hit(boolean smash) {
+		maxHeight = 0;
+		
 		smash = false;
 		t=0;
 		fromPosition = currentPosition.cpy();
@@ -246,7 +263,7 @@ public class Birdie {
 	}
 
 	public String toString() {
-		return "Birdie State: " + state + " Position: " + currentPosition;
+		return "Birdie State: " + state + " Acceleration: " + acceleration;
 	}
 
 }

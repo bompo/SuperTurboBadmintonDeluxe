@@ -29,6 +29,8 @@ public class Player {
 	public STATE state = STATE.IDLE;
 	public AIMING aiming = AIMING.IDLE;
 	public boolean jump = false;
+	
+	//charge time
 	public float aimTime = 1;
 	public float diagonalTime = 0; //currently only used for sliding diagonally  when player didn't release both keys at the same time
 	public float moveTime = 0.0f;

@@ -245,42 +245,8 @@ public class Player {
 		if(position.x < -3.5f) {
 			position.x=-3.5f;
 		}
-		
-		
-		
-		
-//		if(state == STATE.IDLE) {
-//
-//			position.add(velocity.mul(Gdx.graphics.getDeltaTime() * (moveTime * 0.96f)));
-//
-//		}
-//		else {
-//			position.add(velocity.mul(moveTime * Gdx.graphics.getDeltaTime() * 3));
-//			
-//		}
-		
-		
-//		if(jump){
-//			velocity.mul( (float) Math.pow(0.97f, Gdx.graphics.getDeltaTime() * 35.f));
-//			position.add(velocity.x * Gdx.graphics.getDeltaTime(), velocity.y * Gdx.graphics.getDeltaTime(), velocity.z * Gdx.graphics.getDeltaTime());
-//			if(position.z <= -0.5f) {
-//				position.z = position.z + (Gdx.graphics.getDeltaTime() * 3.3f);
-//			}
-//			else if(position.z > -0.5f) {
-//				jump = false;
-//			}
-//			
-//		}
 
 	}
-	
-//	public void jump() {
-//		jump=true;
-//		velocity = direction;
-//		velocity.x *= 6.0f/5;
-//		velocity.y *= 6.0f/2;
-//		velocity.z = -6.0f;
-//	}
 	
 	public String toString() {
 		return "Player State: " + state + " Aiming: " + aiming + " Position: " + position + " Direction: " + direction;

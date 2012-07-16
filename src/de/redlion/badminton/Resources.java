@@ -18,7 +18,7 @@ public class Resources {
 	public Sprite playerSprite = new Sprite(new Texture(Gdx.files.internal("data/player.png")));
 	
 	public Player player = new Player(Player.SIDE.BOTTOM);
-	public Opponent opponent = new Opponent();
+	public Opponent opponent = new Opponent(Player.SIDE.TOP);
 	public Birdie birdie = new Birdie();
 	
 	public ShaderProgram diffuseShader;

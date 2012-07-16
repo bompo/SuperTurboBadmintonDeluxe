@@ -33,9 +33,9 @@ public class Opponent {
 		
 		if(Resources.getInstance().birdie.state == Birdie.STATE.HIT || Resources.getInstance().birdie.currentPosition.cpy().y < 0) {
 			if(position.y < 0) {
-				position.x = position.x - distance.x * Gdx.graphics.getDeltaTime() / 4;
-				position.y = position.y - distance.y * Gdx.graphics.getDeltaTime() / 4;
-				position.z = position.z - distance.z * Gdx.graphics.getDeltaTime() / 4;
+				position.x = position.x - distance.x * Gdx.graphics.getDeltaTime() / 2;
+				position.y = position.y - distance.y * Gdx.graphics.getDeltaTime() / 2;
+				position.z = position.z - distance.z * Gdx.graphics.getDeltaTime() / 2;
 			}
 			else
 				position.y = -0.01f;
@@ -43,9 +43,9 @@ public class Opponent {
 		else if(Resources.getInstance().birdie.state == Birdie.STATE.HITBYOPPONENT || Resources.getInstance().birdie.state == Birdie.STATE.HELD){
 			distance = position.cpy().sub(center.cpy());
 			
-			position.x = position.x - distance.x * Gdx.graphics.getDeltaTime() / 2;
-			position.y = position.y - distance.y * Gdx.graphics.getDeltaTime() / 2;
-			position.z = position.z - distance.z * Gdx.graphics.getDeltaTime() / 2;
+			position.x = position.x - distance.x * Gdx.graphics.getDeltaTime() / 1;
+			position.y = position.y - distance.y * Gdx.graphics.getDeltaTime() / 1;
+			position.z = position.z - distance.z * Gdx.graphics.getDeltaTime() / 1;
 			
 		}
 		else if(Resources.getInstance().birdie.state == Birdie.STATE.NONHIT){

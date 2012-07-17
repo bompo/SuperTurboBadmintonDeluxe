@@ -35,8 +35,7 @@ public class Birdie {
 
 	public void update() {
 		if (state == STATE.HELD || state == STATE.PREPARED) {
-			currentPosition = Resources.getInstance().player.position.cpy().add(-0.5f,
-					0, 0);
+			currentPosition = GameSession.getInstance().player.position.cpy().add(-0.5f, 0, 0);
 
 		} else {
 		
@@ -108,35 +107,35 @@ public class Birdie {
 		if (currentPosition.y < 0) {
 			if (Math.abs(currentPosition.x) < 3) {
 				if (Math.abs(currentPosition.y) < 7.5) {
-					Resources.getInstance().playerScore++;
+					GameSession.getInstance().playerScore++;
 				} else {
-					Resources.getInstance().opponentScore++;
+					GameSession.getInstance().opponentScore++;
 				}
 			} else {
-				Resources.getInstance().opponentScore++;
+				GameSession.getInstance().opponentScore++;
 			}
 		}
 
 		if (currentPosition.y > 0) {
 			if (Math.abs(currentPosition.x) < 3)
 				if (Math.abs(currentPosition.y) < 7.5)
-					Resources.getInstance().opponentScore++;
+					GameSession.getInstance().opponentScore++;
 				else
-					Resources.getInstance().playerScore++;
+					GameSession.getInstance().playerScore++;
 			else
-				Resources.getInstance().playerScore++;
+				GameSession.getInstance().playerScore++;
 		}
 	}
 
 	public void reset() {
 		
 		if (currentPosition.y < 0) {
-			currentPosition = Resources.getInstance().player.position.cpy()
+			currentPosition = GameSession.getInstance().player.position.cpy()
 					.add(-0.5f, 0, 0);
 			currentPosition.z = -0.5f;
 			toPosition = new Vector3(0, -6, -0.5f);
 		} else {
-			currentPosition = Resources.getInstance().opponent.position.cpy()
+			currentPosition = GameSession.getInstance().opponent.position.cpy()
 					.add(-0.5f, 0, 0);
 			currentPosition.z = -0.5f;
 			toPosition = new Vector3(0, -6, -0.5f);
@@ -144,7 +143,7 @@ public class Birdie {
 		}
 		t=0;
 		state = STATE.HELD;
-		Resources.getInstance().player.state = Player.STATE.IDLE;
+		GameSession.getInstance().player.state = Player.STATE.IDLE;
 		
 		smash = false;
 		

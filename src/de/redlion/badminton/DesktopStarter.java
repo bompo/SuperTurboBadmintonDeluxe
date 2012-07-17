@@ -30,7 +30,7 @@ public class DesktopStarter extends Game {
 	@Override
 	public void create() {
 		Configuration.getInstance().setConfiguration();
-		setScreen(new GameScreen(this));	
+		setScreen(new MenuScreen(this));	
 	}
 
 }

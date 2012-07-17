@@ -1,10 +1,17 @@
-package de.redlion.badminton;
+package de.redlion.badminton.opponent;
 
 import com.badlogic.gdx.math.Vector3;
 
-public class Opponent extends Player {
+import de.redlion.badminton.Birdie;
+import de.redlion.badminton.GameSession;
+import de.redlion.badminton.Player;
+import de.redlion.badminton.Resources;
+import de.redlion.badminton.Player.SIDE;
+import de.redlion.badminton.Player.STATE;
 
-	public Opponent(SIDE side) {
+public class AIOpponent extends Opponent {
+
+	public AIOpponent(SIDE side) {
 		super(side);
 	}
 
@@ -12,11 +19,11 @@ public class Opponent extends Player {
 		super.update();
 		
 		//AI		
-		if(Resources.getInstance().birdie.state == Birdie.STATE.HIT && Resources.getInstance().birdie.currentPosition.y < 3) {
-			direction = position.cpy().sub(Resources.getInstance().birdie.currentPosition.cpy()).mul(-1);
+		if(GameSession.getInstance().birdie.state == Birdie.STATE.HIT && GameSession.getInstance().birdie.currentPosition.y < 3) {
+			direction = position.cpy().sub(GameSession.getInstance().birdie.currentPosition.cpy()).mul(-1);
 			direction.nor();
 		}
-		else if(Resources.getInstance().birdie.state == Birdie.STATE.HITBYOPPONENT || Resources.getInstance().birdie.state == Birdie.STATE.HELD){
+		else if(GameSession.getInstance().birdie.state == Birdie.STATE.HITBYOPPONENT || GameSession.getInstance().birdie.state == Birdie.STATE.HELD){
 			direction = position.cpy().sub(new Vector3(0,-3,0)).mul(-1);
 			direction.nor();			
 		}

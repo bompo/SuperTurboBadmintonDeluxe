@@ -49,7 +49,7 @@ public class Network {
 	private void connectToServer() {
 		
 		try {
-			socket = new SocketIO("http://localhost:17790");
+			socket = new SocketIO("http://localhost:19834");
 //			socket = new SocketIO("http://superturbobadminton.nodester.com:80");
 
 			socket.connect(new IOCallback() {
@@ -218,6 +218,10 @@ public class Network {
 	
 	public void update() {
 		sendCurrentState(GameSession.getInstance().player);
+		for(UpdatePackage update:networkUpdates) {
+			GameSession.getInstance().opponent.position.set(update.position.x, update.position.y, update.position.z);
+		}
+		networkUpdates.clear();
 	}
 
 	public void sendMessage(String message) {
@@ -234,7 +238,7 @@ public class Network {
 		try {
 			json.putOpt("state", player.state);
 			json.putOpt("positionx", GameSession.getInstance().player.position.x);
-			json.putOpt("positiony", GameSession.getInstance().player.position.y);
+			json.putOpt("positiony", -GameSession.getInstance().player.position.y);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

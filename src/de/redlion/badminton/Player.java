@@ -37,6 +37,9 @@ public class Player {
 
 	public Player(SIDE side) {
 		this.side = side;
+		if(side == SIDE.TOP) {
+			position = new Vector3(0,-3,0);
+		}
 	}
 
 	public void update() {		

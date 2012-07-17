@@ -674,12 +674,14 @@ public class PlayerControls implements InputProcessor {
 	}
 
 	@Override
-	public boolean touchMoved(int x, int y) {
+	public boolean scrolled(int amount) {
 		return false;
 	}
 
+
 	@Override
-	public boolean scrolled(int amount) {
+	public boolean mouseMoved(int arg0, int arg1) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 

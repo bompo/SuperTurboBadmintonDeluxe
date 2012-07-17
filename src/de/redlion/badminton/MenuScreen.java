@@ -87,13 +87,6 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 		initRender();
 	}
 
-	private void initLevel() {
-	}
-
-	private void reset() {
-		initLevel();
-	}
-
 	@Override
 	public void show() {
 	}
@@ -143,6 +136,9 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 			if (fade >= 1) {
 				if(mode == MODE.SINGLEPLAYER) {
 					game.setScreen(new SinglePlayerGameScreen(game));
+				} 
+				if(mode == MODE.MULTIPLAYER) {
+					game.setScreen(new MultiPlayerGameScreen(game));
 				} 
 				if(mode == MODE.EXIT) {
 					Gdx.app.exit();
@@ -238,12 +234,13 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 	}
 
 	@Override
-	public boolean touchMoved(int x, int y) {
+	public boolean scrolled(int amount) {
 		return false;
 	}
 
 	@Override
-	public boolean scrolled(int amount) {
+	public boolean mouseMoved(int arg0, int arg1) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 }

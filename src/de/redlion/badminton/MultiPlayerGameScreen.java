@@ -33,8 +33,6 @@ public class MultiPlayerGameScreen extends DefaultScreen {
 	Player player = GameSession.getInstance().player;
 	Birdie birdie = GameSession.getInstance().birdie;
 	Opponent opponent = GameSession.getInstance().opponent;
-	
-	Network network;
 
 	float fade = 1.0f;
 	boolean finished = false;
@@ -46,7 +44,7 @@ public class MultiPlayerGameScreen extends DefaultScreen {
 		
 		GameSession.getInstance().newMultiPlayerGame();
 		
-		network.getInstance().sendReady(player);
+		Network.getInstance().sendReady(player);
 		
 		//refresh references 
 		//TODO Observer Pattern for newGame
@@ -109,6 +107,7 @@ public class MultiPlayerGameScreen extends DefaultScreen {
 		deltaCount += deltaTime;
 		if(deltaCount > 0.01) {
 			deltaCount = 0;
+			Network.getInstance().update();
 			renderFrame(0.02f);
 		}
 	}
@@ -133,14 +132,12 @@ public class MultiPlayerGameScreen extends DefaultScreen {
 		renderStadium.render();
 
 		batch.begin();
-		font.draw(batch, "P " + GameSession.getInstance().playerScore + " : O "
-				+ GameSession.getInstance().opponentScore, 720, 30);
-		batch.end();
-
-		if (Configuration.getInstance().debug) {
-			renderDebug.render();
-		}
-
+		font.drawMultiLine(batch, "Network connected: " + Network.getInstance().connected + 
+				"\nPlayers connected: " + Network.getInstance().connectedIDs.size() 
+				, 30, 60);
+		
+		batch.end();	
+		
 		// FadeInOut
 		if (!finished && fade > 0) {
 			fade = Math.max(fade - (delta), 0);

@@ -104,7 +104,7 @@ public class Network {
 		                	addMessage("joined room " + obj.getString("room") + " as player " +  obj.getInt("count"));
 		                	System.out.println(obj.getString("player") + ", " + obj.getInt("count"));
 		                }
-		                if (event.equals("connect")) {
+		                if (event.equals("playerconnect")) {
 		                	connectedIDs.put(obj.getString("player"), obj.getInt("count"));
 		                	System.out.println("Player " + obj.getString("player") + ", " + obj.getInt("count") + " connected");
 
@@ -128,7 +128,7 @@ public class Network {
 
 				        	addMessage("player " + obj.getString("player") + " death");
 		                }
-		                if (event.equals("disconnect")) {
+		                if (event.equals("playerdisconnect")) {
 		                	connectedIDs.remove(obj.getString("player"));
 		                	connectedIDs.clear();
 		                	System.out.println("Player " + obj.getString("player") + " disconnected");
@@ -214,6 +214,10 @@ public class Network {
 			e1.printStackTrace();
 		}
 	    
+	}
+	
+	public void update() {
+		sendCurrentState(GameSession.getInstance().player);
 	}
 
 	public void sendMessage(String message) {

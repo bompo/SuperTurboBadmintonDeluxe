@@ -7,6 +7,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,8 +15,14 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.FlickScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
 
-public class MenuScreen extends DefaultScreen implements InputProcessor {
+
+public class LobbyScreen extends DefaultScreen implements InputProcessor {
 
 	public enum MODE {
 		SINGLEPLAYER,MULTIPLAYER,EXIT;
@@ -31,14 +38,18 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 	SpriteBatch fontbatch;
 	BitmapFont font;
 	Sprite blackFade;
+	
+	Stage ui;
+	Table container;
 
 	float fade = 1.0f;
 	boolean finished = false;
 	float delta;
 
-	public MenuScreen(Game game) {
+	public LobbyScreen(Game game) {
 		super(game);
-		Gdx.input.setInputProcessor(this);
+		ui = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+		Gdx.input.setInputProcessor(ui);
 
 		batch = new SpriteBatch();
 		batch.getProjectionMatrix().setToOrtho2D(0, 0, 800, 480);
@@ -52,6 +63,27 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 		font = Resources.getInstance().font;
 		font.setScale(1);
 		
+		//ui stuff		
+		 container = new Table();
+         ui.addActor(container);
+         container.getTableLayout().debug();
+
+         Table table = new Table();
+
+         FlickScrollPane scroll = new FlickScrollPane(table);
+         container.add(scroll).expand().fill();
+
+         table.parse("pad:10 * expand:x space:4");
+         for (int i = 0; i < 100; i++) {
+                 table.row();
+                 table.add(new Label(i + "uno", new LabelStyle(font, Color.RED))).expandX().fillX();
+                 table.add(new Label(i + "dos", new LabelStyle(font, Color.RED)));
+                 table.add(new Label(i + "tres long0 long1 long2 long3 long4 long5 long6 long7 long8 long9 long10 long11 long12",
+                         new LabelStyle(font, Color.RED)));
+         }
+
+         container.getTableLayout().row();
+         container.getTableLayout().add(new Label("stuff at bottom!", new LabelStyle(font, Color.WHITE))).pad(20, 20, 20, 20);
 		initRender();
 	}
 
@@ -65,6 +97,11 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 	@Override
 	public void resize(int width, int height) {
 		super.resize(width, height);
+		
+		ui.setViewport(width, height, false);
+		container.width = width;
+        container.height = height;
+        
 		Vector3 oldPosition = new Vector3();
 		Vector3 oldDirection = new Vector3();
 		if (cam != null) {
@@ -109,12 +146,12 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 
 		cam.update();
 
-		if (Configuration.getInstance().debug) {
-			batch.begin();
-			font.draw(batch, "1. SinglePlayer", 50, 80);
-			font.draw(batch, "2. Multiplayer", 50, 60);
-			batch.end();
-		}
+//		if (Configuration.getInstance().debug) {
+//			batch.begin();
+//			font.draw(batch, "1. SinglePlayer", 50, 80);
+//			font.draw(batch, "2. Multiplayer", 50, 60);
+//			batch.end();
+//		}
 
 		// FadeInOut
 		if (!finished && fade > 0) {
@@ -125,6 +162,10 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 			blackFade.draw(fadeBatch);
 			fadeBatch.end();
 		}
+		
+		ui.act(Gdx.graphics.getDeltaTime());
+		ui.draw();
+		Table.drawDebug(ui);
 
 		if (finished) {
 			fade = Math.min(fade + (delta), 1);
@@ -138,7 +179,7 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 					game.setScreen(new SinglePlayerGameScreen(game));
 				} 
 				if(mode == MODE.MULTIPLAYER) {
-					game.setScreen(new LobbyScreen(game));
+					game.setScreen(new MultiPlayerGameScreen(game));
 				} 
 				if(mode == MODE.EXIT) {
 					Gdx.app.exit();
@@ -153,6 +194,7 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 
 	@Override
 	public void dispose() {
+		ui.dispose();
 	}
 
 	@Override
@@ -185,15 +227,15 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 			}
 		}
 
-		// Player controls
-		if (keycode == Input.Keys.NUM_1) {
-			mode = MODE.SINGLEPLAYER;
-			finished = true;
-		}
-		if (keycode == Input.Keys.NUM_2) {
-			mode = MODE.MULTIPLAYER;
-			finished = true;
-		}
+//		// Player controls
+//		if (keycode == Input.Keys.NUM_1) {
+//			mode = MODE.SINGLEPLAYER;
+//			finished = true;
+//		}
+//		if (keycode == Input.Keys.NUM_2) {
+//			mode = MODE.MULTIPLAYER;
+//			finished = true;
+//		}
 		
 		return false;
 	}
@@ -243,5 +285,4 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
 }

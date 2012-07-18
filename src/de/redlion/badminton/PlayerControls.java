@@ -678,9 +678,8 @@ public class PlayerControls implements InputProcessor {
 		return false;
 	}
 
-
 	@Override
-	public boolean mouseMoved(int arg0, int arg1) {
+	public boolean touchMoved(int arg0, int arg1) {
 		// TODO Auto-generated method stub
 		return false;
 	}

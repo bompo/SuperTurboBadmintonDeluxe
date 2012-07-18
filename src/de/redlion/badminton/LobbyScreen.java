@@ -96,23 +96,6 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		FlickScrollPane scroll = new FlickScrollPane(table);
 		container.add(scroll).expand().fill();
 		table.parse("pad:10 * expand:x space:4");
-		
-        int roomNumber = 1;
-        for (Room room: Network.getInstance().rooms) {
-        		TextButton join = new TextButton("Room " + roomNumber + ": " + room.id, skin);
-    			join.setClickListener(new ClickListener() {
-    				
-    				@Override
-    				public void click(Actor arg0, float arg1, float arg2) {
-    					mode = MODE.MULTIPLAYER;
-    					finished = true;					
-    				}
-    			});
-    			table.row();
-    			table.add(join).fill().expandX();
-    			roomNumber++;
-        }
-
 
 		container.getTableLayout().row().left();
 		TextButton createRoom = new TextButton("Create Room", skin);
@@ -134,13 +117,10 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 				pass.visible = false;
 				
 				final CheckBox check = new CheckBox("Private", skin);
-				check.setClickListener(new ClickListener() {
-					
+				check.setClickListener(new ClickListener() {					
 					@Override
-					public void click(Actor arg0, float arg1, float arg2) {
-						
-						pass.visible = !pass.visible;
-						
+					public void click(Actor arg0, float arg1, float arg2) {						
+						pass.visible = !pass.visible;						
 					}
 				});
 
@@ -151,18 +131,11 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 					@Override
 					public void click(Actor arg0, float arg1, float arg2) {
 						
-						TextButton newRoom = new TextButton(name.getText(), skin);
-						newRoom.setClickListener(new ClickListener() {
-		    				
-		    				@Override
-		    				public void click(Actor arg0, float arg1, float arg2) {
-		    					mode = MODE.MULTIPLAYER;
-		    					finished = true;					
-		    				}
-		    			});
-						
-						table.row();
-						table.add(newRoom).fill().expandX();
+						if(check.isChecked()) {
+							Network.getInstance().sendCreatePrivateRoom(name.getText(),pass.getText());
+						} else {
+							Network.getInstance().sendCreateRoom(name.getText());
+						}						
 						
 						createRoomMenu.clear();
 						Gdx.input.setInputProcessor(ui);
@@ -305,17 +278,34 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 			table.reset();
 	        int roomNumber = 1;
 	        for (Room room: Network.getInstance().rooms) {
-	        		TextButton join = new TextButton("Room " + roomNumber + ": " + room.id, skin);
+        		if(!room.hasPass) {
+	        		TextButton join = new TextButton("Room " + roomNumber + ": " + room.name , skin);
 	    			join.setClickListener(new ClickListener() {
+	    				
 	    				@Override
 	    				public void click(Actor arg0, float arg1, float arg2) {
 	    					mode = MODE.MULTIPLAYER;
-	    					finished = true;
+	    					finished = true;					
 	    				}
 	    			});
 	    			table.row();
 	    			table.add(join).fill().expandX();
 	    			roomNumber++;
+        		} else {
+        			//private room, check pass with server
+        			TextButton join = new TextButton("Room " + roomNumber + ": " + room.name + " (private)" , skin);
+	    			join.setClickListener(new ClickListener() {
+	    				
+	    				@Override
+	    				public void click(Actor arg0, float arg1, float arg2) {
+	    					mode = MODE.MULTIPLAYER;
+	    					finished = true;					
+	    				}
+	    			});
+	    			table.row();
+	    			table.add(join).fill().expandX();
+	    			roomNumber++;
+        		}
 	        }
 	        roomCnt = Network.getInstance().rooms.size();
 		}

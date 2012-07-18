@@ -2,8 +2,8 @@ var socket = require('socket.io').listen(19834);
 var rooms = [];
 var maxPerRoom = 2;
 
-rooms.push(new Room("dummy Room 1"));
-rooms.push(new Room("dummy Room 2"));
+rooms.push(new Room(0,"dummy room 1 "));
+rooms.push(new Room(1,"dummy room 2 pass: test", "test"));
 
  
 socket.on('connection', function(client){
@@ -11,7 +11,11 @@ socket.on('connection', function(client){
     // send list of all open rooms
     for(var room in rooms ) {
         if(rooms[room].players.length < maxPerRoom) {
-            client.emit('roomconnect',{ room: rooms[room].id });
+            if(rooms[room].password === undefined) {
+                client.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: false });
+            } else {
+                client.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: true });
+            }
         }
     }
     
@@ -69,21 +73,39 @@ socket.on('connection', function(client){
         }       
     });
     
-    // player not ready message
-    client.on('openroom', function(message){
-        var currentRoom = new Room(client.id)
+    // create public room
+    client.on('createroom', function(message){
+        var currentRoom = new Room(client.id, message.roomname)
         rooms.push(currentRoom);
         
         // add own id to current players in room
         count = currentRoom.players.length;
         var player = new Player(client);
         currentRoom.players.push(new Player(client));
+        
+        client.emit('roomconnect',{ room: currentRoom.id, name: currentRoom.roomName, hasPass: false });
+        console.log("room:",currentRoom.id, "players:", count); 
+    });
+    
+    // create private room with password
+    client.on('createprivateroom', function(message){
+        var currentRoom = new Room(client.id, message.roomname, message.password)
+        rooms.push(currentRoom);
+        
+        // add own id to current players in room
+        count = currentRoom.players.length;
+        var player = new Player(client);
+        currentRoom.players.push(new Player(client));
+        
+        client.emit('roomconnect',{ room: currentRoom.id, name: currentRoom.roomName, hasPass: true });
         console.log("room:",currentRoom.id, "players:", count); 
     });
     
     
     // player ready message
     client.on('ready', function(message){
+        if(client.room === undefined) return;
+    
         for( var player in client.room.players ) { 
             // set current player to ready
             if(client.room.players[player].client.id === client.id) {
@@ -131,6 +153,8 @@ socket.on('connection', function(client){
 
     // update message
     client.on('update', function(message){
+        if(client.room === undefined) return;
+    
         // broadcast event to other players in the same room
         for( var player in client.room.players ) { 
             if(client.room.players[player].client.id !== client.id) {
@@ -214,8 +238,10 @@ function Player(client, roomId) {
         this.ready = false;
 };
 
-function Room(id) {
+function Room(id, roomName, password) {
         this.id = id;
+        this.roomName = roomName;
+        this.password = password;
         this.gameInProgress = false;
         this.currentRound = 1;
         this.players = [];

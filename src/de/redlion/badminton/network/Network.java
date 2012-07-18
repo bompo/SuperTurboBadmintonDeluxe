@@ -106,7 +106,7 @@ public class Network {
 		                	System.out.println("player id " + id);
 		                }
 		                if (event.equals("roomconnect")) {
-		                	rooms.add(new Room(obj.getString("room")));
+		                	rooms.add(new Room(obj.getString("room"),obj.getString("name"),obj.getBoolean("hasPass")));
 		                	System.out.println("Room " + obj.getString("room") + " added");
 				        	addMessage("Room " + obj.getString("room") + " added");
 		                }
@@ -122,7 +122,6 @@ public class Network {
 		                	}
 		                	if(roomToRemove!=null) {
 		                		rooms.remove(roomToRemove);
-		                		rooms.add(new Room(obj.getString("room")));
 			                	System.out.println("Room " + obj.getString("room") + " removed");
 					        	addMessage("Room " + obj.getString("room") + " removed");
 		                	}		                	
@@ -251,6 +250,37 @@ public class Network {
 	public void sendMessage(String message) {
 		// This line is cached until the connection is established.
 		socket.send(message);
+	}
+	
+	public void sendCreateRoom(String roomName) {
+		System.out.println("create room " + roomName);
+
+		JSONObject json = new JSONObject();
+		try {
+			json.putOpt("player", id);
+			json.putOpt("roomname", roomName);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		socket.emit("createroom", json);
+	}
+	
+	public void sendCreatePrivateRoom(String roomName, String password) {
+		System.out.println("create private room " + roomName + " (" + password + ")");
+
+		JSONObject json = new JSONObject();
+		try {
+			json.putOpt("player", id);
+			json.putOpt("roomname", roomName);
+			json.putOpt("password", password);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		socket.emit("createprivateroom", json);
 	}
 
 	public void sendCurrentState(Player player) {

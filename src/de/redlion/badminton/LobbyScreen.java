@@ -15,11 +15,17 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.ui.FlickScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
+
+import de.redlion.badminton.MenuScreen.MODE;
 
 
 public class LobbyScreen extends DefaultScreen implements InputProcessor {
@@ -63,27 +69,44 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		font = Resources.getInstance().font;
 		font.setScale(1);
 		
+		final Skin skin = new Skin(Gdx.files.internal("data/uiskin.json"), Gdx.files.internal("data/uiskin.png"));
+		
 		//ui stuff		
-		 container = new Table();
-         ui.addActor(container);
-         container.getTableLayout().debug();
+		container = new Table();
+		container.setSkin(skin);
+		ui.addActor(container);
+		container.getTableLayout().debug();
 
-         Table table = new Table();
+		final Table table = new Table();
+		table.setSkin(skin);
+		FlickScrollPane scroll = new FlickScrollPane(table);
+		container.add(scroll).expand().fill();
+		table.parse("pad:10 * expand:x space:4");
+		for (int i = 0; i < 100; i++) {
+			TextButton join = new TextButton("Room" + i, skin);
+			join.setClickListener(new ClickListener() {
+				
+				@Override
+				public void click(Actor arg0, float arg1, float arg2) {
+					mode = MODE.MULTIPLAYER;
+					finished = true;					
+				}
+			});
+			table.row();
+			table.add(join).fill().expandX();
+		}
 
-         FlickScrollPane scroll = new FlickScrollPane(table);
-         container.add(scroll).expand().fill();
-
-         table.parse("pad:10 * expand:x space:4");
-         for (int i = 0; i < 100; i++) {
-                 table.row();
-                 table.add(new Label(i + "uno", new LabelStyle(font, Color.RED))).expandX().fillX();
-                 table.add(new Label(i + "dos", new LabelStyle(font, Color.RED)));
-                 table.add(new Label(i + "tres long0 long1 long2 long3 long4 long5 long6 long7 long8 long9 long10 long11 long12",
-                         new LabelStyle(font, Color.RED)));
-         }
-
-         container.getTableLayout().row();
-         container.getTableLayout().add(new Label("stuff at bottom!", new LabelStyle(font, Color.WHITE))).pad(20, 20, 20, 20);
+		container.getTableLayout().row().left();
+		TextButton createRoom = new TextButton("Create Room", skin);
+		createRoom.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor arg0, float arg1, float arg2) {
+				table.add(new Label("Blaraum", skin)).expandX().fillX();
+				
+			}
+		});
+		container.getTableLayout().add(createRoom);
 		initRender();
 	}
 

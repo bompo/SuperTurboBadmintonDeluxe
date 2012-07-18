@@ -21,6 +21,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
 
+import de.redlion.badminton.network.Network;
+import de.redlion.badminton.network.Room;
+
 
 public class LobbyScreen extends DefaultScreen implements InputProcessor {
 
@@ -41,6 +44,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	
 	Stage ui;
 	Table container;
+	Table table;
 
 	float fade = 1.0f;
 	boolean finished = false;
@@ -68,18 +72,18 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
          ui.addActor(container);
          container.getTableLayout().debug();
 
-         Table table = new Table();
+         table = new Table();
 
          FlickScrollPane scroll = new FlickScrollPane(table);
          container.add(scroll).expand().fill();
 
          table.parse("pad:10 * expand:x space:4");
-         for (int i = 0; i < 100; i++) {
+         int roomNumber = 1;
+         for (Room room: Network.getInstance().rooms) {
                  table.row();
-                 table.add(new Label(i + "uno", new LabelStyle(font, Color.RED))).expandX().fillX();
-                 table.add(new Label(i + "dos", new LabelStyle(font, Color.RED)));
-                 table.add(new Label(i + "tres long0 long1 long2 long3 long4 long5 long6 long7 long8 long9 long10 long11 long12",
-                         new LabelStyle(font, Color.RED)));
+                 table.add(new Label(roomNumber + "", new LabelStyle(font, Color.RED))).expandX().fillX();
+                 table.add(new Label(room.id, new LabelStyle(font, Color.RED)));
+                 roomNumber++;
          }
 
          container.getTableLayout().row();
@@ -141,6 +145,17 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	public void renderFrame(float deltaTime) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		delta = Math.min(0.1f, deltaTime);
+		
+		//refresh table
+		table.reset();
+        table.parse("pad:10 * expand:x space:4");
+        int roomNumber = 1;
+        for (Room room: Network.getInstance().rooms) {
+                table.row();
+                table.add(new Label(roomNumber + "", new LabelStyle(font, Color.RED))).expandX().fillX();
+                table.add(new Label(room.id, new LabelStyle(font, Color.RED)));
+                roomNumber++;
+        }
 
 		startTime += delta;
 

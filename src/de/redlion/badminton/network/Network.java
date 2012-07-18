@@ -7,6 +7,7 @@ import io.socket.SocketIOException;
 
 import java.net.MalformedURLException;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,13 +27,14 @@ public class Network {
 	private Json json;
 
 	public Array<String> messageList = new Array<String>();
+	public HashSet<Room> rooms = new HashSet<Room>();
+	
 	public Array<UpdatePackage> networkUpdates = new Array<UpdatePackage>();
 
 	public boolean connected = false;
 	public float timeToConnect = 5;
 
 	// network vars
-	public Integer place;
 	public String id;
 	public HashMap<String, Integer> connectedIDs = new HashMap<String, Integer>();
 	public NetworkOpponent opponent;
@@ -49,8 +51,8 @@ public class Network {
 	private void connectToServer() {
 		
 		try {
-			socket = new SocketIO("http://localhost:19834");
-//			socket = new SocketIO("http://superturbobadminton.nodester.com:80");
+//			socket = new SocketIO("http://localhost:19834");
+			socket = new SocketIO("http://superturbobadminton.nodester.com:80");
 
 			socket.connect(new IOCallback() {
 				
@@ -100,10 +102,32 @@ public class Network {
 			        	
 		                if (event.equals("init")) {
 		                	id = obj.getString("player");
-		                	place = obj.getInt("count"); 
-		                	addMessage("joined room " + obj.getString("room") + " as player " +  obj.getInt("count"));
-		                	System.out.println(obj.getString("player") + ", " + obj.getInt("count"));
+		                	addMessage("player id " + id);
+		                	System.out.println("player id " + id);
 		                }
+		                if (event.equals("roomconnect")) {
+		                	rooms.add(new Room(obj.getString("room")));
+		                	System.out.println("Room " + obj.getString("room") + " added");
+				        	addMessage("Room " + obj.getString("room") + " added");
+		                }
+		                
+		                if (event.equals("roomdisconnect")) {
+		                	String id = obj.getString("room");
+		                	Room roomToRemove = null;
+		                	for(Room room:rooms) {
+		                		if(room.id.equals(id)) {
+		                			roomToRemove = room;
+		                			break;
+		                		}
+		                	}
+		                	if(roomToRemove!=null) {
+		                		rooms.remove(roomToRemove);
+		                		rooms.add(new Room(obj.getString("room")));
+			                	System.out.println("Room " + obj.getString("room") + " removed");
+					        	addMessage("Room " + obj.getString("room") + " removed");
+		                	}		                	
+		                }
+		                
 		                if (event.equals("playerconnect")) {
 		                	connectedIDs.put(obj.getString("player"), obj.getInt("count"));
 		                	System.out.println("Player " + obj.getString("player") + ", " + obj.getInt("count") + " connected");

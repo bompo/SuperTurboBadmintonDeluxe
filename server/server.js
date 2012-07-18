@@ -1,9 +1,24 @@
 var socket = require('socket.io').listen(19834);
 var rooms = [];
 var maxPerRoom = 2;
+
+rooms.push(new Room("dummy Room 1"));
+rooms.push(new Room("dummy Room 2"));
+
  
 socket.on('connection', function(client){
 
+    // send list of all open rooms
+    for(var room in rooms ) {
+        if(rooms[room].players.length < maxPerRoom) {
+            client.emit('roomconnect',{ room: rooms[room].id });
+        }
+    }
+    
+    // send own id to client
+    client.emit('init',{ player: client.id});
+
+    /*
     // search for free rooms
     var currentRoom = -1;
     for(var room in rooms ) {
@@ -24,8 +39,7 @@ socket.on('connection', function(client){
     currentRoom.players.push(new Player(client));
     console.log("room:",currentRoom.id, "players:", count);
 
-    // send own id to client
-    client.emit('init',{ player: client.id, room: currentRoom.id, gameinprogress: currentRoom.gameInProgress, count: count });
+
     
     // send active players to connected client and inform others about the new player
     var n = 0;
@@ -42,6 +56,30 @@ socket.on('connection', function(client){
     
     client.room = currentRoom;
     client.player = player;
+    */
+    
+    
+    // player not ready message
+    client.on('getrooms', function(message){
+        // send list of all open rooms
+        for(var room in rooms ) {
+            if(rooms[room].players.length < maxPerRoom) {
+                client.emit('roomconnect',{ room: rooms[room].id });
+            }
+        }       
+    });
+    
+    // player not ready message
+    client.on('openroom', function(message){
+        var currentRoom = new Room(client.id)
+        rooms.push(currentRoom);
+        
+        // add own id to current players in room
+        count = currentRoom.players.length;
+        var player = new Player(client);
+        currentRoom.players.push(new Player(client));
+        console.log("room:",currentRoom.id, "players:", count); 
+    });
     
     
     // player ready message
@@ -122,7 +160,11 @@ socket.on('connection', function(client){
     });
     
     // disconnect message
-    client.on('disconnect', function(){     
+    client.on('disconnect', function(){
+        if(client.room === undefined) {
+            return;
+        }
+       
         // broadcast event to other players in the same room
         for( var player in client.room.players ) { 
             if(client.room.players[player].client.id !== client.id) {

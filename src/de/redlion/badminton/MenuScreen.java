@@ -7,13 +7,25 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class MenuScreen extends DefaultScreen implements InputProcessor {
 
@@ -31,6 +43,8 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 	SpriteBatch fontbatch;
 	BitmapFont font;
 	Sprite blackFade;
+	
+	Stage ui;
 
 	float fade = 1.0f;
 	boolean finished = false;
@@ -38,7 +52,8 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 
 	public MenuScreen(Game game) {
 		super(game);
-		Gdx.input.setInputProcessor(this);
+		ui = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+		Gdx.input.setInputProcessor(ui);
 
 		batch = new SpriteBatch();
 		batch.getProjectionMatrix().setToOrtho2D(0, 0, 800, 480);
@@ -51,6 +66,28 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 
 		font = Resources.getInstance().font;
 		font.setScale(1);
+		
+		//ui stuff
+		
+		Table table = new Table();
+		table.setFillParent(true);
+		table.setColor(1, 1, 1, 1);
+		ui.addActor(table);
+		
+		TextureRegion upRegion = new TextureRegion(new Texture(Gdx.files.internal("data/white.png")));
+		TextureRegion downRegion = new TextureRegion(new Texture(Gdx.files.internal("data/black.png")));
+		BitmapFont buttonFont = font;
+		TextButtonStyle style = new TextButtonStyle();
+		style.up = new TextureRegionDrawable(upRegion);
+		style.down = new TextureRegionDrawable(downRegion);
+		style.font = buttonFont;
+		TextButton button = new TextButton("Create Room",style);
+		button.setBounds(50, 50, 100, 20);
+		table.addActor(button);
+		
+		//Skin skin = new Skin(Gdx.files.internal("skins/buttons.json"), Gdx.files.internal("buttons/default-button.png"));
+		//table.setSkin(skin);		
+		
 
 		initRender();
 	}
@@ -65,6 +102,7 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 	@Override
 	public void resize(int width, int height) {
 		super.resize(width, height);
+		ui.setViewport(width, height, true);
 		Vector3 oldPosition = new Vector3();
 		Vector3 oldDirection = new Vector3();
 		if (cam != null) {
@@ -109,12 +147,12 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 
 		cam.update();
 
-		if (Configuration.getInstance().debug) {
-			batch.begin();
-			font.draw(batch, "1. SinglePlayer", 50, 80);
-			font.draw(batch, "2. Multiplayer", 50, 60);
-			batch.end();
-		}
+//		if (Configuration.getInstance().debug) {
+//			batch.begin();
+//			font.draw(batch, "1. SinglePlayer", 50, 80);
+//			font.draw(batch, "2. Multiplayer", 50, 60);
+//			batch.end();
+//		}
 
 		// FadeInOut
 		if (!finished && fade > 0) {
@@ -125,6 +163,9 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 			blackFade.draw(fadeBatch);
 			fadeBatch.end();
 		}
+		
+		ui.act(Gdx.graphics.getDeltaTime());
+		ui.draw();
 
 		if (finished) {
 			fade = Math.min(fade + (delta), 1);
@@ -153,6 +194,7 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 
 	@Override
 	public void dispose() {
+		ui.dispose();
 	}
 
 	@Override
@@ -185,15 +227,15 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 			}
 		}
 
-		// Player controls
-		if (keycode == Input.Keys.NUM_1) {
-			mode = MODE.SINGLEPLAYER;
-			finished = true;
-		}
-		if (keycode == Input.Keys.NUM_2) {
-			mode = MODE.MULTIPLAYER;
-			finished = true;
-		}
+//		// Player controls
+//		if (keycode == Input.Keys.NUM_1) {
+//			mode = MODE.SINGLEPLAYER;
+//			finished = true;
+//		}
+//		if (keycode == Input.Keys.NUM_2) {
+//			mode = MODE.MULTIPLAYER;
+//			finished = true;
+//		}
 		
 		return false;
 	}

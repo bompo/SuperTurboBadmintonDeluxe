@@ -15,11 +15,17 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.ui.FlickScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
+
+import de.redlion.badminton.MenuScreen.MODE;
 
 import de.redlion.badminton.network.Network;
 import de.redlion.badminton.network.Room;
@@ -45,6 +51,9 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	Stage ui;
 	Table container;
 	Table table;
+	Skin skin;
+	
+	int roomCnt = 0;
 
 	float fade = 1.0f;
 	boolean finished = false;
@@ -67,27 +76,49 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		font = Resources.getInstance().font;
 		font.setScale(1);
 		
+		skin = new Skin(Gdx.files.internal("data/uiskin.json"), Gdx.files.internal("data/uiskin.png"));
+		
 		//ui stuff		
-		 container = new Table();
-         ui.addActor(container);
-         container.getTableLayout().debug();
+		container = new Table();
+		container.setSkin(skin);
+		ui.addActor(container);
+		container.getTableLayout().debug();
 
-         table = new Table();
+		table = new Table();
+		table.setSkin(skin);
+		FlickScrollPane scroll = new FlickScrollPane(table);
+		container.add(scroll).expand().fill();
+		table.parse("pad:10 * expand:x space:4");
+		
+        int roomNumber = 1;
+        for (Room room: Network.getInstance().rooms) {
+        		TextButton join = new TextButton("Room " + roomNumber + ": " + room.id, skin);
+    			join.setClickListener(new ClickListener() {
+    				
+    				@Override
+    				public void click(Actor arg0, float arg1, float arg2) {
+    					mode = MODE.MULTIPLAYER;
+    					finished = true;					
+    				}
+    			});
+    			table.row();
+    			table.add(join).fill().expandX();
+    			roomNumber++;
+        }
 
-         FlickScrollPane scroll = new FlickScrollPane(table);
-         container.add(scroll).expand().fill();
 
-         table.parse("pad:10 * expand:x space:4");
-         int roomNumber = 1;
-         for (Room room: Network.getInstance().rooms) {
-                 table.row();
-                 table.add(new Label(roomNumber + "", new LabelStyle(font, Color.RED))).expandX().fillX();
-                 table.add(new Label(room.id, new LabelStyle(font, Color.RED)));
-                 roomNumber++;
-         }
+		container.getTableLayout().row().left();
+		TextButton createRoom = new TextButton("Create Room", skin);
+		createRoom.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor arg0, float arg1, float arg2) {
+				table.add(new Label("Blaraum", skin)).expandX().fillX();
+				
+			}
+		});
+		container.getTableLayout().add(createRoom);
 
-         container.getTableLayout().row();
-         container.getTableLayout().add(new Label("stuff at bottom!", new LabelStyle(font, Color.WHITE))).pad(20, 20, 20, 20);
 		initRender();
 	}
 
@@ -146,16 +177,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		delta = Math.min(0.1f, deltaTime);
 		
-		//refresh table
-		table.reset();
-        table.parse("pad:10 * expand:x space:4");
-        int roomNumber = 1;
-        for (Room room: Network.getInstance().rooms) {
-                table.row();
-                table.add(new Label(roomNumber + "", new LabelStyle(font, Color.RED))).expandX().fillX();
-                table.add(new Label(room.id, new LabelStyle(font, Color.RED)));
-                roomNumber++;
-        }
+		checkForNewRooms();
 
 		startTime += delta;
 
@@ -200,6 +222,28 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 					Gdx.app.exit();
 				}
 			}
+		}
+	}
+
+	private void checkForNewRooms() {
+		if(roomCnt != Network.getInstance().rooms.size()) {
+			//refresh table
+			table.reset();
+	        int roomNumber = 1;
+	        for (Room room: Network.getInstance().rooms) {
+	        		TextButton join = new TextButton("Room " + roomNumber + ": " + room.id, skin);
+	    			join.setClickListener(new ClickListener() {
+	    				@Override
+	    				public void click(Actor arg0, float arg1, float arg2) {
+	    					mode = MODE.MULTIPLAYER;
+	    					finished = true;
+	    				}
+	    			});
+	    			table.row();
+	    			table.add(join).fill().expandX();
+	    			roomNumber++;
+	        }
+	        roomCnt = Network.getInstance().rooms.size();
 		}
 	}
 

@@ -12,17 +12,20 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.ui.FlickScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
 
 import de.redlion.badminton.MenuScreen.MODE;
@@ -49,6 +52,8 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	Sprite blackFade;
 	
 	Stage ui;
+	Stage createRoomMenu;
+	boolean creating = false;
 	Table container;
 	Table table;
 	Skin skin;
@@ -62,6 +67,8 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	public LobbyScreen(Game game) {
 		super(game);
 		ui = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+		createRoomMenu = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+		
 		Gdx.input.setInputProcessor(ui);
 
 		batch = new SpriteBatch();
@@ -113,8 +120,70 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 			
 			@Override
 			public void click(Actor arg0, float arg1, float arg2) {
-				table.add(new Label("Blaraum", skin)).expandX().fillX();
 				
+				Table temp = new Table(skin);
+				temp.width = 350;
+				temp.height = 500;
+				temp.x = Gdx.graphics.getWidth() / 2 - temp.width / 2;
+
+				temp.setBackground(new NinePatch(blackFade));
+				createRoomMenu.addActor(temp);
+				
+				final TextField name = new TextField("Name", skin);
+				final TextField pass = new TextField("Password", skin);
+				pass.visible = false;
+				
+				final CheckBox check = new CheckBox("Private", skin);
+				check.setClickListener(new ClickListener() {
+					
+					@Override
+					public void click(Actor arg0, float arg1, float arg2) {
+						
+						pass.visible = !pass.visible;
+						
+					}
+				});
+
+				
+				TextButton create = new TextButton("Create", skin);
+				create.setClickListener(new ClickListener() {
+					
+					@Override
+					public void click(Actor arg0, float arg1, float arg2) {
+						
+						TextButton newRoom = new TextButton(name.getText(), skin);
+						newRoom.setClickListener(new ClickListener() {
+		    				
+		    				@Override
+		    				public void click(Actor arg0, float arg1, float arg2) {
+		    					mode = MODE.MULTIPLAYER;
+		    					finished = true;					
+		    				}
+		    			});
+						
+						table.row();
+						table.add(newRoom).fill().expandX();
+						
+						createRoomMenu.clear();
+						Gdx.input.setInputProcessor(ui);
+						creating = false;
+						
+					}
+				});
+				
+				temp.row();
+				temp.add(new Label("Create Room", skin)).left();
+				temp.row();
+				temp.add(name);
+				temp.row();
+				temp.add(pass).left();
+				temp.add(check).right();
+				temp.row();
+				temp.add(create).left();
+				
+				Gdx.input.setInputProcessor(createRoomMenu);
+				
+				creating = true;
 			}
 		});
 		container.getTableLayout().add(createRoom);
@@ -203,6 +272,11 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		ui.act(Gdx.graphics.getDeltaTime());
 		ui.draw();
 		Table.drawDebug(ui);
+		if(creating) {
+			createRoomMenu.act(Gdx.graphics.getDeltaTime());
+			createRoomMenu.draw();
+			Table.drawDebug(createRoomMenu);
+		}
 
 		if (finished) {
 			fade = Math.min(fade + (delta), 1);

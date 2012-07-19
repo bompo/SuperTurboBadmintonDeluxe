@@ -1,6 +1,8 @@
 package de.redlion.badminton;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Game;
@@ -18,6 +20,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Align;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.ui.FlickScrollPane;
@@ -105,9 +108,10 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 			@Override
 			public void click(Actor arg0, float arg1, float arg2) {
 				
-				Table temp = new Table(skin);
-				temp.width = 350;
-				temp.height = 500;
+				final Table temp = new Table(skin);
+				temp.width = 300;
+				temp.height = 150;
+				temp.y = Gdx.graphics.getHeight() / 2 - temp.height / 2;
 				temp.x = Gdx.graphics.getWidth() / 2 - temp.width / 2;
 
 				temp.setBackground(new NinePatch(blackFade));
@@ -126,26 +130,9 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 				});
 
 				
-				TextButton create = new TextButton("Create", skin);
-				create.setClickListener(new ClickListener() {
-					
-					@Override
-					public void click(Actor arg0, float arg1, float arg2) {
-						
-						if(check.isChecked()) {
-							Network.getInstance().sendCreatePrivateRoom(name.getText(),pass.getText());
-						} else {
-							Network.getInstance().sendCreateRoom(name.getText());
-						}						
-						
-						createRoomMenu.clear();
-						Gdx.input.setInputProcessor(ui);
-						creating = false;
-						
-					}
-				});
+
 				
-				TextButton cancel = new TextButton("Cancel", skin);
+				final TextButton cancel = new TextButton("Cancel", skin);
 				cancel.setClickListener(new ClickListener() {
 					
 					@Override
@@ -155,6 +142,33 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 						Gdx.input.setInputProcessor(ui);
 						creating = false;
 						
+					}
+				});
+				
+				TextButton create = new TextButton("Create", skin);
+				create.setClickListener(new ClickListener() {
+					
+					@Override
+					public void click(Actor arg0, float arg1, float arg2) {
+						
+//						if(check.isChecked()) {
+//							Network.getInstance().sendCreatePrivateRoom(name.getText(),pass.getText());
+//						} else {
+//							Network.getInstance().sendCreateRoom(name.getText());
+//						}			
+						
+						
+						temp.clear();
+						
+						Label waiting = new Label("Waiting For Challenger...", skin);
+						waiting.getStyle().fontColor = new Color(1,1,1,1);
+						
+						temp.add(waiting).top();
+						temp.row();
+						temp.add(cancel).right();
+						
+						
+						//change to multiplayer
 					}
 				});
 				
@@ -313,16 +327,18 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	}
 
 	private void checkForNewRooms() {
-		if(roomCnt != Network.getInstance().rooms.size()) {
+		HashSet<Room> roomsCopy = (HashSet<Room>) Network.getInstance().rooms.clone();
+		if(roomCnt != roomsCopy.size()) {
 			//refresh table
 			table.reset();
 	        int roomNumber = 1;
-	        for (Room room: Network.getInstance().rooms) {
+	        for (Room room: roomsCopy) {
         		if(!room.hasPass) {
-	        		TextButton join = new TextButton("Room " + roomNumber + ": " + room.name , skin);
+        			Label playerCount = new Label(roomNumber + "/2", skin);
+        			Label roomInfo = new Label("Room " + roomNumber + ": " + room.name, skin);
+	        		TextButton join = new TextButton(skin);
 	        		join.getTableLayout().skin = skin;
-	        		join.getStyle().fontColor = new Color(1, 1, 1, 1);
-	        		Label playerCount = new Label(roomNumber + "/2", skin);
+	        		join.add(roomInfo).center();
 	        		join.add(playerCount).right();
 	        		if(roomNumber < 2) {
 		    			join.setClickListener(new ClickListener() {
@@ -335,7 +351,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		    			});
 	        		}
 	        		else {
-	        			join.getStyle().fontColor = new Color(0, 0, 0, 0.5f);
+	        			roomInfo.getStyle().fontColor = new Color(0, 0, 0, 0.5f);
 	        			playerCount.getStyle().fontColor = new Color(0, 0, 0, 0.5f);
 	        		}
 	    			table.row();
@@ -343,30 +359,58 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	    			roomNumber++;
         		} else {
         			//private room, check pass with server
-        			TextButton join = new TextButton("Room " + roomNumber + ": " + room.name + " (private)" , skin);
         			Label playerCount = new Label(roomNumber + "/2", skin);
+        			Label roomInfo = new Label("Room " + roomNumber + ": " + room.name + " (private)", skin);
+	        		TextButton join = new TextButton(skin);
         			join.getStyle().fontColor = new Color(1, 1, 1, 1);
+        			join.add(roomInfo).center();
         			join.add(playerCount).right();
-        			if(roomNumber < 2) {
+//        			if(roomNumber < 2) {
 		    			join.setClickListener(new ClickListener() {
 		    				
 		    				@Override
 		    				public void click(Actor arg0, float arg1, float arg2) {
-		    					mode = MODE.MULTIPLAYER;
-		    					finished = true;					
+		    					
+		    					final Table temp = new Table(skin);
+		    					temp.width = 300;
+		    					temp.height = 150;
+		    					temp.y = Gdx.graphics.getHeight() / 2 - temp.height / 2;
+		    					temp.x = Gdx.graphics.getWidth() / 2 - temp.width / 2;
+
+		    					temp.setBackground(new NinePatch(blackFade));
+		    					createRoomMenu.addActor(temp);
+		    					
+		    					TextField pass = new TextField("Password", skin);
+		    					TextButton enter = new TextButton("Enter", skin);
+		    					enter.setClickListener(new ClickListener() {
+									
+									@Override
+									public void click(Actor arg0, float arg1, float arg2) {
+										
+//										if(pass.getText().equals(Network.getInstance().getPass()) {
+//											mode = MODE.MULTIPLAYER;
+//											finished = true;
+//										}
+										
+									}
+								});
+		    					
+		    					temp.add(pass);
+		    					temp.add(enter);
+		    					
 		    				}
 		    			});
-        			}
-        			else {
-	        			join.getStyle().fontColor = new Color(0, 0, 0, 0.5f);
-	        			playerCount.getStyle().fontColor = new Color(0, 0, 0, 0.5f);
-	        		}
+//        			}
+//        			else {
+//	        			roomInfo.getStyle().fontColor = new Color(0, 0, 0, 0.5f);
+//	        			playerCount.getStyle().fontColor = new Color(0, 0, 0, 0.5f);
+//	        		}
 	    			table.row();
 	    			table.add(join).fill().expandX();
 	    			roomNumber++;
         		}
 	        }
-	        roomCnt = Network.getInstance().rooms.size();
+	        roomCnt = roomsCopy.size();
 		}
 	}
 

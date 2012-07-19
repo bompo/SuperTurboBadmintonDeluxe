@@ -23,8 +23,12 @@ rooms.push(dummyRoom2);
 socket.on('connection', function(client){
 
     // send list of all rooms
-    for(var room in rooms ) {        
-        client.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: true, playerCnt: rooms[room].players.length });
+    for(var room in rooms ) {  
+        if(rooms[room].password === undefined) {
+            client.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: false, playerCnt: rooms[room].players.length });
+        } else {
+            client.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: true, playerCnt: rooms[room].players.length });
+        }
     }
     
     // send own id to client
@@ -85,6 +89,7 @@ socket.on('connection', function(client){
     client.on('createroom', function(message){
         var currentRoom = new Room(client.id, message.roomname)
         rooms.push(currentRoom);
+        client.room = currentRoom;
         
         // add own id to current players in room
         count = currentRoom.players.length;
@@ -99,6 +104,7 @@ socket.on('connection', function(client){
     client.on('createprivateroom', function(message){
         var currentRoom = new Room(client.id, message.roomname, message.password)
         rooms.push(currentRoom);
+        client.room = currentRoom;
         
         // add own id to current players in room
         count = currentRoom.players.length;
@@ -107,6 +113,49 @@ socket.on('connection', function(client){
          client.emit('roomconnect',{ room: currentRoom.id, name: currentRoom.roomName, hasPass: true, playerCnt: currentRoom.players.length });
         client.broadcast.emit('roomconnect',{ room: currentRoom.id, name: currentRoom.roomName, hasPass: true, playerCnt: currentRoom.players.length });
         console.log("room:",currentRoom.id, "players:", count); 
+    });
+    
+    
+    // join existing room
+    client.on('joinroom', function(message){
+    
+        var joined = false;
+        for(var room in rooms ) {
+            //search room
+            if(rooms[room].players.length < maxPerRoom && rooms[room].id === message.roomId) {
+                var player = new Player(client);
+                rooms[room].players.push(new Player(client));
+                client.room = rooms[room];
+                
+                //send all players in room that game can be started
+                for( var player in rooms[room].players ) { 
+                    rooms[room].players[player].client.emit('startgame',{ id: message.roomId }); 
+                }
+                
+                //update room player number
+                client.broadcast.emit('roomdisconnect',{ room: rooms[room].id, name: rooms[room].roomName});        
+                if(rooms[room].password === undefined) {
+                    client.broadcast.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: false, playerCnt: rooms[room].players.length });
+                } else {
+                    client.broadcast.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: true, playerCnt: rooms[room].players.length });
+                }
+                
+                client.emit('roomdisconnect',{ room: rooms[room].id, name: rooms[room].roomName});        
+                if(rooms[room].password === undefined) {
+                    client.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: false, playerCnt: rooms[room].players.length });
+                } else {
+                    client.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: true, playerCnt: rooms[room].players.length });
+                }
+                
+                joined = true;
+            }
+        }   
+        
+        //error notify client
+        if(joined === false) {
+            client.emit('errorjoiningroom',{ id: message.roomId }); 
+        }
+    
     });
     
     

@@ -36,6 +36,8 @@ public class Network {
 
 	public boolean connected = false;
 	public float timeToConnect = 5;
+	
+	public boolean startGame = false;
 
 	// network vars
 	public String id;
@@ -88,6 +90,7 @@ public class Network {
 		        public void onDisconnect() {
 		        	addMessage("connection terminated");
 		            System.out.println("connection terminated.");
+		            startGame = false;
 		        }
 
 		        @Override
@@ -115,6 +118,12 @@ public class Network {
 				        	addMessage("Room " + obj.getString("room") + " added");
 		                }
 		                
+		                if (event.equals("startgame")) {
+		                	System.out.println("startgame");
+				        	addMessage("startgame");
+				        	startGame = true;
+		                }
+		                
 		                if (event.equals("roomdisconnect")) {
 		                	String id = obj.getString("room");
 		                	Room roomToRemove = null;
@@ -128,7 +137,7 @@ public class Network {
 		                		rooms.remove(roomToRemove);
 			                	System.out.println("Room " + obj.getString("room") + " removed");
 					        	addMessage("Room " + obj.getString("room") + " removed");
-		                	}		                	
+		                	}
 		                }
 		                
 		                if (event.equals("playerconnect")) {
@@ -285,6 +294,21 @@ public class Network {
 		}
 
 		socket.emit("createprivateroom", json);
+	}
+	
+	public void sendJoinRoom(String roomId) {
+		System.out.println("join room " + roomId);
+
+		JSONObject json = new JSONObject();
+		try {
+			json.putOpt("player", id);
+			json.putOpt("roomId", roomId);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		socket.emit("joinroom", json);
 	}
 	
 	public void sendLeaveRoom() {

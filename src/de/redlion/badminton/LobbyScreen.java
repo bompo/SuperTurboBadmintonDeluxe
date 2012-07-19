@@ -281,6 +281,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		delta = Math.min(0.1f, deltaTime);
 		
 		checkForNewRooms();
+		checkForConnection();
 
 		startTime += delta;
 
@@ -328,13 +329,23 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		}
 	}
 
+	private void checkForConnection() {
+		System.out.println(waiting + " " + Network.getInstance().startGame);
+		if(waiting == true && Network.getInstance().startGame == true) {
+			//start game
+			
+			mode = LobbyScreen.MODE.MULTIPLAYER;
+			finished = true;
+		}
+	}
+
 	private void checkForNewRooms() {
 		if(roomCnt != Network.getInstance().rooms.size()) {
 			//refresh table
 			table.reset();
 	        int roomNumber = 1;
 	        
-	        for (Room room: Network.getInstance().rooms) {
+	        for (final Room room: Network.getInstance().rooms) {
         		if(!room.hasPass) {
         			Label playerCount = new Label(room.playersCnt + "/2", skin);
         			Label roomInfo = new Label("Room " + roomNumber + ": " + room.name, skin);
@@ -346,20 +357,14 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		    				
 		    				@Override
 		    				public void click(Actor arg0, float arg1, float arg2) {
-		    					mode = MODE.MULTIPLAYER;
-		    					finished = true;					
+		    					Network.getInstance().sendJoinRoom(room.id);
+		    					waiting = true;
 		    				}
 		    			});
-//		    			System.out.println("room " + room.name + " free");
-//		    			roomInfo.setStyle(skin.getStyle("default", LabelStyle.class));
-//	        			playerCount.setStyle(skin.getStyle("default", LabelStyle.class));
 		    			roomInfo.setColor(1,1,1,1);
 		    			playerCount.setColor(1,1,1,1);
 	        		}
 	        		else {
-//	        			System.out.println("room " + room.name + " full");
-//	        			roomInfo.setStyle(skin.getStyle("disabled", LabelStyle.class));
-//	        			playerCount.setStyle(skin.getStyle("disabled", LabelStyle.class));
 	        			roomInfo.setColor(0,0,0,0.5f);
 		    			playerCount.setColor(0,0,0,0.5f);
 	        		}
@@ -378,8 +383,11 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
         			if(room.playersCnt < 2) {
 		    			join.setClickListener(new ClickListener() {
 		    				
+		    				
 		    				@Override
 		    				public void click(Actor arg0, float arg1, float arg2) {
+		    					
+		    					System.out.println("join private with pass");
 		    					
 		    					final Table temp = new Table(skin);
 		    					temp.width = 300;
@@ -390,17 +398,14 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		    					temp.setBackground(new NinePatch(blackFade));
 		    					createRoomMenu.addActor(temp);
 		    					
-		    					TextField pass = new TextField("Password", skin);
+		    					final TextField pass = new TextField("Password", skin);
 		    					TextButton enter = new TextButton("Enter", skin);
 		    					enter.setClickListener(new ClickListener() {
 									
 									@Override
 									public void click(Actor arg0, float arg1, float arg2) {
-										
-//										if(pass.getText().equals(Network.getInstance().getPass()) {
-//											mode = MODE.MULTIPLAYER;
-//											finished = true;
-//										}
+										waiting = true;
+										System.out.println("join private with pass " + pass.getText());
 										
 									}
 								});
@@ -410,16 +415,10 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		    					
 		    				}
 		    			});
-//		    			System.out.println("room " + room.name + " free");
-//		    			roomInfo.setStyle(skin.getStyle("default", LabelStyle.class));
-//	        			playerCount.setStyle(skin.getStyle("default", LabelStyle.class));
 	        			roomInfo.setColor(1,1,1,1);
 		    			playerCount.setColor(1,1,1,1);
         			}
         			else {
-//        				System.out.println("room " + room.name + " full");
-//        				roomInfo.setStyle(skin.getStyle("disabled", LabelStyle.class));
-//	        			playerCount.setStyle(skin.getStyle("disabled", LabelStyle.class));
         				roomInfo.setColor(0,0,0,0.5f);
 		    			playerCount.setColor(0,0,0,0.5f);
 	        		}

@@ -37,7 +37,7 @@ import de.redlion.badminton.network.Room;
 public class LobbyScreen extends DefaultScreen implements InputProcessor {
 
 	public enum MODE {
-		SINGLEPLAYER,MULTIPLAYER,EXIT;
+		TITLESCREEN,SINGLEPLAYER,MULTIPLAYER,EXIT;
 	}
 	
 	MODE mode = MODE.EXIT;
@@ -144,6 +144,19 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 					}
 				});
 				
+				TextButton cancel = new TextButton("Cancel", skin);
+				cancel.setClickListener(new ClickListener() {
+					
+					@Override
+					public void click(Actor arg0, float arg1, float arg2) {
+						
+						createRoomMenu.clear();
+						Gdx.input.setInputProcessor(ui);
+						creating = false;
+						
+					}
+				});
+				
 				temp.row();
 				temp.add(new Label("Create Room", skin)).left();
 				temp.row();
@@ -153,14 +166,37 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 				temp.add(check).right();
 				temp.row();
 				temp.add(create).left();
+				temp.add(cancel);
 				
 				Gdx.input.setInputProcessor(createRoomMenu);
 				
 				creating = true;
 			}
 		});
-		container.getTableLayout().add(createRoom);
+		
 
+		TextButton back = new TextButton("Back", skin);
+		back.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor arg0, float arg1, float arg2) {
+				
+				mode = MODE.TITLESCREEN;
+				finished = true;
+				
+			}
+		});
+		
+		Table buttons = new Table(skin);
+
+		container.add(buttons).expandX().fill();
+		
+		buttons.left();
+		buttons.add(createRoom);
+		buttons.add(back).expandX().right();
+		
+		
+		
 		initRender();
 	}
 
@@ -259,6 +295,9 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 			blackFade.draw(fadeBatch);
 			fadeBatch.end();
 			if (fade >= 1) {
+				if(mode == MODE.TITLESCREEN) {
+					game.setScreen(new MenuScreen(game));
+				}
 				if(mode == MODE.SINGLEPLAYER) {
 					game.setScreen(new SinglePlayerGameScreen(game));
 				} 

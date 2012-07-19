@@ -330,7 +330,6 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	}
 
 	private void checkForConnection() {
-		System.out.println(waiting + " " + Network.getInstance().startGame);
 		if(waiting == true && Network.getInstance().startGame == true) {
 			//start game
 			

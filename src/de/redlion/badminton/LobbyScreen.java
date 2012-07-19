@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.FlickScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -58,6 +59,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	Stage ui;
 	Stage createRoomMenu;
 	boolean creating = false;
+	boolean waiting = false;
 	Table container;
 	Table table;
 	Skin skin;
@@ -89,7 +91,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		
 		skin = new Skin(Gdx.files.internal("data/uiskin.json"), Gdx.files.internal("data/uiskin.png"));
 		
-		//ui stuff		
+		//ui stuff	
 		container = new Table();
 		container.setSkin(skin);
 		ui.addActor(container);
@@ -101,6 +103,9 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		container.add(scroll).expand().fill();
 		table.parse("pad:10 * expand:x space:4");
 
+		
+		
+		
 		container.getTableLayout().row().left();
 		TextButton createRoom = new TextButton("Create Room", skin);
 		createRoom.setClickListener(new ClickListener() {
@@ -128,40 +133,45 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 						pass.visible = !pass.visible;						
 					}
 				});
-
-				
-
-				
+						
 				final TextButton cancel = new TextButton("Cancel", skin);
 				cancel.setClickListener(new ClickListener() {
 					
 					@Override
 					public void click(Actor arg0, float arg1, float arg2) {
 						
+						if(waiting) {
+							Network.getInstance().sendLeaveRoom();
+						}
+						
 						createRoomMenu.clear();
 						Gdx.input.setInputProcessor(ui);
 						creating = false;
+						waiting = false;
 						
 					}
 				});
 				
 				TextButton create = new TextButton("Create", skin);
+				
 				create.setClickListener(new ClickListener() {
 					
 					@Override
 					public void click(Actor arg0, float arg1, float arg2) {
+
+						waiting = true;
 						
-//						if(check.isChecked()) {
-//							Network.getInstance().sendCreatePrivateRoom(name.getText(),pass.getText());
-//						} else {
-//							Network.getInstance().sendCreateRoom(name.getText());
-//						}			
 						
+						if(check.isChecked()) {
+							Network.getInstance().sendCreatePrivateRoom(name.getText(),pass.getText());
+						} else {
+							Network.getInstance().sendCreateRoom(name.getText());
+						}						
 						
 						temp.clear();
 						
 						Label waiting = new Label("Waiting For Challenger...", skin);
-						waiting.getStyle().fontColor = new Color(1,1,1,1);
+						waiting.setColor(1,1,1,1);
 						
 						temp.add(waiting).top();
 						temp.row();
@@ -276,12 +286,6 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 
 		cam.update();
 
-//		if (Configuration.getInstance().debug) {
-//			batch.begin();
-//			font.draw(batch, "1. SinglePlayer", 50, 80);
-//			font.draw(batch, "2. Multiplayer", 50, 60);
-//			batch.end();
-//		}
 
 		// FadeInOut
 		if (!finished && fade > 0) {
@@ -295,11 +299,9 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		
 		ui.act(Gdx.graphics.getDeltaTime());
 		ui.draw();
-		Table.drawDebug(ui);
 		if(creating) {
 			createRoomMenu.act(Gdx.graphics.getDeltaTime());
 			createRoomMenu.draw();
-			Table.drawDebug(createRoomMenu);
 		}
 
 		if (finished) {
@@ -327,20 +329,19 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	}
 
 	private void checkForNewRooms() {
-		HashSet<Room> roomsCopy = (HashSet<Room>) Network.getInstance().rooms.clone();
-		if(roomCnt != roomsCopy.size()) {
+		if(roomCnt != Network.getInstance().rooms.size()) {
 			//refresh table
 			table.reset();
 	        int roomNumber = 1;
-	        for (Room room: roomsCopy) {
+	        
+	        for (Room room: Network.getInstance().rooms) {
         		if(!room.hasPass) {
-        			Label playerCount = new Label(roomNumber + "/2", skin);
+        			Label playerCount = new Label(room.playersCnt + "/2", skin);
         			Label roomInfo = new Label("Room " + roomNumber + ": " + room.name, skin);
+        			
 	        		TextButton join = new TextButton(skin);
-	        		join.getTableLayout().skin = skin;
-	        		join.add(roomInfo).center();
-	        		join.add(playerCount).right();
-	        		if(roomNumber < 2) {
+	        		
+	        		if(room.playersCnt < 2) {
 		    			join.setClickListener(new ClickListener() {
 		    				
 		    				@Override
@@ -349,23 +350,32 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		    					finished = true;					
 		    				}
 		    			});
+//		    			System.out.println("room " + room.name + " free");
+//		    			roomInfo.setStyle(skin.getStyle("default", LabelStyle.class));
+//	        			playerCount.setStyle(skin.getStyle("default", LabelStyle.class));
+		    			roomInfo.setColor(1,1,1,1);
+		    			playerCount.setColor(1,1,1,1);
 	        		}
 	        		else {
-	        			roomInfo.getStyle().fontColor = new Color(0, 0, 0, 0.5f);
-	        			playerCount.getStyle().fontColor = new Color(0, 0, 0, 0.5f);
+//	        			System.out.println("room " + room.name + " full");
+//	        			roomInfo.setStyle(skin.getStyle("disabled", LabelStyle.class));
+//	        			playerCount.setStyle(skin.getStyle("disabled", LabelStyle.class));
+	        			roomInfo.setColor(0,0,0,0.5f);
+		    			playerCount.setColor(0,0,0,0.5f);
 	        		}
+	        		join.getTableLayout().skin = skin;
+	        		join.add(roomInfo).center();
+	        		join.add(playerCount).right();
 	    			table.row();
 	    			table.add(join).fill().expandX();
 	    			roomNumber++;
         		} else {
         			//private room, check pass with server
-        			Label playerCount = new Label(roomNumber + "/2", skin);
+        			Label playerCount = new Label(room.playersCnt + "/2", skin);
         			Label roomInfo = new Label("Room " + roomNumber + ": " + room.name + " (private)", skin);
 	        		TextButton join = new TextButton(skin);
-        			join.getStyle().fontColor = new Color(1, 1, 1, 1);
-        			join.add(roomInfo).center();
-        			join.add(playerCount).right();
-//        			if(roomNumber < 2) {
+        			
+        			if(room.playersCnt < 2) {
 		    			join.setClickListener(new ClickListener() {
 		    				
 		    				@Override
@@ -400,17 +410,27 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		    					
 		    				}
 		    			});
-//        			}
-//        			else {
-//	        			roomInfo.getStyle().fontColor = new Color(0, 0, 0, 0.5f);
-//	        			playerCount.getStyle().fontColor = new Color(0, 0, 0, 0.5f);
-//	        		}
+//		    			System.out.println("room " + room.name + " free");
+//		    			roomInfo.setStyle(skin.getStyle("default", LabelStyle.class));
+//	        			playerCount.setStyle(skin.getStyle("default", LabelStyle.class));
+	        			roomInfo.setColor(1,1,1,1);
+		    			playerCount.setColor(1,1,1,1);
+        			}
+        			else {
+//        				System.out.println("room " + room.name + " full");
+//        				roomInfo.setStyle(skin.getStyle("disabled", LabelStyle.class));
+//	        			playerCount.setStyle(skin.getStyle("disabled", LabelStyle.class));
+        				roomInfo.setColor(0,0,0,0.5f);
+		    			playerCount.setColor(0,0,0,0.5f);
+	        		}
+        			join.add(roomInfo).center();
+        			join.add(playerCount).right();
 	    			table.row();
 	    			table.add(join).fill().expandX();
 	    			roomNumber++;
         		}
 	        }
-	        roomCnt = roomsCopy.size();
+	        roomCnt = Network.getInstance().rooms.size();
 		}
 	}
 

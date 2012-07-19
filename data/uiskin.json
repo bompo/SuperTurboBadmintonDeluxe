@@ -179,9 +179,10 @@ resources: {
 			{ width: 1, height: 1, x: 9, y: 115 }
 		]
 	},
-	com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: default.fnt } },
+	com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: com/badlogic/gdx/utils/arial-15.fnt } },
 	com.badlogic.gdx.graphics.Color: {
 		green: { a: 1, b: 0, g: 1, r: 0 },
+		grey: { a: 0.5, b: 1, g: 1, r: 1 },
 		white: { a: 1, b: 1, g: 1, r: 1 },
 		red: { a: 1, b: 0, g: 0, r: 1 },
 		black: { a: 1, b: 0, g: 0, r: 0 }
@@ -213,7 +214,8 @@ styles: {
 		default: { slider: default-slider, knob: default-slider-knob }
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
-		default: { font: default-font, fontColor: white }
+		default: { font: default-font, fontColor: white },
+		disabled: { font: default-font, fontColor: white }
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 		default: { selection: selection, background: textfield, font: default-font, fontColor: white, cursor: cursor }

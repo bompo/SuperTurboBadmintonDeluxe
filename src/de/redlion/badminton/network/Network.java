@@ -6,8 +6,11 @@ import io.socket.SocketIO;
 import io.socket.SocketIOException;
 
 import java.net.MalformedURLException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +30,7 @@ public class Network {
 	private Json json;
 
 	public Array<String> messageList = new Array<String>();
-	public HashSet<Room> rooms = new HashSet<Room>();
+	public Set<Room> rooms;
 	
 	public Array<UpdatePackage> networkUpdates = new Array<UpdatePackage>();
 
@@ -45,6 +48,7 @@ public class Network {
 
 	private Network() {
 		json = new Json();
+		rooms = Collections.synchronizedSet(new HashSet<Room>());
 		connectToServer();
 	}
 
@@ -106,7 +110,7 @@ public class Network {
 		                	System.out.println("player id " + id);
 		                }
 		                if (event.equals("roomconnect")) {
-		                	rooms.add(new Room(obj.getString("room"),obj.getString("name"),obj.getBoolean("hasPass")));
+		                	rooms.add(new Room(obj.getString("room"),obj.getString("name"),obj.getBoolean("hasPass"),obj.getInt("playerCnt")));
 		                	System.out.println("Room " + obj.getString("room") + " added");
 				        	addMessage("Room " + obj.getString("room") + " added");
 		                }
@@ -281,6 +285,20 @@ public class Network {
 		}
 
 		socket.emit("createprivateroom", json);
+	}
+	
+	public void sendLeaveRoom() {
+		System.out.println("leave current room ");
+
+		JSONObject json = new JSONObject();
+		try {
+			json.putOpt("player", id);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		socket.emit("leaveroom", json);
 	}
 
 	public void sendCurrentState(Player player) {

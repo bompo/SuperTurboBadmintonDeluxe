@@ -2,21 +2,29 @@ var socket = require('socket.io').listen(19834);
 var rooms = [];
 var maxPerRoom = 2;
 
-rooms.push(new Room(0,"dummy room 1 "));
-rooms.push(new Room(1,"dummy room 2 pass: test", "test"));
+var dummyRoom1 = new Room(0,"dummy room 1 ");
+var dummyRoom2 = new Room(1,"dummy room 2 pass: test", "test");
+var dummyClient1 = {};
+dummyClient1.id = 1;
+var dummyPlayer1 = new Player(dummyClient1);
+var dummyClient2 = {};
+dummyClient2.id = 2;
+var dummyPlayer2 = new Player(dummyClient2);
+var dummyClient3 = {};
+dummyClient3.id = 3;
+var dummyPlayer3 = new Player(dummyClient3);
+dummyRoom1.players.push(dummyPlayer1);
+dummyRoom1.players.push(dummyPlayer2);
+dummyRoom2.players.push(dummyPlayer3);
+rooms.push(dummyRoom1);
+rooms.push(dummyRoom2);
 
  
 socket.on('connection', function(client){
 
-    // send list of all open rooms
-    for(var room in rooms ) {
-        if(rooms[room].players.length < maxPerRoom) {
-            if(rooms[room].password === undefined) {
-                client.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: false });
-            } else {
-                client.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: true });
-            }
-        }
+    // send list of all rooms
+    for(var room in rooms ) {        
+        client.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: true, playerCnt: rooms[room].players.length });
     }
     
     // send own id to client
@@ -82,8 +90,8 @@ socket.on('connection', function(client){
         count = currentRoom.players.length;
         var player = new Player(client);
         currentRoom.players.push(new Player(client));
-        
-        client.emit('roomconnect',{ room: currentRoom.id, name: currentRoom.roomName, hasPass: false });
+        client.emit('roomconnect',{ room: currentRoom.id, name: currentRoom.roomName, hasPass: false, playerCnt: currentRoom.players.length });
+        client.broadcast.emit('roomconnect',{ room: currentRoom.id, name: currentRoom.roomName, hasPass: false, playerCnt: currentRoom.players.length });
         console.log("room:",currentRoom.id, "players:", count); 
     });
     
@@ -96,9 +104,33 @@ socket.on('connection', function(client){
         count = currentRoom.players.length;
         var player = new Player(client);
         currentRoom.players.push(new Player(client));
-        
-        client.emit('roomconnect',{ room: currentRoom.id, name: currentRoom.roomName, hasPass: true });
+         client.emit('roomconnect',{ room: currentRoom.id, name: currentRoom.roomName, hasPass: true, playerCnt: currentRoom.players.length });
+        client.broadcast.emit('roomconnect',{ room: currentRoom.id, name: currentRoom.roomName, hasPass: true, playerCnt: currentRoom.players.length });
         console.log("room:",currentRoom.id, "players:", count); 
+    });
+    
+    
+    // leave current room
+    client.on('leaveroom', function(message){
+        var n = 0;
+        for(var room in rooms ) {
+            //remove player from current room
+            var i = 0;
+            for( var player in rooms[n].players ) { 
+                if(rooms[n].players[i].client.id === client.id) {        
+                    rooms[n].players.splice(i, 1);
+                    break;
+                }
+                i = i + 1;
+            }
+            if(rooms[n].players.length === 0) {
+                console.log("delete room", rooms[n].id);  
+                client.emit('roomdisconnect',{ room: rooms[n].id, name: rooms[n].roomName});                      
+                client.broadcast.emit('roomdisconnect',{ room: rooms[n].id, name: rooms[n].roomName});        
+                rooms.splice(n, 1);
+            }            
+            n = n + 1;
+        }            
     });
     
     
@@ -184,7 +216,7 @@ socket.on('connection', function(client){
     });
     
     // disconnect message
-    client.on('disconnect', function(){
+    client.on('disconnect', function() {
         if(client.room === undefined) {
             return;
         }

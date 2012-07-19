@@ -22,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.ui.FlickScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -319,28 +320,47 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	        for (Room room: Network.getInstance().rooms) {
         		if(!room.hasPass) {
 	        		TextButton join = new TextButton("Room " + roomNumber + ": " + room.name , skin);
-	    			join.setClickListener(new ClickListener() {
-	    				
-	    				@Override
-	    				public void click(Actor arg0, float arg1, float arg2) {
-	    					mode = MODE.MULTIPLAYER;
-	    					finished = true;					
-	    				}
-	    			});
+	        		join.getTableLayout().skin = skin;
+	        		join.getStyle().fontColor = new Color(1, 1, 1, 1);
+	        		Label playerCount = new Label(roomNumber + "/2", skin);
+	        		join.add(playerCount).right();
+	        		if(roomNumber < 2) {
+		    			join.setClickListener(new ClickListener() {
+		    				
+		    				@Override
+		    				public void click(Actor arg0, float arg1, float arg2) {
+		    					mode = MODE.MULTIPLAYER;
+		    					finished = true;					
+		    				}
+		    			});
+	        		}
+	        		else {
+	        			join.getStyle().fontColor = new Color(0, 0, 0, 0.5f);
+	        			playerCount.getStyle().fontColor = new Color(0, 0, 0, 0.5f);
+	        		}
 	    			table.row();
 	    			table.add(join).fill().expandX();
 	    			roomNumber++;
         		} else {
         			//private room, check pass with server
         			TextButton join = new TextButton("Room " + roomNumber + ": " + room.name + " (private)" , skin);
-	    			join.setClickListener(new ClickListener() {
-	    				
-	    				@Override
-	    				public void click(Actor arg0, float arg1, float arg2) {
-	    					mode = MODE.MULTIPLAYER;
-	    					finished = true;					
-	    				}
-	    			});
+        			Label playerCount = new Label(roomNumber + "/2", skin);
+        			join.getStyle().fontColor = new Color(1, 1, 1, 1);
+        			join.add(playerCount).right();
+        			if(roomNumber < 2) {
+		    			join.setClickListener(new ClickListener() {
+		    				
+		    				@Override
+		    				public void click(Actor arg0, float arg1, float arg2) {
+		    					mode = MODE.MULTIPLAYER;
+		    					finished = true;					
+		    				}
+		    			});
+        			}
+        			else {
+	        			join.getStyle().fontColor = new Color(0, 0, 0, 0.5f);
+	        			playerCount.getStyle().fontColor = new Color(0, 0, 0, 0.5f);
+	        		}
 	    			table.row();
 	    			table.add(join).fill().expandX();
 	    			roomNumber++;

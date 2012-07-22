@@ -286,11 +286,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		delta = Math.min(0.1f, deltaTime);
 		
-		boolean okay = checkForNewRooms();
-		if(!okay) {
-			table.clear();
-			table.add(new Label("Sorry, our servers are down :(", skin)).fill().expandX();
-		}
+		checkForNewRooms();
 		checkForConnection();
 
 		startTime += delta;
@@ -348,7 +344,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		}
 	}
 
-	private boolean checkForNewRooms() {
+	private void checkForNewRooms() {
 		if(roomCnt != Network.getInstance().rooms.size()) {
 			//refresh table
 			table.reset();
@@ -529,9 +525,9 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	        }
 	        roomCnt = Network.getInstance().rooms.size();
 	        
-	        return true;
-		}			
-		return false;
+		}
+		 
+
 	}
 
 	@Override

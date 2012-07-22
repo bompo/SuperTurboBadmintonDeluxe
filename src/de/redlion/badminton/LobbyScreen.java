@@ -1,5 +1,7 @@
 package de.redlion.badminton;
 
+import io.socket.SocketIOException;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -284,7 +286,11 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		delta = Math.min(0.1f, deltaTime);
 		
-		checkForNewRooms();
+		boolean okay = checkForNewRooms();
+		if(!okay) {
+			table.clear();
+			table.add(new Label("Sorry, our servers are down :(", skin)).fill().expandX();
+		}
 		checkForConnection();
 
 		startTime += delta;
@@ -342,7 +348,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		}
 	}
 
-	private void checkForNewRooms() {
+	private boolean checkForNewRooms() {
 		if(roomCnt != Network.getInstance().rooms.size()) {
 			//refresh table
 			table.reset();
@@ -522,9 +528,10 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
         		}
 	        }
 	        roomCnt = Network.getInstance().rooms.size();
-		}
-		
-		
+	        
+	        return true;
+		}			
+		return false;
 	}
 
 	@Override

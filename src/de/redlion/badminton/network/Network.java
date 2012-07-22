@@ -30,6 +30,7 @@ import com.badlogic.gdx.utils.Json;
 
 import de.redlion.badminton.GameSession;
 import de.redlion.badminton.Player;
+import de.redlion.badminton.Resources;
 import de.redlion.badminton.opponent.NetworkOpponent;
 
 public class Network {
@@ -66,8 +67,8 @@ public class Network {
 	private void connectToServer() {
 		
 		try {
-			socket = new SocketIO("http://localhost:19834");
-//			socket = new SocketIO("http://superturbobadminton.nodester.com:80");
+//			socket = new SocketIO("http://localhost:19834");
+			socket = new SocketIO("http://superturbobadminton.nodester.com:80");
 
 			socket.connect(new IOCallback() {
 				

@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Align;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.ui.FlickScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
@@ -35,6 +36,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
+import com.badlogic.gdx.utils.Scaling;
 
 import de.redlion.badminton.MenuScreen.MODE;
 
@@ -428,8 +430,10 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
         		} else {
         			//private room, check pass with server
         			Label playerCount = new Label(room.playersCnt + "/2", skin);
-        			Label roomInfo = new Label(room.name + " (private)", skin);
+        			Label roomInfo = new Label(room.name, skin);
 	        		TextButton join = new TextButton(skin);
+	        		
+	        		
         			
         			if(room.playersCnt < 2) {
 		    			join.setClickListener(new ClickListener() {
@@ -516,7 +520,9 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
         				roomInfo.setColor(0,0,0,0.5f);
 		    			playerCount.setColor(0,0,0,0.5f);
 	        		}
+        			Image locked = new Image(Resources.getInstance().lock);
         			join.add(roomInfo).center();
+        			join.add(locked).width(28).height((int) join.height).right();
         			join.add(playerCount).right();
 	    			table.row();
 	    			table.add(join).fill().expandX();

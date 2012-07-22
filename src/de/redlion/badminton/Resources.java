@@ -16,6 +16,7 @@ public class Resources {
 	
 	public Sprite background = new Sprite(new Texture(Gdx.files.internal("data/court_bg.png")));
 	public Sprite playerSprite = new Sprite(new Texture(Gdx.files.internal("data/player.png")));
+	public Texture lock = new Texture(Gdx.files.internal("data/lock.png"));
 	
 	public ShaderProgram diffuseShader;
 	

@@ -61,6 +61,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	Stage createRoomMenu;
 	boolean creating = false;
 	boolean waiting = false;
+	boolean joining = false;
 	Table container;
 	Table table;
 	Skin skin;
@@ -201,6 +202,8 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		});
 		
 
+		
+
 		TextButton back = new TextButton("Back", skin);
 		back.setClickListener(new ClickListener() {
 			
@@ -301,7 +304,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		
 		ui.act(Gdx.graphics.getDeltaTime());
 		ui.draw();
-		if(creating) {
+		if(creating || joining) {
 			createRoomMenu.act(Gdx.graphics.getDeltaTime());
 			createRoomMenu.draw();
 		}
@@ -361,8 +364,50 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		    				
 		    				@Override
 		    				public void click(Actor arg0, float arg1, float arg2) {
-		    					Network.getInstance().sendJoinRoom(room.id);
-		    					waiting = true;
+		    					//Network.getInstance().sendJoinRoom(room.id);
+								joining = true;
+
+								final Table temp = new Table(skin);
+								temp.width = 300;
+								temp.height = 150;
+								temp.y = Gdx.graphics.getHeight() / 2
+										- temp.height / 2;
+								temp.x = Gdx.graphics.getWidth() / 2
+										- temp.width / 2;
+
+								temp.setBackground(new NinePatch(blackFade));
+								createRoomMenu.addActor(temp);
+
+								temp.clear();
+
+								Label joinText = new Label("Joining...", skin);
+								joinText.setColor(1, 1, 1, 1);
+								
+								final TextButton cancel = new TextButton("Cancel", skin);
+								cancel.setClickListener(new ClickListener() {
+									
+									@Override
+									public void click(Actor arg0, float arg1, float arg2) {
+										
+										if(joining) {
+											Network.getInstance().sendLeaveRoom();
+										}
+										
+										createRoomMenu.clear();
+										Gdx.input.setInputProcessor(ui);
+										creating = false;
+										waiting = false;
+										joining = false;
+										
+									}
+								});
+								
+								temp.add(joinText).top();
+								temp.row();
+								temp.add(cancel).right();
+								
+								Gdx.input.setInputProcessor(createRoomMenu);
+		    						
 		    				}
 		    			});
 		    			roomInfo.setColor(1,1,1,1);
@@ -392,6 +437,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		    				public void click(Actor arg0, float arg1, float arg2) {
 		    					
 		    					System.out.println("join private with pass");
+		    					joining = true;
 		    					
 		    					final Table temp = new Table(skin);
 		    					temp.width = 300;
@@ -402,20 +448,62 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		    					temp.setBackground(new NinePatch(blackFade));
 		    					createRoomMenu.addActor(temp);
 		    					
+		    					Label passText = new Label("Enter Password:", skin);
+								passText.setColor(1, 1, 1, 1);
+		    					
+								final TextButton cancel = new TextButton("Cancel", skin);
+								cancel.setClickListener(new ClickListener() {
+									
+									@Override
+									public void click(Actor arg0, float arg1, float arg2) {
+										
+										if(joining) {
+											Network.getInstance().sendLeaveRoom();
+										}
+										
+										createRoomMenu.clear();
+										Gdx.input.setInputProcessor(ui);
+										creating = false;
+										waiting = false;
+										joining = false;
+										
+									}
+								});
+								
 		    					final TextField pass = new TextField("Password", skin);
 		    					TextButton enter = new TextButton("Enter", skin);
+		    					
+		    					
+		    					
 		    					enter.setClickListener(new ClickListener() {
 									
 									@Override
 									public void click(Actor arg0, float arg1, float arg2) {
-										waiting = true;
+										joining = true;
 										System.out.println("join private with pass " + pass.getText());
+										
+										//TODO if pass.getText().equals(room.pass)
+										
+										temp.clear();
+										Label joinText = new Label("Joining...", skin);
+										joinText.setColor(1, 1, 1, 1);
+										
+										temp.add(joinText);
+										temp.row();
+										temp.add(cancel).right();
 										
 									}
 								});
 		    					
+		    					
+		    					
+								temp.add(passText).top().left();
+								temp.row();
 		    					temp.add(pass);
 		    					temp.add(enter);
+		    					temp.row();
+		    					temp.add(cancel).right();
+		    					Gdx.input.setInputProcessor(createRoomMenu);
 		    					
 		    				}
 		    			});

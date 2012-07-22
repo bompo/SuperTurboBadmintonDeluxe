@@ -3,6 +3,7 @@ package de.redlion.badminton;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Game;
@@ -344,10 +345,14 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 			table.reset();
 	        int roomNumber = 1;
 	        
+	        Network.getInstance().sortRooms();
+	        
+	        
 	        for (final Room room: Network.getInstance().rooms) {
+	        	
         		if(!room.hasPass) {
         			Label playerCount = new Label(room.playersCnt + "/2", skin);
-        			Label roomInfo = new Label("Room " + roomNumber + ": " + room.name, skin);
+        			Label roomInfo = new Label(room.name, skin);
         			
 	        		TextButton join = new TextButton(skin);
 	        		
@@ -376,7 +381,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
         		} else {
         			//private room, check pass with server
         			Label playerCount = new Label(room.playersCnt + "/2", skin);
-        			Label roomInfo = new Label("Room " + roomNumber + ": " + room.name + " (private)", skin);
+        			Label roomInfo = new Label(room.name + " (private)", skin);
 	        		TextButton join = new TextButton(skin);
         			
         			if(room.playersCnt < 2) {
@@ -430,6 +435,8 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	        }
 	        roomCnt = Network.getInstance().rooms.size();
 		}
+		
+		
 	}
 
 	@Override

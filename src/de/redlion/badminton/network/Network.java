@@ -6,15 +6,23 @@ import io.socket.SocketIO;
 import io.socket.SocketIOException;
 
 import java.net.MalformedURLException;
+import java.text.CollationKey;
+import java.text.Collator;
+import java.text.RuleBasedCollator;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -50,7 +58,8 @@ public class Network {
 
 	private Network() {
 		json = new Json();
-		rooms = Collections.synchronizedSet(new HashSet<Room>());
+		rooms = new TreeSet<Room>();
+		Collections.synchronizedSet(rooms);
 		connectToServer();
 	}
 
@@ -417,6 +426,50 @@ public class Network {
 			messageList.removeIndex(0);
 		}
 		messageList.add(m);
+	}
+	
+	public void sortRooms() {
+//		ArrayList<Room> temp = new ArrayList<Room>();
+//		try {
+//		temp.add(rooms2.first());
+//		rooms2.remove(rooms2.first());
+//		for(Room r : temp) {
+//			
+//			if(r.compareTo(temp.get(0)) < 0){
+//				if(!r.equals(temp.get(0)))
+//					temp.add(0, r);
+//			}
+//			if(r.compareTo(temp.get(0)) >= 0){
+//				if(!r.equals(temp.get(0)))
+//					temp.add(r);
+//			}
+//			
+//		}
+//		} catch(Exception e) {
+//			java.util.Collections.so
+//		}
+//		
+//		sortRooms(rooms2);
+//		
+//		rooms.clear();
+//		rooms.addAll(temp);
+		
+		ArrayList<Room> chambers = new ArrayList<Room>();
+		
+		for(Room r : rooms) {
+			chambers.add(r);
+		}
+		
+		java.util.Collections.sort(chambers);
+		
+		
+		
+		rooms.clear();
+		
+		
+		for(Room ro : chambers) {
+			rooms.add(ro);
+		}
 	}
 
 

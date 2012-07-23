@@ -1,18 +1,12 @@
 package de.redlion.badminton;
 
-import io.socket.SocketIOException;
-
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
 
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -23,22 +17,15 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Align;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.ui.FlickScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
-import com.badlogic.gdx.utils.Scaling;
-
-import de.redlion.badminton.MenuScreen.MODE;
 
 import de.redlion.badminton.network.Network;
 import de.redlion.badminton.network.Room;
@@ -338,11 +325,21 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	}
 
 	private void checkForConnection() {
-		if(waiting == true && Network.getInstance().startGame == true) {
+		if((waiting == true || joining == true) && Network.getInstance().startGame == true) {
 			//start game
 			
 			mode = LobbyScreen.MODE.MULTIPLAYER;
 			finished = true;
+		}
+		
+		if((waiting == true || joining == true) && Network.getInstance().error == true) {
+			//TODO show error message
+			waiting = false;
+			joining = false;
+			creating = false;
+			createRoomMenu.clear();
+			Network.getInstance().error = false;
+			Gdx.input.setInputProcessor(ui);
 		}
 	}
 
@@ -368,7 +365,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		    				
 		    				@Override
 		    				public void click(Actor arg0, float arg1, float arg2) {
-		    					//Network.getInstance().sendJoinRoom(room.id);
+		    					Network.getInstance().sendJoinRoom(room.id);
 								joining = true;
 
 								final Table temp = new Table(skin);
@@ -441,8 +438,6 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		    				
 		    				@Override
 		    				public void click(Actor arg0, float arg1, float arg2) {
-		    					
-		    					System.out.println("join private with pass");
 		    					joining = true;
 		    					
 		    					final Table temp = new Table(skin);
@@ -477,16 +472,15 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 								});
 								
 		    					final TextField pass = new TextField("Password", skin);
-		    					TextButton enter = new TextButton("Enter", skin);
-		    					
-		    					
+		    					TextButton enter = new TextButton("Enter", skin);	    					
 		    					
 		    					enter.setClickListener(new ClickListener() {
 									
 									@Override
 									public void click(Actor arg0, float arg1, float arg2) {
-										joining = true;
-										System.out.println("join private with pass " + pass.getText());
+				    					
+				    					Network.getInstance().sendJoinPrivateRoom(room.id, pass.getText());
+				    					joining = true;
 										
 										//TODO if pass.getText().equals(room.pass)
 										
@@ -499,8 +493,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 										temp.add(cancel).right();
 										
 									}
-								});
-		    					
+								});    					
 		    					
 		    					
 								temp.add(passText).top().left();

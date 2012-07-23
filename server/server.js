@@ -87,7 +87,26 @@ socket.on('connection', function(client){
     
     // create public room
     client.on('createroom', function(message){
-        var currentRoom = new Room(client.id, message.roomname)
+        var postfix = "";
+        var postfixN = 0;
+        var found = true;
+        while(found === true) {
+            found = false;
+            //check if room with same name exists
+            for(var room in rooms ) {
+                //search room
+                if(rooms[room].roomName === message.roomname+postfix) {
+                    postfixN = postfixN + 1;
+                    postfix = "_" + postfixN;
+                    found = true;
+                }
+            }
+        }
+        if(postfixN>0) {
+            postfix = "_" + postfixN;
+        }
+    
+        var currentRoom = new Room(client.id, message.roomname+postfix)
         rooms.push(currentRoom);
         client.room = currentRoom;
         
@@ -102,7 +121,26 @@ socket.on('connection', function(client){
     
     // create private room with password
     client.on('createprivateroom', function(message){
-        var currentRoom = new Room(client.id, message.roomname, message.password)
+        var postfix = "";
+        var postfixN = 0;
+        var found = true;
+        while(found === true) {
+            found = false;
+            //check if room with same name exists
+            for(var room in rooms ) {
+                //search room
+                if(rooms[room].roomName === message.roomname+postfix) {
+                    postfixN = postfixN + 1;
+                    postfix = "_" + postfixN;
+                    found = true;
+                }
+            }
+        }
+        if(postfixN>0) {
+            postfix = "_" + postfixN;
+        }
+    
+        var currentRoom = new Room(client.id, message.roomname+postfix, message.password)
         rooms.push(currentRoom);
         client.room = currentRoom;
         
@@ -153,7 +191,62 @@ socket.on('connection', function(client){
         
         //error notify client
         if(joined === false) {
-            client.emit('errorjoiningroom',{ id: message.roomId }); 
+            client.room = undefined;
+            client.emit('errorjoiningroom',{ roomId: message.roomId }); 
+        }
+    
+    });
+    
+    
+        // join existing room
+    client.on('joinprivateroom', function(message){
+    
+        var joined = false;
+        for(var room in rooms ) {
+        console.log("room check",rooms[room].players.length, rooms[room].id, message.roomId);
+        
+            //search room
+            if(rooms[room].players.length < maxPerRoom && rooms[room].id == message.roomId) {
+               
+                console.log("pass check",rooms[room].password,message.password);
+                
+                //password check
+                if(rooms[room].password === message.password) {
+                    console.log("password passed");
+                
+                    var player = new Player(client);
+                    rooms[room].players.push(new Player(client));
+                    client.room = rooms[room];
+                    
+                    //send all players in room that game can be started
+                    for( var player in rooms[room].players ) { 
+                        rooms[room].players[player].client.emit('startgame',{ id: message.roomId }); 
+                    }
+                    
+                    //update room player number
+                    client.broadcast.emit('roomdisconnect',{ room: rooms[room].id, name: rooms[room].roomName});        
+                    if(rooms[room].password === undefined) {
+                        client.broadcast.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: false, playerCnt: rooms[room].players.length });
+                    } else {
+                        client.broadcast.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: true, playerCnt: rooms[room].players.length });
+                    }
+                    
+                    client.emit('roomdisconnect',{ room: rooms[room].id, name: rooms[room].roomName});        
+                    if(rooms[room].password === undefined) {
+                        client.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: false, playerCnt: rooms[room].players.length });
+                    } else {
+                        client.emit('roomconnect',{ room: rooms[room].id, name: rooms[room].roomName, hasPass: true, playerCnt: rooms[room].players.length });
+                    }
+                    
+                    joined = true;
+                }
+            }
+        }   
+        
+        //error notify client
+        if(joined === false) {
+            client.room = undefined;
+            client.emit('errorjoiningroom',{ roomId: message.roomId }); 
         }
     
     });
@@ -180,6 +273,7 @@ socket.on('connection', function(client){
             }            
             n = n + 1;
         }            
+        client.room = undefined;
     });
     
     
@@ -294,7 +388,7 @@ socket.on('connection', function(client){
         if(client.room.players.length === 0) {
             var n = 0;
             for(var room in rooms ) {
-                if(rooms[room].id === client.room.id) {
+                if(rooms[n].id === client.room.id) {
                     break;
                 }
                 n = n + 1;

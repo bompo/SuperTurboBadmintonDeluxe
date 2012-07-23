@@ -47,6 +47,7 @@ public class Network {
 	public float timeToConnect = 5;
 	
 	public boolean startGame = false;
+	public boolean error = false;
 
 	// network vars
 	public String id;
@@ -67,8 +68,8 @@ public class Network {
 	private void connectToServer() {
 		
 		try {
-//			socket = new SocketIO("http://localhost:19834");
-			socket = new SocketIO("http://superturbobadminton.nodester.com:80");
+			socket = new SocketIO("http://localhost:19834");
+//			socket = new SocketIO("http://superturbobadminton.nodester.com:80");
 
 			socket.connect(new IOCallback() {
 				
@@ -132,6 +133,13 @@ public class Network {
 		                	System.out.println("startgame");
 				        	addMessage("startgame");
 				        	startGame = true;
+		                }
+		                
+		                if (event.equals("errorjoiningroom")) {
+		                	String id = obj.getString("roomId");
+		                	System.out.println("Room " + id + " full, removed or password wrong");
+				        	addMessage("Room " + id + " full, removed or password wrong");      
+				        	error = true;
 		                }
 		                
 		                if (event.equals("roomdisconnect")) {
@@ -276,6 +284,7 @@ public class Network {
 	}
 	
 	public void sendCreateRoom(String roomName) {
+		error = false;
 		System.out.println("create room " + roomName);
 
 		JSONObject json = new JSONObject();
@@ -291,6 +300,7 @@ public class Network {
 	}
 	
 	public void sendCreatePrivateRoom(String roomName, String password) {
+		error = false;
 		System.out.println("create private room " + roomName + " (" + password + ")");
 
 		JSONObject json = new JSONObject();
@@ -307,6 +317,7 @@ public class Network {
 	}
 	
 	public void sendJoinRoom(String roomId) {
+		error = false;
 		System.out.println("join room " + roomId);
 
 		JSONObject json = new JSONObject();
@@ -320,6 +331,24 @@ public class Network {
 
 		socket.emit("joinroom", json);
 	}
+	
+	public void sendJoinPrivateRoom(String roomId, String password) {
+		error = false;
+		System.out.println("join room " + roomId + " with pass:" + password);
+
+		JSONObject json = new JSONObject();
+		try {
+			json.putOpt("player", id);
+			json.putOpt("roomId", roomId);
+			json.putOpt("password", password);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		socket.emit("joinprivateroom", json);
+	}
+	
 	
 	public void sendLeaveRoom() {
 		System.out.println("leave current room ");

@@ -315,7 +315,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 					game.setScreen(new SinglePlayerGameScreen(game));
 				} 
 				if(mode == MODE.MULTIPLAYER) {
-					game.setScreen(new MultiPlayerGameScreen(game));
+					game.setScreen(new NetworkMultiPlayerGameScreen(game));
 				} 
 				if(mode == MODE.EXIT) {
 					Gdx.app.exit();

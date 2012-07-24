@@ -54,8 +54,10 @@ public class Network {
 	public HashMap<String, Integer> connectedIDs = new HashMap<String, Integer>();
 	public NetworkOpponent opponent;
 	
-	Player.STATE currentState = Player.STATE.IDLE; 
-
+	Player.STATE currentState = Player.STATE.IDLE;
+	Player.AIMING currentAiming = Player.AIMING.IDLE; 
+	Player.SIDE currentSide = Player.SIDE.BOTTOM;
+	
 	static Network instance;
 
 	private Network() {
@@ -68,8 +70,8 @@ public class Network {
 	private void connectToServer() {
 		
 		try {
-			socket = new SocketIO("http://localhost:19834");
-//			socket = new SocketIO("http://superturbobadminton.nodester.com:80");
+//			socket = new SocketIO("http://localhost:19834");
+			socket = new SocketIO("http://superturbobadminton.nodester.com:80");
 
 			socket.connect(new IOCallback() {
 				
@@ -249,11 +251,35 @@ public class Network {
 		                			} else if(obj.getJSONObject("message").getString("state").equalsIgnoreCase("AIMING")) {
 		                				GameSession.getInstance().opponent.state = Player.STATE.AIMING;
 		                			}
-		                		
+		                			
+		                			if(obj.getJSONObject("message").getString("aiming").equalsIgnoreCase("IDLE")) {
+		                				GameSession.getInstance().opponent.aiming = Player.AIMING.IDLE;
+		                			} else if(obj.getJSONObject("message").getString("state").equalsIgnoreCase("UP")) {
+		                				GameSession.getInstance().opponent.aiming = Player.AIMING.UP;
+		                			} else if(obj.getJSONObject("message").getString("state").equalsIgnoreCase("DOWN")) {
+		                				GameSession.getInstance().opponent.aiming = Player.AIMING.DOWN;
+		                			} else if(obj.getJSONObject("message").getString("state").equalsIgnoreCase("LEFT")) {
+		                				GameSession.getInstance().opponent.aiming = Player.AIMING.LEFT;
+		                			} else if(obj.getJSONObject("message").getString("state").equalsIgnoreCase("RIGHT")) {
+		                				GameSession.getInstance().opponent.aiming = Player.AIMING.RIGHT;
+		                			} else if(obj.getJSONObject("message").getString("state").equalsIgnoreCase("UPLEFT")) {
+		                				GameSession.getInstance().opponent.aiming = Player.AIMING.UPLEFT;
+		                			} else if(obj.getJSONObject("message").getString("state").equalsIgnoreCase("UPRIGHT")) {
+		                				GameSession.getInstance().opponent.aiming = Player.AIMING.UPRIGHT;
+		                			} else if(obj.getJSONObject("message").getString("state").equalsIgnoreCase("DOWNLEFT")) {
+		                				GameSession.getInstance().opponent.aiming = Player.AIMING.DOWNLEFT;
+		                			} else if(obj.getJSONObject("message").getString("state").equalsIgnoreCase("DOWNRIGHT")) {
+		                				GameSession.getInstance().opponent.aiming = Player.AIMING.DOWNRIGHT;
+		                			} 		                		
 		                }
 		                
-		                if (event.equals("startround")) {
-		                	System.out.println("startround");
+		                if (event.equals("startround")) {		                	
+		                	if( obj.getJSONObject("message").getInt("count") == 0) {
+		                		currentSide = Player.SIDE.BOTTOM;
+		                	} else {
+		                		currentSide = Player.SIDE.TOP;
+		                	}
+		                	System.out.println("startround on side " + currentSide);
 		                }
 		            } catch (Exception ex) {
 		                ex.printStackTrace();
@@ -365,13 +391,14 @@ public class Network {
 	}
 
 	public void sendCurrentState(Player player) {
-		if (currentState == player.state)
+		if (currentState == player.state && currentAiming == player.aiming)
 			return;
 		System.out.println("send update");
 
 		JSONObject json = new JSONObject();
 		try {
 			json.putOpt("state", player.state);
+			json.putOpt("aiming", player.aiming);
 			json.putOpt("positionx", GameSession.getInstance().player.position.x);
 			json.putOpt("positiony", -GameSession.getInstance().player.position.y);
 		} catch (JSONException e) {
@@ -389,6 +416,7 @@ public class Network {
 		JSONObject json = new JSONObject();
 		try {
 			json.putOpt("state", player.state);
+			json.putOpt("aiming", player.aiming);
 			json.putOpt("positionx", GameSession.getInstance().player.position.x);
 			json.putOpt("positiony", GameSession.getInstance().player.position.y);
 		} catch (JSONException e) {

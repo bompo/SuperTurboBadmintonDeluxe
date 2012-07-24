@@ -1,4 +1,4 @@
-package de.redlion.badminton;
+package de.redlion.badminton.controls;
 
 import java.io.IOException;
 
@@ -8,11 +8,19 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.math.Vector3;
 
-public class PlayerControls implements InputProcessor {
+import de.redlion.badminton.Birdie;
+import de.redlion.badminton.Configuration;
+import de.redlion.badminton.GameSession;
+import de.redlion.badminton.Player;
+import de.redlion.badminton.ScreenshotSaver;
+import de.redlion.badminton.Birdie.STATE;
+import de.redlion.badminton.Player.AIMING;
+
+public class SinglePlayerControls implements InputProcessor {
 	
 	public Player player;
 	
-	public PlayerControls(Player player) {
+	public SinglePlayerControls(Player player) {
 		this.player = player;
 	}
 	

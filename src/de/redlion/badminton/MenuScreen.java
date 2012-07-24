@@ -18,7 +18,7 @@ import com.badlogic.gdx.math.Vector3;
 public class MenuScreen extends DefaultScreen implements InputProcessor {
 
 	public enum MODE {
-		SINGLEPLAYER,MULTIPLAYER,EXIT;
+		SINGLEPLAYER,NETWORKMULTIPLAYER,LOCALMULTIPLAYER,EXIT;
 	}
 	
 	MODE mode = MODE.EXIT;
@@ -111,8 +111,9 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 
 		if (Configuration.getInstance().debug) {
 			batch.begin();
-			font.draw(batch, "1. SinglePlayer", 50, 80);
-			font.draw(batch, "2. Multiplayer", 50, 60);
+			font.draw(batch, "1. Single Player", 50, 80);
+			font.draw(batch, "2. Network Multiplayer", 50, 60);
+			font.draw(batch, "3. Local Multiplayer", 50, 40);
 			batch.end();
 		}
 
@@ -137,8 +138,11 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 				if(mode == MODE.SINGLEPLAYER) {
 					game.setScreen(new SinglePlayerGameScreen(game));
 				} 
-				if(mode == MODE.MULTIPLAYER) {
+				if(mode == MODE.NETWORKMULTIPLAYER) {
 					game.setScreen(new LobbyScreen(game));
+				} 
+				if(mode == MODE.LOCALMULTIPLAYER) {
+					game.setScreen(new LocalMultiPlayerGameScreen(game));
 				} 
 				if(mode == MODE.EXIT) {
 					Gdx.app.exit();
@@ -191,7 +195,11 @@ public class MenuScreen extends DefaultScreen implements InputProcessor {
 			finished = true;
 		}
 		if (keycode == Input.Keys.NUM_2) {
-			mode = MODE.MULTIPLAYER;
+			mode = MODE.NETWORKMULTIPLAYER;
+			finished = true;
+		}
+		if (keycode == Input.Keys.NUM_3) {
+			mode = MODE.LOCALMULTIPLAYER;
 			finished = true;
 		}
 		

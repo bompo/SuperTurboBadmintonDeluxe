@@ -1,6 +1,7 @@
 package de.redlion.badminton;
 
 import de.redlion.badminton.opponent.AIOpponent;
+import de.redlion.badminton.opponent.LocalOpponent;
 import de.redlion.badminton.opponent.NetworkOpponent;
 import de.redlion.badminton.opponent.Opponent;
 
@@ -33,6 +34,12 @@ public class GameSession {
 		playerScore = 0;
 		opponentScore = 0;
 		opponent = new NetworkOpponent(Player.SIDE.TOP);
+	}
+	
+	public void newLocalMultiPlayerGame() {
+		playerScore = 0;
+		opponentScore = 0;
+		opponent = new LocalOpponent(Player.SIDE.TOP);
 	}
 
 

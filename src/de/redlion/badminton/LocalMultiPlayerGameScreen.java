@@ -10,12 +10,12 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 
-import de.redlion.badminton.controls.SinglePlayerControls;
+import de.redlion.badminton.controls.LocalMultiplayerControls;
 import de.redlion.badminton.opponent.Opponent;
 import de.redlion.badminton.render.RenderDebug;
 import de.redlion.badminton.render.RenderStadium;
 
-public class SinglePlayerGameScreen extends DefaultScreen {
+public class LocalMultiPlayerGameScreen extends DefaultScreen {
 
 	float startTime = 0;
 	PerspectiveCamera cam;
@@ -38,10 +38,10 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 
 	float delta;
 
-	public SinglePlayerGameScreen(Game game) {
+	public LocalMultiPlayerGameScreen(Game game) {
 		super(game);
 		
-		GameSession.getInstance().newSinglePlayerGame();
+		GameSession.getInstance().newLocalMultiPlayerGame();
 		
 		//refresh references 
 		//TODO Observer Pattern for newGame
@@ -49,7 +49,7 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 		renderStadium = new RenderStadium();
 		renderDebug = new RenderDebug();
 		
-		Gdx.input.setInputProcessor(new SinglePlayerControls(player));
+		Gdx.input.setInputProcessor(new LocalMultiplayerControls(player, opponent));
 
 		batch = new SpriteBatch();
 		batch.getProjectionMatrix().setToOrtho2D(0, 0, 800, 480);
@@ -126,16 +126,7 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 		cam.far = 100f;
 		renderStadium.updateCamera(cam);
 		renderStadium.render();
-
-		batch.begin();
-		font.draw(batch, "P " + GameSession.getInstance().playerScore + " : O "
-				+ GameSession.getInstance().opponentScore, 720, 30);
-		batch.end();
-
-		if (Configuration.getInstance().debug) {
-			renderDebug.render();
-		}
-
+		
 		// FadeInOut
 		if (!finished && fade > 0) {
 			fade = Math.max(fade - (delta), 0);

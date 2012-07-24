@@ -220,11 +220,8 @@ public class RenderStadium {
 		tmp.setToRotation(Vector3.X, 90);
 		model.mul(tmp);
 
-		if (!player.jump)
-			tmp.setToTranslation(player.position.x, player.position.y, -0.5f);
-		else
-			tmp.setToTranslation(player.position.x, player.position.y,
-					player.position.z);
+	
+		tmp.setToTranslation(player.position.x, player.position.y, -0.5f);
 		model.mul(tmp);
 
 		float scaler = 0.5f;

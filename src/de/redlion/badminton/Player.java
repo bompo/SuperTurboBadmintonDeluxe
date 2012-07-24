@@ -3,6 +3,9 @@ package de.redlion.badminton;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 
+import de.redlion.badminton.controls.ControlMappings;
+import de.redlion.badminton.controls.PlayerOneControlMappings;
+
 public class Player {
 
 	public enum STATE {
@@ -16,6 +19,8 @@ public class Player {
 	public enum SIDE {
 		TOP, BOTTOM;
 	}
+	
+	public ControlMappings input;
 
 	final static float SPEED = 2;
 	final static float MOMENTUM =0.85f;
@@ -28,7 +33,6 @@ public class Player {
 	public Vector3 velocity = new Vector3(0,0,0);
 	public STATE state = STATE.IDLE;
 	public AIMING aiming = AIMING.IDLE;
-	public boolean jump = false;
 	
 	//charge time
 	public float aimTime = 1;
@@ -40,6 +44,7 @@ public class Player {
 		if(side == SIDE.TOP) {
 			position = new Vector3(0,-3,0);
 		}
+		input = new PlayerOneControlMappings();
 	}
 
 	public void update() {		

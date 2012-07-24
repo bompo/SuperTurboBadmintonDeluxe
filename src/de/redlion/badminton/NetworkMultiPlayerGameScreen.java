@@ -10,13 +10,14 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 
+import de.redlion.badminton.controls.SinglePlayerControls;
 import de.redlion.badminton.network.Network;
 import de.redlion.badminton.opponent.NetworkOpponent;
 import de.redlion.badminton.opponent.Opponent;
 import de.redlion.badminton.render.RenderDebug;
 import de.redlion.badminton.render.RenderStadium;
 
-public class MultiPlayerGameScreen extends DefaultScreen {
+public class NetworkMultiPlayerGameScreen extends DefaultScreen {
 
 	float startTime = 0;
 	PerspectiveCamera cam;
@@ -39,7 +40,7 @@ public class MultiPlayerGameScreen extends DefaultScreen {
 
 	float delta;
 
-	public MultiPlayerGameScreen(Game game) {
+	public NetworkMultiPlayerGameScreen(Game game) {
 		super(game);
 		
 		GameSession.getInstance().newMultiPlayerGame();
@@ -52,7 +53,7 @@ public class MultiPlayerGameScreen extends DefaultScreen {
 		renderStadium = new RenderStadium();
 		renderDebug = new RenderDebug();
 		
-		Gdx.input.setInputProcessor(new PlayerControls(player));
+		Gdx.input.setInputProcessor(new SinglePlayerControls(player));
 
 		batch = new SpriteBatch();
 		batch.getProjectionMatrix().setToOrtho2D(0, 0, 800, 480);

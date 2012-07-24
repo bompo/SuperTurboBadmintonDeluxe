@@ -68,8 +68,8 @@ public class Network {
 	private void connectToServer() {
 		
 		try {
-//			socket = new SocketIO("http://localhost:19834");
-			socket = new SocketIO("http://superturbobadminton.nodester.com:80");
+			socket = new SocketIO("http://localhost:19834");
+//			socket = new SocketIO("http://superturbobadminton.nodester.com:80");
 
 			socket.connect(new IOCallback() {
 				

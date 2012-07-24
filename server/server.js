@@ -1,4 +1,8 @@
-var socket = require('socket.io').listen(19834);
+var app = require('http').createServer(handler)
+ , io = require('socket.io').listen(app);
+
+app.listen(19834);
+
 var rooms = [];
 var maxPerRoom = 2;
 
@@ -19,8 +23,32 @@ dummyRoom2.players.push(dummyPlayer3);
 rooms.push(dummyRoom1);
 rooms.push(dummyRoom2);
 
+var replacer = function(key, value) {
+  if (key==="currentRoom" || key==="client") {
+    if(value.id && value.room) {
+      return value.id + " in " + value.room.id;
+    } else if(value.id) {
+      return value.id;
+    } else {
+      return "";
+    }
+  }
+  return value;
+}
+
+function handler (req, res) {
+//  try {
+    res.writeHead(200, {"Content-Type": "application/json"});
+    res.write(JSON.stringify(rooms, replacer, 2)); 
+    res.end();
+//  } catch (e) {
+//    res.writeHead(200, {"Content-Type": "text/html"});
+//    res.write("error while json parsing, possible circle reference, parsing is difficult..."); 
+//    res.end();
+//  };
+}
  
-socket.on('connection', function(client){
+io.sockets.on('connection', function(client){
 
     // send list of all rooms
     for(var room in rooms ) {  
@@ -111,9 +139,10 @@ socket.on('connection', function(client){
         client.room = currentRoom;
         
         // add own id to current players in room
-        count = currentRoom.players.length;
         var player = new Player(client);
         currentRoom.players.push(new Player(client));
+        count = currentRoom.players.length;
+        
         client.emit('roomconnect',{ room: currentRoom.id, name: currentRoom.roomName, hasPass: false, playerCnt: currentRoom.players.length });
         client.broadcast.emit('roomconnect',{ room: currentRoom.id, name: currentRoom.roomName, hasPass: false, playerCnt: currentRoom.players.length });
         console.log("room:",currentRoom.id, "players:", count); 
@@ -145,10 +174,11 @@ socket.on('connection', function(client){
         client.room = currentRoom;
         
         // add own id to current players in room
-        count = currentRoom.players.length;
         var player = new Player(client);
-        currentRoom.players.push(new Player(client));
-         client.emit('roomconnect',{ room: currentRoom.id, name: currentRoom.roomName, hasPass: true, playerCnt: currentRoom.players.length });
+        currentRoom.players.push(new Player(client));        
+        count = currentRoom.players.length;
+        
+        client.emit('roomconnect',{ room: currentRoom.id, name: currentRoom.roomName, hasPass: true, playerCnt: currentRoom.players.length });
         client.broadcast.emit('roomconnect',{ room: currentRoom.id, name: currentRoom.roomName, hasPass: true, playerCnt: currentRoom.players.length });
         console.log("room:",currentRoom.id, "players:", count); 
     });

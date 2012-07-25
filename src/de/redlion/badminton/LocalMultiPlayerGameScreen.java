@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 
-import de.redlion.badminton.controls.LocalMultiplayerControls;
+import de.redlion.badminton.controls.TwoPlayerControls;
 import de.redlion.badminton.opponent.Opponent;
 import de.redlion.badminton.render.RenderDebug;
 import de.redlion.badminton.render.RenderStadium;
@@ -49,7 +49,7 @@ public class LocalMultiPlayerGameScreen extends DefaultScreen {
 		renderStadium = new RenderStadium();
 		renderDebug = new RenderDebug();
 		
-		Gdx.input.setInputProcessor(new LocalMultiplayerControls(player, opponent));
+		Gdx.input.setInputProcessor(new TwoPlayerControls(player, opponent));
 
 		batch = new SpriteBatch();
 		batch.getProjectionMatrix().setToOrtho2D(0, 0, 800, 480);

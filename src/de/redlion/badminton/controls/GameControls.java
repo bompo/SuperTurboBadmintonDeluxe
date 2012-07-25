@@ -2,10 +2,10 @@ package de.redlion.badminton.controls;
 
 import java.io.IOException;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.math.Vector3;
 
 import de.redlion.badminton.Birdie;
@@ -13,33 +13,10 @@ import de.redlion.badminton.Configuration;
 import de.redlion.badminton.GameSession;
 import de.redlion.badminton.Player;
 import de.redlion.badminton.ScreenshotSaver;
-import de.redlion.badminton.Birdie.STATE;
-import de.redlion.badminton.Player.AIMING;
-import de.redlion.badminton.opponent.Opponent;
 
-public class LocalMultiplayerControls implements InputProcessor {
-	
-	public Player playerOne;
-	public Opponent playerTwo;
-	
-	public LocalMultiplayerControls(Player player, Opponent playerTwo) {
-		this.playerOne = player;
-		this.playerTwo = playerTwo;
-	}
-	
-	
-	@Override
-	public boolean keyDown(int keycode) {
-		keyDownOptions(keycode);
+public class GameControls implements InputProcessor {
 
-		keyDownPlayer(playerOne, keycode);
-		keyDownPlayer(playerTwo, keycode);
-
-		return false;
-	}
-
-
-	private void keyDownOptions(int keycode) {
+	public void keyDownOptions(int keycode) {
 		if (keycode == Input.Keys.F) {
 			if (Gdx.app.getType() == ApplicationType.Desktop) {
 				if (!org.lwjgl.opengl.Display.isFullscreen()) {
@@ -64,7 +41,7 @@ public class LocalMultiplayerControls implements InputProcessor {
 	}
 
 
-	private void keyDownPlayer(Player player, int keycode) {
+	public void keyDownPlayer(Player player, int keycode) {
 		// Player controls
 		if (keycode == player.input.left) {
 			if (player.state == Player.STATE.AIMING) {
@@ -330,19 +307,8 @@ public class LocalMultiplayerControls implements InputProcessor {
 		
 		player.moveTime = 0.0f;
 	}
-	
 
-
-	@Override
-	public boolean keyUp(int keycode) {
-		keyUpPlayer(playerOne, keycode);
-		keyUpPlayer(playerTwo, keycode);
-
-		return false;
-	}
-
-
-	private void keyUpPlayer(Player player, int keycode) {
+	public void keyUpPlayer(Player player, int keycode) {
 		player.lastDirection = player.direction.cpy();
 		
 		if (player.state == Player.STATE.AIMING) {
@@ -608,6 +574,18 @@ public class LocalMultiplayerControls implements InputProcessor {
 			}
 		}
 	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		return false;
+	}
+
 
 	@Override
 	public boolean keyTyped(char character) {

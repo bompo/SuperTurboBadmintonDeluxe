@@ -6,8 +6,8 @@ import de.redlion.badminton.controls.PlayerTwoControlMappings;
 
 public class LocalOpponent extends Opponent {
 	
-	public LocalOpponent(SIDE side) {
-		super(side);
+	public LocalOpponent(SIDE side,boolean service) {
+		super(side, service);
 		this.input = new PlayerTwoControlMappings();
 	}
 

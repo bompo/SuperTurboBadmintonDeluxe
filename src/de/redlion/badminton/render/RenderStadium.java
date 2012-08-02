@@ -213,55 +213,72 @@ public class RenderStadium {
 		modelPlaneObj.render(diffuseShader);
 
 		diffuseShader.setUniformf("alpha", 1);
-		// render player
-		tmp.idt();
-		model.idt();
-
-		tmp.setToRotation(Vector3.X, 90);
-		model.mul(tmp);
-
-	
-		tmp.setToTranslation(player.position.x, player.position.y, -0.5f);
-		model.mul(tmp);
-
-		float scaler = 0.5f;
 		
-		if (player.state == Player.STATE.AIMING) {
-			float help = (player.aimTime / 2) % 0.5f;
-
-			if (help < 0.25f)
-				scaler = 0.5f + help;
-			if (help > 0.25f)
-				scaler = 1 - help;
+		
+		// render player
+		{
+			tmp.idt();
+			model.idt();
+	
+			tmp.setToRotation(Vector3.X, 90);
+			model.mul(tmp);
+	
+		
+			tmp.setToTranslation(player.position.x, player.position.y, -0.5f);
+			model.mul(tmp);
+	
+			float scaler = 0.5f;
+			
+			if (player.state == Player.STATE.AIMING) {
+				float help = (player.aimTime / 2) % 0.5f;
+	
+				if (help < 0.25f)
+					scaler = 0.5f + help;
+				if (help > 0.25f)
+					scaler = 1 - help;
+			}
+	
+			tmp.setToScaling(scaler, scaler, scaler);
+			model.mul(tmp);
+	
+			diffuseShader.setUniformMatrix("MMatrix", model);
+			diffuseShader.setUniformi("uSampler", 0);
+	
+			modelPlaneTex.bind(0);
+			modelPlaneObj.render(diffuseShader);
 		}
 
-		tmp.setToScaling(scaler, scaler, scaler);
-		model.mul(tmp);
-
-		diffuseShader.setUniformMatrix("MMatrix", model);
-		diffuseShader.setUniformi("uSampler", 0);
-
-		modelPlaneTex.bind(0);
-		modelPlaneObj.render(diffuseShader);
-
 		// render opponent
-		tmp.idt();
-		model.idt();
-
-		tmp.setToRotation(Vector3.X, 90);
-		model.mul(tmp);
-
-		tmp.setToTranslation(opponent.position.x, opponent.position.y, -0.5f);
-		model.mul(tmp);
-
-		tmp.setToScaling(0.5f, 0.5f, 0.5f);
-		model.mul(tmp);
-
-		diffuseShader.setUniformMatrix("MMatrix", model);
-		diffuseShader.setUniformi("uSampler", 0);
-
-		modelPlaneTex.bind(0);
-		modelPlaneObj.render(diffuseShader);
+		{
+			tmp.idt();
+			model.idt();
+	
+			tmp.setToRotation(Vector3.X, 90);
+			model.mul(tmp);
+	
+			tmp.setToTranslation(opponent.position.x, opponent.position.y, -0.5f);
+			model.mul(tmp);
+	
+			float scaler = 0.5f;
+			
+			if (opponent.state == Player.STATE.AIMING) {
+				float help = (opponent.aimTime / 2) % 0.5f;
+	
+				if (help < 0.25f)
+					scaler = 0.5f + help;
+				if (help > 0.25f)
+					scaler = 1 - help;
+			}
+	
+			tmp.setToScaling(scaler, scaler, scaler);
+			model.mul(tmp);
+			
+			diffuseShader.setUniformMatrix("MMatrix", model);
+			diffuseShader.setUniformi("uSampler", 0);
+	
+			modelPlaneTex.bind(0);
+			modelPlaneObj.render(diffuseShader);
+		}
 
 		// render stadium
 		tmp.idt();

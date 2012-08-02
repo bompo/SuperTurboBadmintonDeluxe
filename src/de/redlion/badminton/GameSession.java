@@ -7,8 +7,8 @@ import de.redlion.badminton.opponent.Opponent;
 
 public class GameSession {
 	
-	public Player player = new Player(Player.SIDE.BOTTOM);
-	public Opponent opponent = new Opponent(Player.SIDE.TOP);
+	public Player player = new Player(Player.SIDE.BOTTOM, true);
+	public Opponent opponent = new Opponent(Player.SIDE.TOP, false);
 	public Birdie birdie = new Birdie();
 	
 
@@ -27,19 +27,19 @@ public class GameSession {
 	public void newSinglePlayerGame() {
 		playerScore = 0;
 		opponentScore = 0;
-		opponent = new AIOpponent(Player.SIDE.TOP);
+		opponent = new AIOpponent(Player.SIDE.TOP, false);
 	}
 	
 	public void newMultiPlayerGame() {
 		playerScore = 0;
 		opponentScore = 0;
-		opponent = new NetworkOpponent(Player.SIDE.TOP);
+		opponent = new NetworkOpponent(Player.SIDE.TOP, false);
 	}
 	
 	public void newLocalMultiPlayerGame() {
 		playerScore = 0;
 		opponentScore = 0;
-		opponent = new LocalOpponent(Player.SIDE.TOP);
+		opponent = new LocalOpponent(Player.SIDE.TOP, false);
 	}
 
 

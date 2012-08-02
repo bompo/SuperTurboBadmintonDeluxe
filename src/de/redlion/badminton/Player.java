@@ -33,14 +33,16 @@ public class Player {
 	public Vector3 velocity = new Vector3(0,0,0);
 	public STATE state = STATE.IDLE;
 	public AIMING aiming = AIMING.IDLE;
+	public boolean service = false;
 	
 	//charge time
 	public float aimTime = 1;
 	public float diagonalTime = 0; //currently only used for sliding diagonally  when player didn't release both keys at the same time
 	public float moveTime = 0.0f;
 
-	public Player(SIDE side) {
+	public Player(SIDE side, boolean service) {
 		this.side = side;
+		this.service = service;
 		if(side == SIDE.TOP) {
 			position = new Vector3(0,-3,0);
 		}
@@ -257,7 +259,7 @@ public class Player {
 	}
 	
 	public String toString() {
-		return "Player State: " + state + " Aiming: " + aiming + " Position: " + position + " Direction: " + direction;
+		return this.getClass().getSimpleName() + " State: " + state + " Aiming: " + aiming + " Position: " + position + " Direction: " + direction;
 	}
 
 }

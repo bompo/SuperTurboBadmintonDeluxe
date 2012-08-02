@@ -231,28 +231,10 @@ public class GameControls implements InputProcessor {
 				player.state = Player.STATE.AIMING;
 			}
 			
-//			if(player.position.dst(birdie.currentPosition) < 1.3f && player.state == Player.STATE.AIMING){
-//				collisionTest(false);
-//			}
-			if(GameSession.getInstance().birdie.state == Birdie.STATE.HELD) {
+			if(player.service && GameSession.getInstance().birdie.state == Birdie.STATE.HELD) {
 				GameSession.getInstance().birdie.hit(player, false);
-				GameSession.getInstance().birdie.state = Birdie.STATE.HIT;
-				int tmp = player.aiming.ordinal();
-				player.aimTime = 1;
-				player.aiming = Player.AIMING.IDLE;
-				player.state = Player.STATE.IDLE;
-				
-				player.state = Player.STATE.values()[tmp];
+				GameSession.getInstance().birdie.state = Birdie.STATE.HIT;				
 			}
-//			else if(player.position.dst(birdie.currentPosition) > 1.3f && player.aimTime >= 1.1f) {
-//				
-//				player.state = Player.STATE.IDLE;
-//				player.aimTime = 1;
-//				int tmp = player.aiming.ordinal();
-//				player.state = Player.STATE.values()[tmp];
-//				player.aiming = Player.AIMING.IDLE;
-//				
-//			}
 				
 		}
 		if (keycode == player.input.smash) {
@@ -312,7 +294,7 @@ public class GameControls implements InputProcessor {
 		player.lastDirection = player.direction.cpy();
 		
 		if (player.state == Player.STATE.AIMING) {
-			if (keycode == player.input.up) {
+			if (keycode == player.input.left) {
 				if (Gdx.input.isKeyPressed(player.input.right)) {
 					if (Gdx.input.isKeyPressed(player.input.up))
 						player.aiming = Player.AIMING.UPRIGHT;

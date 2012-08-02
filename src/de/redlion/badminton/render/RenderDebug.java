@@ -37,7 +37,8 @@ public class RenderDebug {
 		batch.begin();
 		font.draw(batch, Gdx.graphics.getFramesPerSecond() + " fps", 20, 30);
 		font.draw(batch, GameSession.getInstance().player.toString(), 20, 50);
-		font.draw(batch, GameSession.getInstance().birdie.toString(), 20, 70);
+		font.draw(batch, GameSession.getInstance().opponent.toString(), 20, 70);
+		font.draw(batch, GameSession.getInstance().birdie.toString(), 20, 90);
 		batch.end();
 
 	}

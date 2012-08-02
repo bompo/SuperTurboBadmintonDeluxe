@@ -73,7 +73,7 @@ public class Birdie {
 			if(!smash)
 				t+= (Gdx.graphics.getDeltaTime()) * acceleration;
 			else
-				t+= (Gdx.graphics.getDeltaTime()) *acceleration;
+				t+= (Gdx.graphics.getDeltaTime()) * acceleration;
 			
 			if(acceleration > 1.5f)
 				trajectoryPath.add(currentPosition);
@@ -144,6 +144,7 @@ public class Birdie {
 		t=0;
 		state = STATE.HELD;
 		GameSession.getInstance().player.state = Player.STATE.IDLE;
+		GameSession.getInstance().player.service = true;
 		
 		smash = false;
 		
@@ -152,6 +153,14 @@ public class Birdie {
 
 	public void hit(Player player, boolean high) {
 		maxHeight = 0;
+		
+		//set player states
+		player.service = false;
+		player.aimTime = 1;
+		player.aiming = Player.AIMING.IDLE;
+		player.state = Player.STATE.IDLE;	
+		int tmp = player.aiming.ordinal();
+		player.state = Player.STATE.values()[tmp];
 		
 		acceleration = player.aimTime;
 		if(acceleration > 1.f)

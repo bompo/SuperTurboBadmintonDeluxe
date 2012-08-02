@@ -4,8 +4,8 @@ import com.badlogic.gdx.math.Vector3;
 
 public class NetworkOpponent extends Opponent {
 
-	public NetworkOpponent(SIDE side) {
-		super(side);
+	public NetworkOpponent(SIDE side,boolean service) {
+		super(side, service);
 	}
 
 	public void update(Vector3 playerposition) {

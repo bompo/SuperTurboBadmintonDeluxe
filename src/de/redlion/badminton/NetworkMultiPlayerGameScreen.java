@@ -168,7 +168,7 @@ public class NetworkMultiPlayerGameScreen extends DefaultScreen {
 			player.state = Player.STATE.AIMING;
 		player.update();
 		birdie.update();
-		opponent.update(player.position);
+		opponent.update();
 
 		if (opponent.position.dst(birdie.currentPosition) < 1.0f
 				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {

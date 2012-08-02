@@ -8,8 +8,8 @@ import de.redlion.badminton.Player;
 
 public class AIOpponent extends Opponent {
 
-	public AIOpponent(SIDE side) {
-		super(side);
+	public AIOpponent(SIDE side,boolean service) {
+		super(side, service);
 	}
 
 	public void update(Vector3 playerposition) {

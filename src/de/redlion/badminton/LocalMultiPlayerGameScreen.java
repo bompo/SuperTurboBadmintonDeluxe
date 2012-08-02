@@ -127,6 +127,10 @@ public class LocalMultiPlayerGameScreen extends DefaultScreen {
 		renderStadium.updateCamera(cam);
 		renderStadium.render();
 		
+		if (Configuration.getInstance().debug) {
+			renderDebug.render();
+		}
+		
 		// FadeInOut
 		if (!finished && fade > 0) {
 			fade = Math.max(fade - (delta), 0);
@@ -152,17 +156,13 @@ public class LocalMultiPlayerGameScreen extends DefaultScreen {
 
 	private void updateAI() {	
 		
-		if (birdie.state == Birdie.STATE.HELD && player.position.dst(birdie.currentPosition) < 1.3f)
+		if (birdie.state == Birdie.STATE.HELD && player.position.dst(birdie.currentPosition) < 1.3f) {
 			player.state = Player.STATE.AIMING;
-		player.update();
-		birdie.update();
-		opponent.update(player.position);
-
-		if (opponent.position.dst(birdie.currentPosition) < 1.0f
-				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {
-			birdie.state = Birdie.STATE.HITBYOPPONENT;  //TODO quote-unquote to test movements
-			birdie.hit(false);
 		}
+
+		birdie.update();
+		player.update();
+		opponent.update();
 	}
 
 	private void collisionTest() {

@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 
 import de.redlion.badminton.controls.SinglePlayerControls;
+import de.redlion.badminton.opponent.AIOpponent;
 import de.redlion.badminton.opponent.Opponent;
 import de.redlion.badminton.render.RenderDebug;
 import de.redlion.badminton.render.RenderStadium;
@@ -31,7 +32,7 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 
 	Player player = GameSession.getInstance().player;
 	Birdie birdie = GameSession.getInstance().birdie;
-	Opponent opponent = GameSession.getInstance().opponent;
+	AIOpponent opponent;
 
 	float fade = 1.0f;
 	boolean finished = false;
@@ -45,7 +46,7 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 		
 		//refresh references 
 		//TODO Observer Pattern for newGame
-		opponent = GameSession.getInstance().opponent;
+		opponent = (AIOpponent) GameSession.getInstance().opponent;
 		renderStadium = new RenderStadium();
 		renderDebug = new RenderDebug();
 		
@@ -66,8 +67,7 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 	}
 
 	public void initRender() {
-		Gdx.graphics.getGL20().glViewport(0, 0, Gdx.graphics.getWidth(),
-				Gdx.graphics.getHeight());
+		Gdx.graphics.getGL20().glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 		Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
 	}
@@ -80,13 +80,11 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 		if (cam != null) {
 			oldPosition.set(cam.position);
 			oldDirection.set(cam.direction);
-			cam = new PerspectiveCamera(7, Gdx.graphics.getWidth(),
-					Gdx.graphics.getHeight());
+			cam = new PerspectiveCamera(7, Gdx.graphics.getWidth(),	Gdx.graphics.getHeight());
 			cam.position.set(oldPosition);
 			cam.lookAt(0, 0, 0.5f);
 		} else {
-			cam = new PerspectiveCamera(7, Gdx.graphics.getWidth(),
-					Gdx.graphics.getHeight());
+			cam = new PerspectiveCamera(7, Gdx.graphics.getWidth(),	Gdx.graphics.getHeight());
 			cam.position.set(-0.6f, 7.2f, 38.8f);
 			cam.lookAt(0, -0.2f, -1.1f);
 		}

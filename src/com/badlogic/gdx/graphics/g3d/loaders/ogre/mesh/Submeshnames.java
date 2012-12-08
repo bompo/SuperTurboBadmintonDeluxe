@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
 package com.badlogic.gdx.graphics.g3d.loaders.ogre.mesh;
 
 import java.util.ArrayList;
@@ -28,12 +29,11 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {"submeshname"})
+@XmlType(name = "", propOrder = {"submesh"})
 @XmlRootElement(name = "submeshnames")
 public class Submeshnames {
 
-	@XmlElement(required = true)
-	protected List<Submeshname> submeshname;
+	@XmlElement(required = true) protected List<Submeshname> submesh;
 
 	/** Gets the value of the submeshname property.
 	 * 
@@ -53,10 +53,10 @@ public class Submeshnames {
 	 * <p>
 	 * Objects of the following type(s) are allowed in the list {@link Submeshname } */
 	public List<Submeshname> getSubmeshname () {
-		if (submeshname == null) {
-			submeshname = new ArrayList<Submeshname>();
+		if (submesh == null) {
+			submesh = new ArrayList<Submeshname>();
 		}
-		return this.submeshname;
+		return this.submesh;
 	}
 
 }

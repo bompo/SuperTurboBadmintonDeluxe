@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
 package com.badlogic.gdx.graphics.g3d.materials;
 
 import com.badlogic.gdx.Gdx;
@@ -21,14 +22,25 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.utils.Pool;
 
 public class TextureAttribute extends MaterialAttribute {
+
+	public final static int MAX_TEXTURE_UNITS = 16;
+	static final public String diffuseTexture = "diffuseTexture";
+	static final public String lightmapTexture = "lightmapTexture";
+	static final public String specularTexture = "specularTexture";
+	static final public String envmapTexture = "envmap";
+
 	public Texture texture;
 	public int unit;
 	public int minFilter;
 	public int magFilter;
 	public int uWrap;
 	public int vWrap;
+
+	protected TextureAttribute () {
+	}
 
 	public TextureAttribute (Texture texture, int unit, String name, TextureFilter minFilter, TextureFilter magFilter,
 		TextureWrap uWrap, TextureWrap vWrap) {
@@ -38,6 +50,7 @@ public class TextureAttribute extends MaterialAttribute {
 	public TextureAttribute (Texture texture, int unit, String name, int minFilter, int magFilter, int uWrap, int vWrap) {
 		super(name);
 		this.texture = texture;
+		if (unit > MAX_TEXTURE_UNITS) throw new RuntimeException(MAX_TEXTURE_UNITS + " is max texture units supported");
 		this.unit = unit;
 		this.uWrap = uWrap;
 		this.vWrap = vWrap;
@@ -71,5 +84,46 @@ public class TextureAttribute extends MaterialAttribute {
 	@Override
 	public MaterialAttribute copy () {
 		return new TextureAttribute(texture, unit, name, minFilter, magFilter, uWrap, vWrap);
+	}
+
+	@Override
+	public void set (MaterialAttribute attr) {
+		TextureAttribute texAttr = (TextureAttribute)attr;
+		name = texAttr.name;
+		texture = texAttr.texture;
+		unit = texAttr.unit;
+		magFilter = texAttr.magFilter;
+		minFilter = texAttr.minFilter;
+		uWrap = texAttr.uWrap;
+		vWrap = texAttr.vWrap;
+	}
+
+	/** this method check if the texture portion of texture attribute is equal, name isn't used */
+	public boolean texturePortionEquals (TextureAttribute other) {
+		if (other == null) return false;
+		if (this == other) return true;
+
+		return (texture == other.texture) && (unit == other.unit) && (minFilter == other.minFilter)
+			&& (magFilter == other.magFilter) && (uWrap == other.uWrap) && (vWrap == other.vWrap);
+
+	}
+
+	private final static Pool<TextureAttribute> pool = new Pool<TextureAttribute>() {
+		@Override
+		protected TextureAttribute newObject () {
+			return new TextureAttribute();
+		}
+	};
+
+	@Override
+	public MaterialAttribute pooledCopy () {
+		TextureAttribute attr = pool.obtain();
+		attr.set(this);
+		return attr;
+	}
+
+	@Override
+	public void free () {
+		if (isPooled) pool.free(this);
 	}
 }

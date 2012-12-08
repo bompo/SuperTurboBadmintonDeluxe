@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
 package com.badlogic.gdx.graphics.g3d.loaders.collada;
 
 import java.io.InputStream;
@@ -54,7 +55,7 @@ public class ColladaLoader implements StillModelLoader {
 		return model;
 	}
 
-	private static Array<Geometry> readGeometries (Element root) {
+	public static Array<Geometry> readGeometries (Element root) {
 		// check whether the library_geometries element is there
 		Element colladaGeoLibrary = root.getChildByName("library_geometries");
 		if (colladaGeoLibrary == null) throw new GdxRuntimeException("not <library_geometries> element in file");

@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
 package com.badlogic.gdx.graphics.g3d;
 
+import com.badlogic.gdx.graphics.g3d.model.AnimatedModel;
 import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
 
 public interface ModelRenderer {
@@ -22,7 +24,7 @@ public interface ModelRenderer {
 
 	public void draw (StillModel model, StillModelInstance instance);
 
-	public void draw (StillModel model, AnimatedModelInstance instance);
+	public void draw (AnimatedModel model, AnimatedModelInstance instance);
 
 	public void end ();
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
 package com.badlogic.gdx.graphics.g3d.model.still;
 
 import java.util.ArrayList;
@@ -26,8 +27,11 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 public class StillModel implements Model {
 	final public StillSubMesh[] subMeshes;
 
-	public StillModel (StillSubMesh[] subMeshes) {
-		this.subMeshes = subMeshes;
+	public StillModel (SubMesh[] subMeshes) {
+		this.subMeshes = new StillSubMesh[subMeshes.length];
+		for (int i = 0; i < subMeshes.length ; ++i) {
+			this.subMeshes[i] = (StillSubMesh)subMeshes[i];
+		}	
 	}
 
 	@Override
@@ -49,8 +53,12 @@ public class StillModel implements Model {
 		int len = subMeshes.length;
 		for (int i = 0; i < len; i++) {
 			StillSubMesh subMesh = subMeshes[i];
+			if (i == 0) {
+				subMesh.material.bind(program);
+			} else if (!subMeshes[i - 1].material.equals(subMesh.material)) {
+				subMesh.material.bind(program);
+			}
 			subMesh.mesh.render(program, subMesh.primitiveType);
-//			System.out.println(subMesh.mesh.getVertexAttributes());
 		}
 	}
 

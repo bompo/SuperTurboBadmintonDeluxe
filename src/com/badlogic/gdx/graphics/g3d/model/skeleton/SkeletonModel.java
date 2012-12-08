@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
 package com.badlogic.gdx.graphics.g3d.model.skeleton;
 
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
@@ -30,9 +31,13 @@ public class SkeletonModel implements AnimatedModel {
 	public final Skeleton skeleton;
 	public final SkeletonSubMesh[] subMeshes;
 
-	public SkeletonModel (Skeleton skeleton, SkeletonSubMesh[] subMeshes) {
+	public SkeletonModel (Skeleton skeleton, SubMesh[] subMeshes) {
 		this.skeleton = skeleton;
-		this.subMeshes = subMeshes;
+		this.subMeshes = new SkeletonSubMesh[subMeshes.length];
+		
+		for (int i=0; i < subMeshes.length; ++i) {
+			this.subMeshes[i] = (SkeletonSubMesh)subMeshes[i];
+		}
 		setMaterial(new Material("default"));
 	}
 
@@ -70,13 +75,13 @@ public class SkeletonModel implements AnimatedModel {
 
 			final float ox = vertices[idx], oy = vertices[idx + 1], oz = vertices[idx + 2];
 			float x = 0, y = 0, z = 0;
-			final float onx = 0, ony = 0, onz = 0;
+			float onx = 0, ony = 0, onz = 0;
 			float nx = 0, ny = 0, nz = 0;
 
 			if (nidx != -1) {
-				nx = vertices[nidx];
-				ny = vertices[nidx + 1];
-				nz = vertices[nidx + 2];
+				onx = vertices[nidx];
+				ony = vertices[nidx + 1];
+				onz = vertices[nidx + 2];
 			}
 
 			for (int j = 0; j < boneIndices.length; j++) {
@@ -127,7 +132,16 @@ public class SkeletonModel implements AnimatedModel {
 
 	@Override
 	public void render (ShaderProgram program) {
-		// FIXME
+		int len = subMeshes.length;
+		for (int i = 0; i < len; i++) {
+			SkeletonSubMesh subMesh = subMeshes[i];
+			if (i == 0) {
+				subMesh.material.bind(program);
+			} else if (!subMeshes[i - 1].material.equals(subMesh.material)) {
+				subMesh.material.bind(program);
+			}
+			subMesh.mesh.render(program, subMesh.primitiveType);
+		}
 	}
 
 	@Override
@@ -176,7 +190,7 @@ public class SkeletonModel implements AnimatedModel {
 			animations = new SkeletonAnimation[skeleton.animations.size];
 			int i = 0;
 			for (SkeletonAnimation anim : skeleton.animations.values()) {
-				animations[i] = anim;
+				animations[i++] = anim;
 			}
 		}
 		return animations;

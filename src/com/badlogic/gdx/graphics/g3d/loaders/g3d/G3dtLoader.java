@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
 package com.badlogic.gdx.graphics.g3d.loaders.g3d;
 
 import java.io.BufferedReader;
@@ -23,6 +24,7 @@ import java.io.InputStreamReader;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.Mesh.VertexDataType;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
@@ -173,7 +175,7 @@ public class G3dtLoader {
 		for (int i = 0; i < numAnimations; i++) {
 			String animationName = readString(in);
 			int numKeyframes = readInt(in);
-			float frameDuration = readFloat(in);
+			float frameDuration = readFloat(in); // in seconds
 
 			Keyframe[] keyframes = new Keyframe[numKeyframes];
 			float time = 0;
@@ -193,9 +195,9 @@ public class G3dtLoader {
 			animations.put(animationName, animation);
 		}
 
-		KeyframedSubMesh mesh = new KeyframedSubMesh(name, new Mesh(false, numVertices, indices.size, createVertexAttributes(
-			hasNormals, uvSets.size)), buildVertices(numVertices, hasNormals, uvSets), animations, animatedComponents,
-			GL10.GL_TRIANGLES);
+		KeyframedSubMesh mesh = new KeyframedSubMesh(name, new Mesh(VertexDataType.VertexArray, false, numVertices, indices.size,
+			createVertexAttributes(hasNormals, uvSets.size)), buildVertices(numVertices, hasNormals, uvSets), animations,
+			animatedComponents, GL10.GL_TRIANGLES);
 		mesh.mesh.setIndices(convertToShortArray(indices));
 		mesh.mesh.setVertices(mesh.blendedVertices);
 		return mesh;

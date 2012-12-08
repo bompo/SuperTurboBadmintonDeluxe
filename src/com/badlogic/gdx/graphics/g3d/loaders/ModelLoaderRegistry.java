@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
 package com.badlogic.gdx.graphics.g3d.loaders;
 
 import java.util.HashMap;
@@ -21,7 +22,9 @@ import java.util.Map;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g3d.ModelLoaderHints;
 import com.badlogic.gdx.graphics.g3d.loaders.collada.ColladaLoader;
+import com.badlogic.gdx.graphics.g3d.loaders.collada.ColladaLoaderSkeleton;
 import com.badlogic.gdx.graphics.g3d.loaders.g3d.G3dLoader.G3dKeyframedModelLoader;
+import com.badlogic.gdx.graphics.g3d.loaders.g3d.G3dLoader.G3dSkeletonModelLoader;
 import com.badlogic.gdx.graphics.g3d.loaders.g3d.G3dLoader.G3dStillModelLoader;
 import com.badlogic.gdx.graphics.g3d.loaders.g3d.G3dtLoader.G3dtKeyframedModelLoader;
 import com.badlogic.gdx.graphics.g3d.loaders.g3d.G3dtLoader.G3dtStillModelLoader;
@@ -49,12 +52,14 @@ public class ModelLoaderRegistry {
 	// registering the default loaders here
 	static {
 		registerLoader("dae", new ColladaLoader(), new ModelLoaderHints(false));
+		registerLoader("dae", new ColladaLoaderSkeleton(), new ModelLoaderHints(false));
 		registerLoader("obj", new ObjLoader(), new ModelLoaderHints(false));
 		registerLoader("md2", new MD2Loader(), new MD2LoaderHints(0.2f));
 		registerLoader("g3dt", new G3dtStillModelLoader(), new ModelLoaderHints(true));
 		registerLoader("g3dt", new G3dtKeyframedModelLoader(), new ModelLoaderHints(true));
 		registerLoader("g3d", new G3dStillModelLoader(), new ModelLoaderHints(false));
 		registerLoader("g3d", new G3dKeyframedModelLoader(), new ModelLoaderHints(false));
+		registerLoader("g3d", new G3dSkeletonModelLoader(), new ModelLoaderHints(false));
 	}
 
 	/** Registers a new loader with the registry. The extension will be used to match the loader against a file to be loaded. The
@@ -106,8 +111,6 @@ public class ModelLoaderRegistry {
 			try {
 				model = loader.load(file, hint);
 			} catch (GdxRuntimeException e) {
-				errors.append("Couldn't load '" + file.name() + "' with loader of type " + loader.getClass().getSimpleName() + ": "
-					+ e.getMessage() + "\n");
 			}
 		}
 
@@ -141,8 +144,6 @@ public class ModelLoaderRegistry {
 			try {
 				model = loader.load(file, hints);
 			} catch (GdxRuntimeException e) {
-				errors.append("Couldn't load '" + file.name() + "' with loader of type " + loader.getClass().getSimpleName() + ": "
-					+ e.getMessage() + "\n");
 			}
 		}
 
@@ -180,8 +181,6 @@ public class ModelLoaderRegistry {
 					model = ((StillModelLoader)loader).load(file, hint);
 				}
 			} catch (GdxRuntimeException e) {
-				errors.append("Couldn't load '" + file.name() + "' with loader of type " + loader.getClass().getSimpleName() + ": "
-					+ e.getMessage() + "\n");
 			}
 		}
 
@@ -217,8 +216,6 @@ public class ModelLoaderRegistry {
 					model = ((StillModelLoader)loader).load(file, hints);
 				}
 			} catch (GdxRuntimeException e) {
-				errors.append("Couldn't load '" + file.name() + "' with loader of type " + loader.getClass().getSimpleName() + ": "
-					+ e.getMessage() + "\n");
 			}
 		}
 
@@ -257,8 +254,6 @@ public class ModelLoaderRegistry {
 					model = ((KeyframedModelLoader)loader).load(file, hint);
 				}
 			} catch (GdxRuntimeException e) {
-				errors.append("Couldn't load '" + file.name() + "' with loader of type " + loader.getClass().getSimpleName() + ": "
-					+ e.getMessage() + "\n");
 			}
 		}
 
@@ -295,8 +290,6 @@ public class ModelLoaderRegistry {
 					model = ((KeyframedModelLoader)loader).load(file, hints);
 				}
 			} catch (GdxRuntimeException e) {
-				errors.append("Couldn't load '" + file.name() + "' with loader of type " + loader.getClass().getSimpleName() + ": "
-					+ e.getMessage() + "\n");
 			}
 		}
 
@@ -334,8 +327,6 @@ public class ModelLoaderRegistry {
 					model = ((SkeletonModelLoader)loader).load(file, hint);
 				}
 			} catch (GdxRuntimeException e) {
-				errors.append("Couldn't load '" + file.name() + "' with loader of type " + loader.getClass().getSimpleName() + ": "
-					+ e.getMessage());
 			}
 		}
 
@@ -371,8 +362,6 @@ public class ModelLoaderRegistry {
 					model = ((SkeletonModelLoader)loader).load(file, hints);
 				}
 			} catch (GdxRuntimeException e) {
-				errors.append("Couldn't load '" + file.name() + "' with loader of type " + loader.getClass().getSimpleName() + ": "
-					+ e.getMessage());
 			}
 		}
 

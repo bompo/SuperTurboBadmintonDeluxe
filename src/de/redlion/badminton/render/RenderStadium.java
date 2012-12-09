@@ -57,7 +57,7 @@ public class RenderStadium {
 	StillModel modelCourtObj;
 	Texture modelCourtTex;
 
-	StillModel modelStadiumObj;
+	StillModel modelStadium;
 	Texture modelStadiumTex;
 
 	Texture modelShadowTex;
@@ -113,7 +113,7 @@ public class RenderStadium {
 		modelCourtTex = new Texture(Gdx.files.internal("data/court_only.png"),
 				true);
 
-		modelStadiumObj = ModelLoaderRegistry.loadStillModel(Gdx.files
+		modelStadium = ModelLoaderRegistry.loadStillModel(Gdx.files
 				.internal("data/stadium.g3dt"));
 		modelStadiumTex = new Texture(Gdx.files.internal("data/uv_map.png"),
 				true);
@@ -131,20 +131,27 @@ public class RenderStadium {
 		birdie = GameSession.getInstance().birdie;
 		opponent = GameSession.getInstance().opponent;
 		
-		// add player
-		BoundingBox box = new BoundingBox();		
-		instancePlayer = new StillModelNode();
-		modelOctopus.getBoundingBox(box);
-		instancePlayer.matrix.trn(0f, 0f, 0f);
-		instancePlayer.matrix.scale(1f, 1f, 1f);
-		box.mul(instancePlayer.matrix);
-		instancePlayer.radius = (box.getDimensions().len() / 2);
+		{
+			// add stadium
+			BoundingBox box = new BoundingBox();		
+			instanceStadium = new StillModelNode();
+			modelStadium.getBoundingBox(box);
+			instanceStadium.matrix.rotate(Vector3.Y, -90);
+			instanceStadium.matrix.trn(0f, 0f, 0f);
+			instanceStadium.matrix.scale(10f, 10f, 10f);
+			box.mul(instanceStadium.matrix);
+			instanceStadium.radius = (box.getDimensions().len() / 2);
+		}
+		
 		
 		// set materials
 		MaterialAttribute blueDiffuseColor = new ColorAttribute(new Color(0.1f, 0.1f, 0.8f, 1.0f), ColorAttribute.diffuse);
 		Material octopusBody = new Material("octopusBody", blueDiffuseColor);
+		MaterialAttribute greyDiffuseColor = new ColorAttribute(new Color(0.6f, 0.6f, 0.6f, 1.0f), ColorAttribute.diffuse);
+		Material stadium = new Material("stadium", greyDiffuseColor);
 		
 		modelOctopus.setMaterial(octopusBody);
+		modelStadium.setMaterial(stadium);
 	
 	}
 	
@@ -200,6 +207,7 @@ public class RenderStadium {
 			
 		
 		protoRenderer.begin();
+		protoRenderer.draw(modelStadium, instanceStadium);
 		protoRenderer.draw(modelOctopus, instancePlayer);	
 		protoRenderer.draw(modelOctopus, instanceOpponent);
 		protoRenderer.end();

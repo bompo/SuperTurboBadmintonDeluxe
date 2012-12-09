@@ -145,12 +145,34 @@ public class RenderStadium {
 		
 		
 		// set materials
-		MaterialAttribute blueDiffuseColor = new ColorAttribute(new Color(0.1f, 0.1f, 0.8f, 1.0f), ColorAttribute.diffuse);
-		Material octopusBody = new Material("octopusBody", blueDiffuseColor);
+		MaterialAttribute blueDiffuseColor = new ColorAttribute(new Color(0.0f, 0.04f, 0.49f, 1.0f), ColorAttribute.diffuse);
+		MaterialAttribute yellowDiffuseColor = new ColorAttribute(new Color(0.58f, 0.35f, 0.0f, 1.0f), ColorAttribute.diffuse);
+		MaterialAttribute redDiffuseColor = new ColorAttribute(new Color(0.2f, 0.0f, 0.03f, 1.0f), ColorAttribute.diffuse);
+		MaterialAttribute whiteDiffuseColor = new ColorAttribute(new Color(0.6f, 0.6f, 0.6f, 1.0f), ColorAttribute.diffuse);
+		MaterialAttribute blackDiffuseColor = new ColorAttribute(new Color(0.01f, 0.01f, 0.01f, 1.0f), ColorAttribute.diffuse);
+		Material octopusBlue = new Material("blue", blueDiffuseColor);
+		Material octopusWhite = new Material("white", whiteDiffuseColor);
+		Material octopusBlack = new Material("black", blackDiffuseColor);
+		Material octopusRed = new Material("red", redDiffuseColor);
+		Material octopusYellow = new Material("tentacle", yellowDiffuseColor);
 		MaterialAttribute greyDiffuseColor = new ColorAttribute(new Color(0.6f, 0.6f, 0.6f, 1.0f), ColorAttribute.diffuse);
 		Material stadium = new Material("stadium", greyDiffuseColor);
 		
-		modelOctopus.setMaterial(octopusBody);
+		modelOctopus.setMaterial(octopusBlue);
+		modelOctopus.getSubMesh("bandana").material = octopusWhite;
+		modelOctopus.getSubMesh("body").material = octopusBlue;
+		modelOctopus.getSubMesh("eye_l").material = octopusWhite;
+		modelOctopus.getSubMesh("eye_r").material = octopusWhite;
+		modelOctopus.getSubMesh("eyeball_r").material = octopusRed;
+		modelOctopus.getSubMesh("eyeball_l").material = octopusRed;
+		modelOctopus.getSubMesh("eyebrow_l").material = octopusBlack;
+		modelOctopus.getSubMesh("eyebrow_r").material = octopusBlack;
+		modelOctopus.getSubMesh("pupile_l").material = octopusBlack;
+		modelOctopus.getSubMesh("pupile_l").material = octopusBlack;
+		modelOctopus.getSubMesh("sucker").material = octopusRed;
+		modelOctopus.getSubMesh("tentacle").material = octopusYellow;
+		
+		
 		modelStadium.setMaterial(stadium);
 	
 	}

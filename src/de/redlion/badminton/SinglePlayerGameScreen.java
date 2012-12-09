@@ -62,6 +62,9 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 		
 		font = Resources.getInstance().font;
 		font.setScale(1);
+		
+		cam = new PerspectiveCamera(7, Gdx.graphics.getWidth(),	Gdx.graphics.getHeight());
+		cam.lookAt(0, 0, 0.5f);
 
 		initRender();
 	}
@@ -70,24 +73,16 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 		Gdx.graphics.getGL20().glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 		Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+		Gdx.gl.glClearColor(0.2f ,0.2f ,0.2f ,1.0f);
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		super.resize(width, height);
-		Vector3 oldPosition = new Vector3();
-		Vector3 oldDirection = new Vector3();
-		if (cam != null) {
-			oldPosition.set(cam.position);
-			oldDirection.set(cam.direction);
-			cam = new PerspectiveCamera(7, Gdx.graphics.getWidth(),	Gdx.graphics.getHeight());
-			cam.position.set(oldPosition);
-			cam.lookAt(0, 0, 0.5f);
-		} else {
-			cam = new PerspectiveCamera(7, Gdx.graphics.getWidth(),	Gdx.graphics.getHeight());
-			cam.position.set(-0.6f, 7.2f, 38.8f);
-			cam.lookAt(0, -0.2f, -1.1f);
-		}
+		cam.viewportWidth = width;
+		cam.viewportHeight = height;
+		
+		renderDebug.resize(width, height);
 		
 		initRender();
 	}
@@ -117,11 +112,12 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 		collisionTest();
 		updateAI();
 		
-		cam.position.set(0, 20f, 45f);
+		cam.position.set(0, 26f, 58f);
+		cam.fieldOfView = 14;
 		cam.lookAt(0, 0.0f, GameSession.getInstance().birdie.currentPosition.y / 10);
 		cam.up.set(0, 1, 0);
 		cam.near = 0.5f;
-		cam.far = 100f;
+		cam.far = 1000f;
 		renderStadium.updateCamera(cam);
 		renderStadium.render();
 

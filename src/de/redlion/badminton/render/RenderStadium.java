@@ -3,6 +3,7 @@ package de.redlion.badminton.render;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.graphics.g3d.lights.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.lights.LightManager;
 import com.badlogic.gdx.graphics.g3d.lights.LightManager.LightQuality;
 import com.badlogic.gdx.graphics.g3d.loaders.ModelLoaderRegistry;
+import com.badlogic.gdx.graphics.g3d.materials.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.materials.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.materials.Material;
 import com.badlogic.gdx.graphics.g3d.materials.MaterialAttribute;
@@ -45,19 +47,22 @@ public class RenderStadium {
 	StillModelNode instancePlayer;
 	StillModelNode instanceOpponent;
 	StillModelNode instanceStadium;
+	StillModelNode instanceBirdie;
 	
 	Material octopus;	
 	
-	StillModel modelPlaneObj;
+	StillModel modelPlane;
 	Texture modelPlaneTex;
 
-	StillModel modelBirdieObj;
+	StillModel modelBirdie;
 	Texture modelBirdieTex;
 
-	StillModel modelCourtObj;
+	StillModel modelCourt;
 	Texture modelCourtTex;
 
 	StillModel modelStadium;
+	StillModel modelWater;
+	StillModel modelNet;
 	Texture modelStadiumTex;
 
 	Texture modelShadowTex;
@@ -85,14 +90,14 @@ public class RenderStadium {
 		}
 		
 		lightManager.dirLight = new DirectionalLight();
-		lightManager.dirLight.color.set(0.99f, 0.99f, 0.99f, 1);
+		lightManager.dirLight.color.set(1f, 1f, 1f, 1);
 		lightManager.dirLight.direction.set(-.4f, -1, 0.03f).nor();
 
-		lightManager.ambientLight.set(.05f, 0.05f, 0.05f, 0f);
+		lightManager.ambientLight.set(.0f, 0.0f, 0.0f, 0f);
 		
 		protoRenderer = new PrototypeRendererGL20(lightManager);
 		
-		modelPlaneObj = ModelLoaderRegistry.loadStillModel(Gdx.files
+		modelPlane = ModelLoaderRegistry.loadStillModel(Gdx.files
 				.internal("data/plane.g3dt"));
 		modelPlaneTex = new Texture(
 				Gdx.files.internal("data/court_top_texture.png"), true);
@@ -100,7 +105,7 @@ public class RenderStadium {
 				TextureFilter.Linear);
 		modelPlaneTex.getTextureData().useMipMaps();
 
-		modelBirdieObj = ModelLoaderRegistry.loadStillModel(Gdx.files
+		modelBirdie = ModelLoaderRegistry.loadStillModel(Gdx.files
 				.internal("data/birdie.g3dt"));
 		modelBirdieTex = new Texture(
 				Gdx.files.internal("data/birdie_diff.png"), true);
@@ -108,7 +113,7 @@ public class RenderStadium {
 				TextureFilter.Linear);
 		modelBirdieTex.getTextureData().useMipMaps();
 
-		modelCourtObj = ModelLoaderRegistry.loadStillModel(Gdx.files
+		modelCourt = ModelLoaderRegistry.loadStillModel(Gdx.files
 				.internal("data/court.g3dt"));
 		modelCourtTex = new Texture(Gdx.files.internal("data/court_only.png"),
 				true);
@@ -120,6 +125,12 @@ public class RenderStadium {
 		modelStadiumTex.setFilter(TextureFilter.MipMapLinearLinear,
 				TextureFilter.Linear);
 		modelStadiumTex.getTextureData().useMipMaps();
+		
+		modelWater = ModelLoaderRegistry.loadStillModel(Gdx.files
+				.internal("data/water.g3dt"));
+		
+		modelNet = ModelLoaderRegistry.loadStillModel(Gdx.files
+				.internal("data/net.g3dt"));
 
 		modelShadowTex = new Texture(Gdx.files.internal("data/shadow.png"),
 				false);
@@ -136,44 +147,72 @@ public class RenderStadium {
 			BoundingBox box = new BoundingBox();		
 			instanceStadium = new StillModelNode();
 			modelStadium.getBoundingBox(box);
-			instanceStadium.matrix.rotate(Vector3.Y, -90);
 			instanceStadium.matrix.trn(0f, 0f, 0f);
-			instanceStadium.matrix.scale(10f, 10f, 10f);
+			instanceStadium.matrix.scale(1f, 1f, 1f);
 			box.mul(instanceStadium.matrix);
 			instanceStadium.radius = (box.getDimensions().len() / 2);
 		}
 		
 		
 		// set materials
-		MaterialAttribute blueDiffuseColor = new ColorAttribute(new Color(0.0f, 0.04f, 0.49f, 1.0f), ColorAttribute.diffuse);
-		MaterialAttribute yellowDiffuseColor = new ColorAttribute(new Color(0.58f, 0.35f, 0.0f, 1.0f), ColorAttribute.diffuse);
-		MaterialAttribute redDiffuseColor = new ColorAttribute(new Color(0.2f, 0.0f, 0.03f, 1.0f), ColorAttribute.diffuse);
-		MaterialAttribute whiteDiffuseColor = new ColorAttribute(new Color(0.6f, 0.6f, 0.6f, 1.0f), ColorAttribute.diffuse);
+		MaterialAttribute blueDiffuseColor = new ColorAttribute(new Color(0.1f, 0.2f, 0.91f, 1.0f), ColorAttribute.diffuse);
+		MaterialAttribute yellowDiffuseColor = new ColorAttribute(new Color(1f, 0.7f, 0.0f, 1.0f), ColorAttribute.diffuse);
+		MaterialAttribute redDiffuseColor = new ColorAttribute(new Color(0.8f, 0.0f, 0.3f, 1.0f), ColorAttribute.diffuse);
+		MaterialAttribute whiteDiffuseColor = new ColorAttribute(new Color(1.0f, 1.0f, 1.0f, 1.0f), ColorAttribute.diffuse);
 		MaterialAttribute blackDiffuseColor = new ColorAttribute(new Color(0.01f, 0.01f, 0.01f, 1.0f), ColorAttribute.diffuse);
-		Material octopusBlue = new Material("blue", blueDiffuseColor);
-		Material octopusWhite = new Material("white", whiteDiffuseColor);
-		Material octopusBlack = new Material("black", blackDiffuseColor);
-		Material octopusRed = new Material("red", redDiffuseColor);
-		Material octopusYellow = new Material("tentacle", yellowDiffuseColor);
-		MaterialAttribute greyDiffuseColor = new ColorAttribute(new Color(0.6f, 0.6f, 0.6f, 1.0f), ColorAttribute.diffuse);
-		Material stadium = new Material("stadium", greyDiffuseColor);
 		
-		modelOctopus.setMaterial(octopusBlue);
-		modelOctopus.getSubMesh("bandana").material = octopusWhite;
-		modelOctopus.getSubMesh("body").material = octopusBlue;
-		modelOctopus.getSubMesh("eye_l").material = octopusWhite;
-		modelOctopus.getSubMesh("eye_r").material = octopusWhite;
-		modelOctopus.getSubMesh("eyeball_r").material = octopusRed;
-		modelOctopus.getSubMesh("eyeball_l").material = octopusRed;
-		modelOctopus.getSubMesh("eyebrow_l").material = octopusBlack;
-		modelOctopus.getSubMesh("eyebrow_r").material = octopusBlack;
-		modelOctopus.getSubMesh("pupile_l").material = octopusBlack;
-		modelOctopus.getSubMesh("pupile_l").material = octopusBlack;
-		modelOctopus.getSubMesh("sucker").material = octopusRed;
-		modelOctopus.getSubMesh("tentacle").material = octopusYellow;
+		MaterialAttribute pureWhiteDiffuseColor = new ColorAttribute(new Color(0.99f, 0.99f, 0.99f, 1.0f), ColorAttribute.diffuse);
 		
+		MaterialAttribute blueSpecularColor = new ColorAttribute(new Color(0.0f, 0.04f, 0.49f, 1.0f), ColorAttribute.specular);
+		MaterialAttribute yellowSpecularColor = new ColorAttribute(new Color(0.58f, 0.35f, 0.0f, 1.0f), ColorAttribute.specular);
+		MaterialAttribute redSpecularColor = new ColorAttribute(new Color(0.2f, 0.0f, 0.03f, 1.0f), ColorAttribute.specular);
+		MaterialAttribute whiteSpecularColor = new ColorAttribute(new Color(0.6f, 0.6f, 0.6f, 1.0f), ColorAttribute.specular);
+		MaterialAttribute blackSpecularColor = new ColorAttribute(new Color(0.01f, 0.01f, 0.01f, 1.0f), ColorAttribute.specular);
 		
-		modelStadium.setMaterial(stadium);
+		MaterialAttribute darkPurpleDiffuseColor = new ColorAttribute(new Color(0.3f, 0.0f, 0.2f, 1.0f), ColorAttribute.diffuse);
+		MaterialAttribute lightPurpleDiffuseColor = new ColorAttribute(new Color(0.5f, 0.0f, 0.2f, 1.0f), ColorAttribute.diffuse);
+		
+		MaterialAttribute waterDiffuseColor = new ColorAttribute(new Color(0.2f, 0.45f, 0.6f, 0.6f), ColorAttribute.diffuse);
+		MaterialAttribute alphaBlending = new BlendingAttribute("translucent");
+		
+		MaterialAttribute netDiffuseColor = new ColorAttribute(new Color(0.95f, 0.95f, 0.95f, 0.8f), ColorAttribute.diffuse);
+		
+		Material clayBlue = new Material("blue", blueDiffuseColor, blueSpecularColor);
+		Material clayWhite = new Material("white", whiteDiffuseColor, whiteSpecularColor);
+		Material clayBlack = new Material("black", blackDiffuseColor, blackSpecularColor);
+		Material clayRed = new Material("red", redDiffuseColor, redSpecularColor);
+		Material clayYellow = new Material("tentacle", yellowDiffuseColor, yellowSpecularColor);
+		
+		Material darkPurple = new Material("court", darkPurpleDiffuseColor);
+		Material lightPurple = new Material("outerCourt", lightPurpleDiffuseColor);
+		
+		Material pureWhite = new Material("pureWhite", pureWhiteDiffuseColor);
+		
+		Material water = new Material("water", waterDiffuseColor, alphaBlending);
+		Material net = new Material("net", netDiffuseColor, alphaBlending);
+				
+		modelOctopus.setMaterial(clayBlue);
+		modelOctopus.getSubMesh("bandana").material = clayWhite;
+		modelOctopus.getSubMesh("body").material = clayBlue;
+		modelOctopus.getSubMesh("eye_l").material = clayWhite;
+		modelOctopus.getSubMesh("eye_r").material = clayWhite;
+		modelOctopus.getSubMesh("eyeball_l").material = clayRed;
+		modelOctopus.getSubMesh("eyeball_r").material = clayRed;
+		modelOctopus.getSubMesh("eyebrow_l").material = clayBlack;
+		modelOctopus.getSubMesh("eyebrow_r").material = clayBlack;
+		modelOctopus.getSubMesh("pupile_l").material = clayBlack;
+		modelOctopus.getSubMesh("pupile_r").material = clayBlack;
+		modelOctopus.getSubMesh("sucker").material = clayRed;
+		modelOctopus.getSubMesh("tentacle").material = clayYellow;
+		
+		modelStadium.setMaterial(pureWhite);
+		modelStadium.getSubMesh("playground").material = lightPurple;
+		modelStadium.getSubMesh("playfield").material = darkPurple;
+		
+		modelWater.setMaterial(water);
+		modelNet.setMaterial(net);
+		
+		modelBirdie.setMaterial(pureWhite);	
 	
 	}
 	
@@ -186,7 +225,7 @@ public class RenderStadium {
 
 		{
 			//player
-			float scaler = 0.5f;		
+			float scaler = 1f;		
 			if (player.state == Player.STATE.AIMING) {
 				float help = (player.aimTime / 2) % 0.5f;
 	
@@ -199,7 +238,7 @@ public class RenderStadium {
 			BoundingBox box = new BoundingBox();		
 			instancePlayer = new StillModelNode();
 			modelOctopus.getBoundingBox(box);
-			instancePlayer.matrix.trn(player.position.x, -0.5f, player.position.y);
+			instancePlayer.matrix.trn(player.position.x, 0, player.position.y);
 			instancePlayer.matrix.scale(scaler, scaler, scaler);
 			box.mul(instancePlayer.matrix);
 			instancePlayer.radius = (box.getDimensions().len() / 2);
@@ -207,7 +246,7 @@ public class RenderStadium {
 		
 		{
 			// opponent
-			float scaler = 0.5f;
+			float scaler = 1f;
 			if (opponent.state == Player.STATE.AIMING) {
 				float help = (opponent.aimTime / 2) % 0.5f;
 	
@@ -221,17 +260,37 @@ public class RenderStadium {
 			instanceOpponent = new StillModelNode();
 			modelOctopus.getBoundingBox(box);
 			instanceOpponent.matrix.rotate(Vector3.Y, 180);
-			instanceOpponent.matrix.trn(opponent.position.x, -0.5f, opponent.position.y);
+			instanceOpponent.matrix.trn(opponent.position.x, 0, opponent.position.y);
 			instanceOpponent.matrix.scale(scaler, scaler, scaler);
 			box.mul(instancePlayer.matrix);
 			instanceOpponent.radius = (box.getDimensions().len() / 2);
 		}
+		
+		{
+			// birdie	
+			BoundingBox box = new BoundingBox();		
+			instanceBirdie = new StillModelNode();
+			modelOctopus.getBoundingBox(box);
+			instanceBirdie.matrix.trn(birdie.currentPosition.x, birdie.currentPosition.z, birdie.currentPosition.y);
+			instanceBirdie.matrix.scale(2, 2, 2);
+			tmp.setToLookAt(birdie.tangent, birdie.up);
+			instanceBirdie.matrix.mul(tmp);
+			box.mul(instanceBirdie.matrix);
+			instanceBirdie.radius = (box.getDimensions().len() / 2);
+		}
 			
+		
+		Gdx.gl.glDisable(GL10.GL_BLEND);
+		Gdx.gl.glEnable(GL10.GL_DEPTH_TEST);
+		Gdx.gl.glDepthMask(true);
 		
 		protoRenderer.begin();
 		protoRenderer.draw(modelStadium, instanceStadium);
+		protoRenderer.draw(modelWater, instanceStadium);
+		protoRenderer.draw(modelNet, instanceStadium);
 		protoRenderer.draw(modelOctopus, instancePlayer);	
 		protoRenderer.draw(modelOctopus, instanceOpponent);
+		protoRenderer.draw(modelBirdie, instanceBirdie);
 		protoRenderer.end();
 		
 //		// render birdie

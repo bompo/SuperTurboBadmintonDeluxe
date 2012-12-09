@@ -271,7 +271,7 @@ public class Birdie {
 	}
 
 	public String toString() {
-		return "Birdie State: " + state + " Acceleration: " + acceleration;
+		return "Birdie State: " + state + " Acceleration: " + acceleration + " Position: " + currentPosition;
 	}
 
 }

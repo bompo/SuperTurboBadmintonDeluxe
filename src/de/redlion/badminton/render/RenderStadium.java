@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g3d.AnimatedModelNode;
 import com.badlogic.gdx.graphics.g3d.StillModelNode;
 import com.badlogic.gdx.graphics.g3d.lights.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.lights.LightManager;
@@ -17,8 +18,11 @@ import com.badlogic.gdx.graphics.g3d.materials.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.materials.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.materials.Material;
 import com.badlogic.gdx.graphics.g3d.materials.MaterialAttribute;
+import com.badlogic.gdx.graphics.g3d.model.keyframe.KeyframedAnimation;
+import com.badlogic.gdx.graphics.g3d.model.keyframe.KeyframedModel;
 import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
 import com.badlogic.gdx.graphics.g3d.test.PrototypeRendererGL20;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -42,10 +46,10 @@ public class RenderStadium {
 	float timer;
 	float alpha = 1;
 	PrototypeRendererGL20 protoRenderer;
-	StillModel modelOctopus;
+	KeyframedModel modelOctopus;
 	
-	StillModelNode instancePlayer;
-	StillModelNode instanceOpponent;
+	AnimatedModelNode instancePlayer;
+	AnimatedModelNode instanceOpponent;
 	StillModelNode instanceStadium;
 	StillModelNode instanceBirdie;
 	
@@ -135,8 +139,8 @@ public class RenderStadium {
 		modelShadowTex = new Texture(Gdx.files.internal("data/shadow.png"),
 				false);
 		
-		modelOctopus = ModelLoaderRegistry.loadStillModel(Gdx.files
-				.internal("data/octopus.g3dt"));
+		modelOctopus = ModelLoaderRegistry.loadKeyframedModel(Gdx.files
+				.internal("data/octopus_anim.g3dt"));
 		
 		player = GameSession.getInstance().player;
 		birdie = GameSession.getInstance().birdie;
@@ -194,16 +198,10 @@ public class RenderStadium {
 		modelOctopus.setMaterial(clayBlue);
 		modelOctopus.getSubMesh("bandana").material = clayWhite;
 		modelOctopus.getSubMesh("body").material = clayBlue;
-		modelOctopus.getSubMesh("eye_l").material = clayWhite;
-		modelOctopus.getSubMesh("eye_r").material = clayWhite;
-		modelOctopus.getSubMesh("eyeball_l").material = clayRed;
-		modelOctopus.getSubMesh("eyeball_r").material = clayRed;
-		modelOctopus.getSubMesh("eyebrow_l").material = clayBlack;
-		modelOctopus.getSubMesh("eyebrow_r").material = clayBlack;
-		modelOctopus.getSubMesh("pupile_l").material = clayBlack;
-		modelOctopus.getSubMesh("pupile_r").material = clayBlack;
-		modelOctopus.getSubMesh("sucker").material = clayRed;
-		modelOctopus.getSubMesh("tentacle").material = clayYellow;
+		modelOctopus.getSubMesh("eye").material = clayWhite;
+		modelOctopus.getSubMesh("pupile").material = clayBlack;
+		modelOctopus.getSubMesh("suckers").material = clayRed;
+		modelOctopus.getSubMesh("tentacles").material = clayYellow;
 		
 		modelStadium.setMaterial(pureWhite);
 		modelStadium.getSubMesh("playground").material = lightPurple;
@@ -213,7 +211,6 @@ public class RenderStadium {
 		modelNet.setMaterial(net);
 		
 		modelBirdie.setMaterial(pureWhite);	
-	
 	}
 	
 	public void updateCamera(PerspectiveCamera cam) {
@@ -221,6 +218,8 @@ public class RenderStadium {
 	}
 
 	public void render() {
+		final float delta = Gdx.graphics.getDeltaTime();
+		
 		Gdx.gl.glDisable(GL20.GL_CULL_FACE);
 
 		{
@@ -236,12 +235,23 @@ public class RenderStadium {
 			}
 			
 			BoundingBox box = new BoundingBox();		
-			instancePlayer = new StillModelNode();
+			instancePlayer = new AnimatedModelNode();
 			modelOctopus.getBoundingBox(box);
 			instancePlayer.matrix.trn(player.position.x, 0, player.position.y);
 			instancePlayer.matrix.scale(scaler, scaler, scaler);
 			box.mul(instancePlayer.matrix);
 			instancePlayer.radius = (box.getDimensions().len() / 2);
+			
+			KeyframedAnimation[] animations = modelOctopus.getAnimations();
+			instancePlayer.animation = animations[0].name;
+			instancePlayer.time = 0;
+			instancePlayer.looping = true;
+			
+			instancePlayer.time = player.keyframeAnimTime*0.7f;
+			if (instancePlayer.time > modelOctopus.getAnimations()[0].totalDuration) {
+				player.keyframeAnimTime = 0;
+				instancePlayer.time = 0;
+			}
 		}
 		
 		{
@@ -257,13 +267,24 @@ public class RenderStadium {
 			}
 			
 			BoundingBox box = new BoundingBox();		
-			instanceOpponent = new StillModelNode();
+			instanceOpponent = new AnimatedModelNode();
 			modelOctopus.getBoundingBox(box);
 			instanceOpponent.matrix.rotate(Vector3.Y, 180);
 			instanceOpponent.matrix.trn(opponent.position.x, 0, opponent.position.y);
 			instanceOpponent.matrix.scale(scaler, scaler, scaler);
 			box.mul(instancePlayer.matrix);
 			instanceOpponent.radius = (box.getDimensions().len() / 2);
+			
+			KeyframedAnimation[] animations = modelOctopus.getAnimations();
+			instanceOpponent.animation = animations[0].name;
+			instanceOpponent.time = 0;
+			instanceOpponent.looping = true;
+			
+			instanceOpponent.time = opponent.keyframeAnimTime*0.7f;
+			if (instanceOpponent.time > modelOctopus.getAnimations()[0].totalDuration) {
+				opponent.keyframeAnimTime = 0;
+				instanceOpponent.time = 0;
+			}
 		}
 		
 		{

@@ -39,6 +39,7 @@ public class Player {
 	public float aimTime = 1;
 	public float diagonalTime = 0; //currently only used for sliding diagonally  when player didn't release both keys at the same time
 	public float moveTime = 0.0f;
+	public float keyframeAnimTime = 0;
 
 	public Player(SIDE side, boolean service) {
 		this.side = side;
@@ -49,7 +50,9 @@ public class Player {
 		input = new PlayerOneControlMappings();
 	}
 
-	public void update() {		
+	public void update() {
+		keyframeAnimTime += Gdx.graphics.getDeltaTime();
+		
 		if(state != STATE.AIMING) {
 			
 			if (state == STATE.LEFT) {

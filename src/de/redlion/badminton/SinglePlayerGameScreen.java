@@ -127,7 +127,7 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 		batch.end();
 
 		if (Configuration.getInstance().debug) {
-			renderDebug.render();
+			renderDebug.render(cam);
 		}
 
 		// FadeInOut

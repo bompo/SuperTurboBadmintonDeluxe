@@ -1,5 +1,8 @@
 package de.redlion.badminton;
 
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
+
 import de.redlion.badminton.opponent.AIOpponent;
 import de.redlion.badminton.opponent.LocalOpponent;
 import de.redlion.badminton.opponent.NetworkOpponent;
@@ -10,6 +13,8 @@ public class GameSession {
 	public Player player = new Player(Player.SIDE.BOTTOM, true);
 	public Opponent opponent = new Opponent(Player.SIDE.TOP, false);
 	public Birdie birdie = new Birdie();
+	
+	public BoundingBox borders = new BoundingBox(new Vector3(-6.5f, 0, -14f), new Vector3(6.5f, 0, 14f));
 	
 
 	public int playerScore = 0;

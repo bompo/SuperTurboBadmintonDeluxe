@@ -1,7 +1,9 @@
 package de.redlion.badminton;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 
 public class Birdie {
@@ -10,16 +12,16 @@ public class Birdie {
 		HIT, NONHIT, HITBYOPPONENT, HELD, PREPARED;
 	}
 
-	public Vector3 currentPosition = new Vector3(-2, 7, -0.5f);
-	public Vector3 fromPosition = new Vector3(-2, 7, -0.5f);
-	public Vector3 via1 = new Vector3(0,1,-3);
-	public Vector3 via2 = new Vector3(0,-1,-3);
-	public Vector3 toPosition = new Vector3(0, -6, 1.0f);
+	public Vector3 currentPosition = new Vector3(-2, 0.5f, 7);
+	public Vector3 fromPosition = new Vector3(-2, 0.5f, 7);
+	public Vector3 via1 = new Vector3(0,7,1);
+	public Vector3 via2 = new Vector3(0,7,-1);
+	public Vector3 toPosition = new Vector3(0, -1, -6);
 
-	public Vector3 tangent = new Vector3(0,0,0);
-	public Vector3 up = new Vector3(0,0,0);
+	public Vector3 tangent = new Vector3(0,0,1);
+	public Vector3 up = new Vector3(0,1,0);
 	
-	public float maxHeight = 0;
+	public float maxHeight = 10;
 	
 	boolean smash = false;
 	
@@ -38,28 +40,13 @@ public class Birdie {
 			currentPosition = GameSession.getInstance().player.position.cpy().add(-0.5f, 0, 0);
 
 		} else {
-		
-			
-//			currentPosition =  fromPosition.cpy().mul((float) Math.pow(1-t, 2));
-//			currentPosition.add(via.cpy().mul(2*t*(1-t)));
-//			currentPosition.add(toPosition.cpy().mul((float) Math.pow(t, 2)));
-//			
-//			tangent = fromPosition.cpy().sub(via.cpy().mul(2)).add(toPosition.cpy()).mul(2*t);
-//			tangent.add(via.cpy().mul(2));
-//			tangent.sub(fromPosition.cpy().mul(2));
-//			tangent.nor();
-//			
-//			up= fromPosition.cpy().sub(via.cpy().mul(2)).add(toPosition).mul(2);
-//			up.nor();
-//			
-//			t+= Gdx.graphics.getDeltaTime() / 2;
-			
+					
 			currentPosition = fromPosition.cpy().mul((float) Math.pow(1-t, 3));
-			currentPosition.add(via1.cpy().mul(3*t).mul((float) Math.pow(1-t, 2)));
-			currentPosition.add(via2.cpy().mul((float) (3*Math.pow(t, 2))).mul(1-t));
+			currentPosition.add(via1.cpy().mul(3 * t).mul((float) Math.pow(1-t, 2)));
+			currentPosition.add(via2.cpy().mul((float) (3 * Math.pow(t, 2))).mul(1-t));
 			currentPosition.add(toPosition.cpy().mul((float) Math.pow(t, 3)));
 			
-			tangent = via1.cpy().mul((float) (-3*Math.pow(t, 2)) + 4*t -1);
+			tangent = via1.cpy().mul((float) (-3 * Math.pow(t, 2)) + 4*t -1);
 			tangent.add(fromPosition.cpy().mul((float) Math.pow(t-1, 2)));
 			tangent.add((via2.cpy().mul(3*t - 2).sub(toPosition.cpy().mul(t))).mul(t));
 			tangent.mul(-3);
@@ -80,7 +67,7 @@ public class Birdie {
 			else
 				trajectoryPath.clear();
 			
-			if (currentPosition.z < 0 && t<=1.0f) {
+			if (currentPosition.y >= 0) {
 				//currentPosition.z = currentPosition.z + (Gdx.graphics.getDeltaTime() * 2.f);
 			} else {
 				state = STATE.NONHIT;
@@ -104,9 +91,9 @@ public class Birdie {
 	}
 
 	public void score() {
-		if (currentPosition.y < 0) {
+		if (currentPosition.z < 0) {
 			if (Math.abs(currentPosition.x) < 3) {
-				if (Math.abs(currentPosition.y) < 7.5) {
+				if (Math.abs(currentPosition.z) < 7.5) {
 					GameSession.getInstance().playerScore++;
 				} else {
 					GameSession.getInstance().opponentScore++;
@@ -116,9 +103,9 @@ public class Birdie {
 			}
 		}
 
-		if (currentPosition.y > 0) {
+		if (currentPosition.z > 0) {
 			if (Math.abs(currentPosition.x) < 3)
-				if (Math.abs(currentPosition.y) < 7.5)
+				if (Math.abs(currentPosition.z) < 7.5)
 					GameSession.getInstance().opponentScore++;
 				else
 					GameSession.getInstance().playerScore++;
@@ -129,15 +116,15 @@ public class Birdie {
 
 	public void reset() {
 		
-		if (currentPosition.y < 0) {
+		if (currentPosition.z < 0) {
 			currentPosition = GameSession.getInstance().player.position.cpy()
 					.add(-0.5f, 0, 0);
-			currentPosition.z = -0.5f;
+			currentPosition.y = 0f;
 			toPosition = new Vector3(0, -6, -0.5f);
 		} else {
 			currentPosition = GameSession.getInstance().opponent.position.cpy()
 					.add(-0.5f, 0, 0);
-			currentPosition.z = -0.5f;
+			currentPosition.y = 0f;
 			toPosition = new Vector3(0, -6, -0.5f);
 			
 		}
@@ -157,8 +144,7 @@ public class Birdie {
 		//set player states
 		player.service = false;
 		player.aimTime = 1;
-		player.aiming = Player.AIMING.IDLE;
-		player.state = Player.STATE.IDLE;	
+
 		int tmp = player.aiming.ordinal();
 		player.state = Player.STATE.values()[tmp];
 		
@@ -169,49 +155,49 @@ public class Birdie {
 		fromPosition = currentPosition.cpy();
 		
 		if(player.aiming == Player.AIMING.LEFT) {
-			toPosition.x = fromPosition.x - acceleration;
-			if(toPosition.x < -3)
-				toPosition.x = -3;
-			toPosition.y = -3 + (fromPosition.y /3);
+			toPosition.x = fromPosition.x - acceleration * 4;
+			if(toPosition.x < GameSession.getInstance().borders.min.x)
+				toPosition.x = GameSession.getInstance().borders.min.x;
+			toPosition.z = GameSession.getInstance().borders.min.z + (fromPosition.z /3);
 		}
 		else if(player.aiming == Player.AIMING.RIGHT) {
-			toPosition.x = fromPosition.x + acceleration;
-			if(toPosition.x > 3)
-				toPosition.x = 3;
-			toPosition.y = -3 + (fromPosition.y /7);
+			toPosition.x = fromPosition.x + acceleration * 4;
+			if(toPosition.x > GameSession.getInstance().borders.max.x)
+				toPosition.x = GameSession.getInstance().borders.max.x;
+			toPosition.z = GameSession.getInstance().borders.min.z + (fromPosition.z /7);
 		}
 		else if(player.aiming == Player.AIMING.UPLEFT) {
-			toPosition.x = fromPosition.x - 0.8f * acceleration;
-			if(toPosition.x < -3)
-				toPosition.x = -3;
-			toPosition.y = -3 - acceleration + (fromPosition.y /7);
-			if(toPosition.y < -7.5)
-				toPosition.y = -7.5f;
+			toPosition.x = fromPosition.x - 0.8f * acceleration * 4;
+			if(toPosition.x < GameSession.getInstance().borders.min.x)
+				toPosition.x = GameSession.getInstance().borders.min.x;
+			toPosition.z = -3 - acceleration * 4 + (fromPosition.z /7);
+			if(toPosition.z < GameSession.getInstance().borders.min.z)
+				toPosition.z = GameSession.getInstance().borders.min.z;
 		}
 		else if(player.aiming == Player.AIMING.UPRIGHT) {
-			toPosition.x = fromPosition.x + 0.8f * acceleration;
-			if(toPosition.x > 3)
-				toPosition.x = 3;
-			toPosition.y = -3 - acceleration + (fromPosition.y /7);
-			if(toPosition.y < -7.5)
-				toPosition.y = -7.5f;
+			toPosition.x = fromPosition.x + 0.8f * acceleration * 4;
+			if(toPosition.x > GameSession.getInstance().borders.max.x)
+				toPosition.x = GameSession.getInstance().borders.max.x;
+			toPosition.z = -3 - acceleration * 4 + (fromPosition.z /7);
+			if(toPosition.z < GameSession.getInstance().borders.min.z)
+				toPosition.z = GameSession.getInstance().borders.min.z;
 		}
 		else { 
 			toPosition.x = 0;
-			toPosition.y = -2.5f * acceleration + (fromPosition.y /7);
+			toPosition.z = -2.5f * acceleration * 4 + (fromPosition.z /7);
 		}
 		
 		if(acceleration > 1.5f && !high) {
-			toPosition.y -= 1;
-			toPosition.y -= 1;
+			toPosition.z -= 1;
+			toPosition.z -= 1;
 		}
 		
 		fuzzyPosition(toPosition, 2.f - acceleration);
 		
-		float middleY = (fromPosition.y + toPosition.y) /1.5f;
+		float middleY = (fromPosition.z + toPosition.z) /1.5f;
 		
-		via1.y = fromPosition.y + middleY/2;
-		via2.y = toPosition.y + middleY/2;
+		via1.z = fromPosition.z + middleY/2;
+		via2.z = toPosition.z + middleY/2;
 		
 		float middleX = (fromPosition.x + toPosition.x) / 2;
 		
@@ -219,21 +205,28 @@ public class Birdie {
 		via2.x = toPosition.x * 0.7f + middleX * 0.3f;
 		
 		if(high) {
-			via1.z = -4;
-			via2.z = -4;
+			via1.y = 15;
+			via2.y = 15;
 		}
 		else {
-			via1.z = -3;
-			via2.z = -3;
+			via1.y = 6;
+			via2.y = 6;
 			
 			if(acceleration > 1.5f) {
-				via1.z = -2.0f;
-				via2.z = -1.5f;
+				via1.y = -2.0f;
+				via2.y = -1.5f;
 				
 				smash = true;
 				Gdx.app.log("S M A S H", toPosition + "");
 			}
 		}
+
+		System.out.println("Hit");
+		System.out.println(fromPosition);
+		System.out.println(via1);
+		System.out.println(via2);
+		System.out.println(toPosition);
+		
 		
 	}
 	
@@ -246,32 +239,31 @@ public class Birdie {
 		fromPosition = currentPosition.cpy();
 		acceleration = 1;
 		toPosition.x = 0;
-		toPosition.y = 3.5f;
+		toPosition.z = 3.5f;
 		
-		float middleY = (fromPosition.y + toPosition.y) / 2;
+		float middleY = (fromPosition.z + toPosition.z) / 2;
 		
-		via1.y = fromPosition.y + middleY/2;
-		via2.y = toPosition.y + middleY/2;
+		via1.z = fromPosition.y + middleY/2;
+		via2.z = toPosition.y + middleY/2;
 		
 		via1.x = 1/3 * toPosition.x + fromPosition.x;
 		
 		via2.x = toPosition.x + 1/3 * fromPosition.x;
-
 	}
 	
-	public void fuzzyPosition(Vector3 pos, float aimTime) {
-		
+	public void fuzzyPosition(Vector3 pos, float aimTime) {		
 		float x = (float) Math.random() * aimTime * 2 - aimTime;
-		float y = (float) Math.random() * aimTime * 2 - aimTime;
+		float z = (float) Math.random() * aimTime * 2 - aimTime;
 		
 		pos.x += x;
-		pos.y += y;	
-		
-		
+		pos.z += z;		
 	}
 
 	public String toString() {
-		return "Birdie State: " + state + " Acceleration: " + acceleration + " Position: " + currentPosition;
+		return "Birdie State: " + state + " Acceleration: " + (float) MathUtils.round(acceleration * 10) / 10. + " Position: " 
+				+ (float) MathUtils.round(currentPosition.x * 10) / 10. + " " 
+				+ (float) MathUtils.round(currentPosition.y * 10) / 10. + " "
+				+ (float) MathUtils.round(currentPosition.z * 10) / 10.;
 	}
 
 }

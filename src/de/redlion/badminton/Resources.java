@@ -18,8 +18,6 @@ public class Resources {
 	public Sprite playerSprite = new Sprite(new Texture(Gdx.files.internal("data/player.png")));
 	public Texture lock = new Texture(Gdx.files.internal("data/lock.png"));
 	
-	public ShaderProgram diffuseShader;
-	
 	public static Resources instance;
 
 	public static Resources getInstance() {
@@ -33,23 +31,12 @@ public class Resources {
 		reInit();	
 	}
 	
-	public void initShader() {
-		diffuseShader = new ShaderProgram(DiffuseShader.mVertexShader, DiffuseShader.mFragmentShader);
-		if (diffuseShader.isCompiled() == false) {
-			Gdx.app.log("diffuseShader: ", diffuseShader.getLog());
-			System.exit(0);
-		}
-	}
 
-	public void reInit() {	
-		initShader();
-		
+	public void reInit() {
 		font = new BitmapFont();
 	}
 
 	public void dispose() {
 		font.dispose();
-		
-		diffuseShader.dispose();
 	}
 }

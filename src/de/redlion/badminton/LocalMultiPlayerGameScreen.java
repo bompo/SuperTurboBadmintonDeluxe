@@ -128,7 +128,7 @@ public class LocalMultiPlayerGameScreen extends DefaultScreen {
 		renderStadium.render();
 		
 		if (Configuration.getInstance().debug) {
-			renderDebug.render();
+			renderDebug.render(cam);
 		}
 		
 		// FadeInOut

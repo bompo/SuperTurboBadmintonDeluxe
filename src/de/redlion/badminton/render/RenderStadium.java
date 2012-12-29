@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.g3d.model.keyframe.KeyframedAnimation;
 import com.badlogic.gdx.graphics.g3d.model.keyframe.KeyframedModel;
 import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
 import com.badlogic.gdx.graphics.g3d.test.PrototypeRendererGL20;
+import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -39,7 +40,7 @@ public class RenderStadium {
 	
 	boolean highQuality = true;
 	
-	static final String TAG = "Super Turbo Badminton";
+	static final String TAG = "de.redlion.badminton";
 
 	LightManager lightManager;
 
@@ -52,6 +53,9 @@ public class RenderStadium {
 	AnimatedModelNode instanceOpponent;
 	StillModelNode instanceStadium;
 	StillModelNode instanceBirdie;
+	
+	BoundingBox instancePlayerBB;
+	BoundingBox instanceOpponentBB;
 	
 	Material octopus;	
 	
@@ -84,7 +88,7 @@ public class RenderStadium {
 
 
 	public RenderStadium() {
-		prefs = Gdx.app.getPreferences("de.redlion.badminton");
+		prefs = Gdx.app.getPreferences(TAG);
 		
 		highQuality = prefs.getBoolean("highQuality", true);
 		if(highQuality) {
@@ -211,6 +215,38 @@ public class RenderStadium {
 		modelNet.setMaterial(net);
 		
 		modelBirdie.setMaterial(pureWhite);	
+		
+		
+		// create instances
+		{
+		instancePlayerBB = new BoundingBox();		
+		instancePlayer = new AnimatedModelNode();
+		modelOctopus.getBoundingBox(instancePlayerBB);
+		instancePlayer.matrix.trn(player.position.x, player.position.y, player.position.z);
+		instancePlayerBB.mul(instancePlayer.matrix);
+		instancePlayer.radius = (instancePlayerBB.getDimensions().len() / 2);
+		
+		KeyframedAnimation[] animations = modelOctopus.getAnimations();
+		instancePlayer.animation = animations[0].name;
+		instancePlayer.time = MathUtils.random(animations[0].totalDuration);
+		instancePlayer.looping = true;
+		}
+		
+		{
+		instanceOpponentBB = new BoundingBox();		
+		instanceOpponent = new AnimatedModelNode();
+		modelOctopus.getBoundingBox(instanceOpponentBB);
+		instanceOpponent.matrix.trn(opponent.position.x, opponent.position.y, opponent.position.z);
+		instanceOpponentBB.mul(instanceOpponent.matrix);
+		instanceOpponent.radius = (instanceOpponentBB.getDimensions().len() / 2);
+		
+		KeyframedAnimation[] animations = modelOctopus.getAnimations();
+		instanceOpponent.animation = animations[0].name;
+		instanceOpponent.time = MathUtils.random(animations[0].totalDuration);
+		instanceOpponent.looping = true;
+		}
+		
+		
 	}
 	
 	public void updateCamera(PerspectiveCamera cam) {
@@ -233,22 +269,13 @@ public class RenderStadium {
 				if (help > 0.25f)
 					scaler = 1 - help;
 			}
+			instancePlayer.matrix.idt();
+			instancePlayer.matrix.trn(player.position.x, player.position.y, player.position.z);
+//			instancePlayer.matrix.scale(scaler, scaler, scaler);
+			instancePlayerBB.mul(instancePlayer.matrix);
 			
-			BoundingBox box = new BoundingBox();		
-			instancePlayer = new AnimatedModelNode();
-			modelOctopus.getBoundingBox(box);
-			instancePlayer.matrix.trn(player.position.x, 0, player.position.y);
-			instancePlayer.matrix.scale(scaler, scaler, scaler);
-			box.mul(instancePlayer.matrix);
-			instancePlayer.radius = (box.getDimensions().len() / 2);
-			
-			KeyframedAnimation[] animations = modelOctopus.getAnimations();
-			instancePlayer.animation = animations[0].name;
-			instancePlayer.time = 0;
-			instancePlayer.looping = true;
-			
-			instancePlayer.time = player.keyframeAnimTime*0.7f;
-			if (instancePlayer.time > modelOctopus.getAnimations()[0].totalDuration) {
+			instancePlayer.time = player.keyframeAnimTime;
+			if (instancePlayer.time > modelOctopus.getAnimations()[0].totalDuration - 0.3f) {
 				player.keyframeAnimTime = 0;
 				instancePlayer.time = 0;
 			}
@@ -266,22 +293,14 @@ public class RenderStadium {
 					scaler = 1 - help;
 			}
 			
-			BoundingBox box = new BoundingBox();		
-			instanceOpponent = new AnimatedModelNode();
-			modelOctopus.getBoundingBox(box);
+			instanceOpponent.matrix.idt();
 			instanceOpponent.matrix.rotate(Vector3.Y, 180);
-			instanceOpponent.matrix.trn(opponent.position.x, 0, opponent.position.y);
-			instanceOpponent.matrix.scale(scaler, scaler, scaler);
-			box.mul(instancePlayer.matrix);
-			instanceOpponent.radius = (box.getDimensions().len() / 2);
+			instanceOpponent.matrix.trn(opponent.position.x, opponent.position.y, opponent.position.z);
+//			instanceOpponent.matrix.scale(scaler, scaler, scaler);
+			instanceOpponentBB.mul(instanceOpponent.matrix);
 			
-			KeyframedAnimation[] animations = modelOctopus.getAnimations();
-			instanceOpponent.animation = animations[0].name;
-			instanceOpponent.time = 0;
-			instanceOpponent.looping = true;
-			
-			instanceOpponent.time = opponent.keyframeAnimTime*0.7f;
-			if (instanceOpponent.time > modelOctopus.getAnimations()[0].totalDuration) {
+			instanceOpponent.time = opponent.keyframeAnimTime;
+			if (instanceOpponent.time > modelOctopus.getAnimations()[0].totalDuration - 0.3f) {
 				opponent.keyframeAnimTime = 0;
 				instanceOpponent.time = 0;
 			}
@@ -292,8 +311,9 @@ public class RenderStadium {
 			BoundingBox box = new BoundingBox();		
 			instanceBirdie = new StillModelNode();
 			modelOctopus.getBoundingBox(box);
-			instanceBirdie.matrix.trn(birdie.currentPosition.x, birdie.currentPosition.z, birdie.currentPosition.y);
-			instanceBirdie.matrix.scale(2, 2, 2);
+			instanceBirdie.matrix.rotate(Vector3.X, -90);
+			instanceBirdie.matrix.trn(birdie.currentPosition.x, birdie.currentPosition.y, birdie.currentPosition.z);
+			instanceBirdie.matrix.scale(1, 1, 1);
 			tmp.setToLookAt(birdie.tangent, birdie.up);
 			instanceBirdie.matrix.mul(tmp);
 			box.mul(instanceBirdie.matrix);
@@ -409,95 +429,6 @@ public class RenderStadium {
 //		diffuseShader.setUniformf("alpha", 1);
 //		
 //		
-//		// render player
-//		{
-//			tmp.idt();
-//			model.idt();
-//	
-//			tmp.setToRotation(Vector3.X, 90);
-//			model.mul(tmp);
-//	
-//		
-//			tmp.setToTranslation(player.position.x, player.position.y, -0.5f);
-//			model.mul(tmp);
-//	
-//			float scaler = 0.5f;
-//			
-//			if (player.state == Player.STATE.AIMING) {
-//				float help = (player.aimTime / 2) % 0.5f;
-//	
-//				if (help < 0.25f)
-//					scaler = 0.5f + help;
-//				if (help > 0.25f)
-//					scaler = 1 - help;
-//			}
-//	
-//			tmp.setToScaling(scaler, scaler, scaler);
-//			model.mul(tmp);
-//	
-//			diffuseShader.setUniformMatrix("MMatrix", model);
-//			diffuseShader.setUniformi("uSampler", 0);
-//	
-//			modelPlaneTex.bind(0);
-//			modelPlaneObj.render(diffuseShader);
-//		}
-//
-//		// render opponent
-//		{
-//			tmp.idt();
-//			model.idt();
-//	
-//			tmp.setToRotation(Vector3.X, 90);
-//			model.mul(tmp);
-//	
-//			tmp.setToTranslation(opponent.position.x, opponent.position.y, -0.5f);
-//			model.mul(tmp);
-//	
-//			float scaler = 0.5f;
-//			
-//			if (opponent.state == Player.STATE.AIMING) {
-//				float help = (opponent.aimTime / 2) % 0.5f;
-//	
-//				if (help < 0.25f)
-//					scaler = 0.5f + help;
-//				if (help > 0.25f)
-//					scaler = 1 - help;
-//			}
-//	
-//			tmp.setToScaling(scaler, scaler, scaler);
-//			model.mul(tmp);
-//			
-//			diffuseShader.setUniformMatrix("MMatrix", model);
-//			diffuseShader.setUniformi("uSampler", 0);
-//	
-//			modelPlaneTex.bind(0);
-//			modelPlaneObj.render(diffuseShader);
-//		}
-//
-//		// render stadium
-//		tmp.idt();
-//		model.idt();
-//
-//		tmp.setToTranslation(0, 0, 0);
-//		model.mul(tmp);
-//
-//		tmp.setToScaling(10, 10, 10);
-//		model.mul(tmp);
-//
-//		tmp.setToRotation(Vector3.Y, -90);
-//		model.mul(tmp);
-//
-//		diffuseShader.setUniformMatrix("MMatrix", model);
-//		diffuseShader.setUniformi("uSampler", 0);
-//
-//		diffuseShader.setUniformf("alpha", 0.2f);
-//
-//		modelStadiumTex.bind(0);
-//		modelStadiumObj.render(diffuseShader);
-//
-//		Gdx.gl.glDisable(GL20.GL_BLEND);
-//
-//		diffuseShader.end();
 
 	}
 

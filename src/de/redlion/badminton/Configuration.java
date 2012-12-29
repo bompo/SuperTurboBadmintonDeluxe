@@ -14,7 +14,7 @@ public class Configuration {
 	static Configuration instance;
 	
 	private Configuration() {
-		preferences = Gdx.app.getPreferences("SuperBadminton");
+		preferences = Gdx.app.getPreferences("de.redlion.badminton");
 		loadConfig();
 	}
 	
@@ -38,6 +38,12 @@ public class Configuration {
 		preferences.flush();
 	}
 		
+	public void setDebug(boolean onOff) {
+		preferences.putBoolean("debug", onOff);
+		debug = onOff;
+		preferences.flush();
+	}
+	
 	public static Configuration getInstance() {
 		if(instance!=null) return instance;
 		instance = new Configuration();		

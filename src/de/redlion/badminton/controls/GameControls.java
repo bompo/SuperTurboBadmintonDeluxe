@@ -38,6 +38,10 @@ public class GameControls implements InputProcessor {
 				e.printStackTrace();
 			}
 		}
+		
+		if (keycode == Input.Keys.F1) {
+			Configuration.getInstance().setDebug(!Configuration.getInstance().debug);
+		}
 	}
 
 

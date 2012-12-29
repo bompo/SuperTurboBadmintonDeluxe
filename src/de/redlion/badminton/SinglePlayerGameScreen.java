@@ -119,7 +119,9 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 		cam.near = 0.5f;
 		cam.far = 1000f;
 		renderStadium.updateCamera(cam);
-		renderStadium.render();
+		if(!Configuration.getInstance().debug) {
+			renderStadium.render();
+		}
 
 		batch.begin();
 		font.draw(batch, "P " + GameSession.getInstance().playerScore + " : O "

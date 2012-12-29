@@ -1,34 +1,21 @@
 package de.redlion.badminton.render;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.loaders.ModelLoaderRegistry;
-import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
-import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
-import de.redlion.badminton.Birdie;
 import de.redlion.badminton.GameSession;
-import de.redlion.badminton.Helper;
-import de.redlion.badminton.Player;
 import de.redlion.badminton.Resources;
-import de.redlion.badminton.opponent.Opponent;
 
 public class RenderDebug {
 
 	SpriteBatch batch;
 	BitmapFont font;
 	
-	ImmediateModeRenderer20 renderer;
+	ShapeRenderer renderer;
 	
 	public RenderDebug() {
 		batch = new SpriteBatch();
@@ -36,7 +23,7 @@ public class RenderDebug {
 		font = Resources.getInstance().font;
 		font.setScale(1);
 		
-		renderer = new ImmediateModeRenderer20(false, false, 0);
+		renderer = new ShapeRenderer();
 	}
 	
 	
@@ -49,20 +36,47 @@ public class RenderDebug {
 		font.draw(batch, GameSession.getInstance().birdie.toString(), 20, 90);
 		batch.end();
 		
-		renderer.begin(cam.combined, GL20.GL_LINES);
+		renderer.setProjectionMatrix(cam.combined);
+		renderer.begin(ShapeType.Line);
 		
 		//draw court borders
-		renderer.vertex(GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.min.y + 0.1f, GameSession.getInstance().borders.min.z);
-		renderer.vertex(GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.max.y + 0.1f, GameSession.getInstance().borders.max.z);
+		renderer.line(GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.min.y + 0.1f, GameSession.getInstance().borders.min.z,
+				GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.max.y + 0.1f, GameSession.getInstance().borders.max.z);
+		renderer.line(GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.min.y + 0.1f, GameSession.getInstance().borders.min.z,
+				GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.max.y + 0.1f, GameSession.getInstance().borders.max.z);
+		renderer.line(GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.min.y + 0.1f, GameSession.getInstance().borders.min.z,
+				GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.max.y + 0.1f, GameSession.getInstance().borders.min.z);
+		renderer.line(GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.min.y + 0.1f, GameSession.getInstance().borders.max.z,
+				GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.max.y + 0.1f, GameSession.getInstance().borders.max.z);
 		
-		renderer.vertex(GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.min.y + 0.1f, GameSession.getInstance().borders.min.z);
-		renderer.vertex(GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.max.y + 0.1f, GameSession.getInstance().borders.max.z);
+		//draw player
+		renderer.line(GameSession.getInstance().player.position.x - 1f, GameSession.getInstance().player.position.y, GameSession.getInstance().player.position.z - 1f, 
+				GameSession.getInstance().player.position.x - 1f, GameSession.getInstance().player.position.y, GameSession.getInstance().player.position.z + 1f);
+		renderer.line(GameSession.getInstance().player.position.x + 1f, GameSession.getInstance().player.position.y, GameSession.getInstance().player.position.z - 1f, 
+				GameSession.getInstance().player.position.x + 1f, GameSession.getInstance().player.position.y, GameSession.getInstance().player.position.z + 1f);
+		renderer.line(GameSession.getInstance().player.position.x + 1f, GameSession.getInstance().player.position.y, GameSession.getInstance().player.position.z + 1f, 
+				GameSession.getInstance().player.position.x - 1f, GameSession.getInstance().player.position.y, GameSession.getInstance().player.position.z + 1f);
+		renderer.line(GameSession.getInstance().player.position.x + 1f, GameSession.getInstance().player.position.y, GameSession.getInstance().player.position.z - 1f, 
+				GameSession.getInstance().player.position.x - 1f, GameSession.getInstance().player.position.y, GameSession.getInstance().player.position.z - 1f);
 		
-		renderer.vertex(GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.min.y + 0.1f, GameSession.getInstance().borders.min.z);
-		renderer.vertex(GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.max.y + 0.1f, GameSession.getInstance().borders.min.z);
+		//draw opponent
+		renderer.line(GameSession.getInstance().opponent.position.x - 1f, GameSession.getInstance().opponent.position.y, GameSession.getInstance().opponent.position.z - 1f, 
+				GameSession.getInstance().opponent.position.x - 1f, GameSession.getInstance().opponent.position.y, GameSession.getInstance().opponent.position.z + 1f);
+		renderer.line(GameSession.getInstance().opponent.position.x + 1f, GameSession.getInstance().opponent.position.y, GameSession.getInstance().opponent.position.z - 1f, 
+				GameSession.getInstance().opponent.position.x + 1f, GameSession.getInstance().opponent.position.y, GameSession.getInstance().opponent.position.z + 1f);
+		renderer.line(GameSession.getInstance().opponent.position.x + 1f, GameSession.getInstance().opponent.position.y, GameSession.getInstance().opponent.position.z + 1f, 
+				GameSession.getInstance().opponent.position.x - 1f, GameSession.getInstance().opponent.position.y, GameSession.getInstance().opponent.position.z + 1f);
+		renderer.line(GameSession.getInstance().opponent.position.x + 1f, GameSession.getInstance().opponent.position.y, GameSession.getInstance().opponent.position.z - 1f, 
+				GameSession.getInstance().opponent.position.x - 1f, GameSession.getInstance().opponent.position.y, GameSession.getInstance().opponent.position.z - 1f);
 		
-		renderer.vertex(GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.min.y + 0.1f, GameSession.getInstance().borders.max.z);
-		renderer.vertex(GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.max.y + 0.1f, GameSession.getInstance().borders.max.z);
+		renderer.line(GameSession.getInstance().birdie.currentPosition.x - 0.1f, GameSession.getInstance().birdie.currentPosition.y, GameSession.getInstance().birdie.currentPosition.z - 0.1f, 
+				GameSession.getInstance().birdie.currentPosition.x - 0.1f, GameSession.getInstance().birdie.currentPosition.y, GameSession.getInstance().birdie.currentPosition.z + 0.1f);
+		renderer.line(GameSession.getInstance().birdie.currentPosition.x + 0.1f, GameSession.getInstance().birdie.currentPosition.y, GameSession.getInstance().birdie.currentPosition.z - 0.1f, 
+				GameSession.getInstance().birdie.currentPosition.x + 0.1f, GameSession.getInstance().birdie.currentPosition.y, GameSession.getInstance().birdie.currentPosition.z + 0.1f);
+		renderer.line(GameSession.getInstance().birdie.currentPosition.x + 0.1f, GameSession.getInstance().birdie.currentPosition.y, GameSession.getInstance().birdie.currentPosition.z + 0.1f, 
+				GameSession.getInstance().birdie.currentPosition.x - 0.1f, GameSession.getInstance().birdie.currentPosition.y, GameSession.getInstance().birdie.currentPosition.z + 0.1f);
+		renderer.line(GameSession.getInstance().birdie.currentPosition.x + 0.1f, GameSession.getInstance().birdie.currentPosition.y, GameSession.getInstance().birdie.currentPosition.z - 0.1f, 
+				GameSession.getInstance().birdie.currentPosition.x - 0.1f, GameSession.getInstance().birdie.currentPosition.y, GameSession.getInstance().birdie.currentPosition.z - 0.1f);
 		
 		renderer.end();
 

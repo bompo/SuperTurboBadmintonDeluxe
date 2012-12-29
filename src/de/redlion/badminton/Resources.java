@@ -4,14 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-
-import de.redlion.badminton.shader.DiffuseShader;
 
 public class Resources {
-	
-	public final boolean debugMode = true;
-
 	public BitmapFont font;
 	
 	public Sprite background = new Sprite(new Texture(Gdx.files.internal("data/court_bg.png")));

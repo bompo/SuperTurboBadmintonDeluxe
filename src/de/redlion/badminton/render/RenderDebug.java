@@ -40,14 +40,14 @@ public class RenderDebug {
 		renderer.begin(ShapeType.Line);
 		
 		//draw court borders
-		renderer.line(GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.min.y + 0.1f, GameSession.getInstance().borders.min.z,
-				GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.max.y + 0.1f, GameSession.getInstance().borders.max.z);
-		renderer.line(GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.min.y + 0.1f, GameSession.getInstance().borders.min.z,
-				GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.max.y + 0.1f, GameSession.getInstance().borders.max.z);
-		renderer.line(GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.min.y + 0.1f, GameSession.getInstance().borders.min.z,
-				GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.max.y + 0.1f, GameSession.getInstance().borders.min.z);
-		renderer.line(GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.min.y + 0.1f, GameSession.getInstance().borders.max.z,
-				GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.max.y + 0.1f, GameSession.getInstance().borders.max.z);
+		renderer.line(GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.min.y, GameSession.getInstance().borders.min.z,
+				GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.max.y, GameSession.getInstance().borders.max.z);
+		renderer.line(GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.min.y, GameSession.getInstance().borders.min.z,
+				GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.max.y, GameSession.getInstance().borders.max.z);
+		renderer.line(GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.min.y, GameSession.getInstance().borders.min.z,
+				GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.max.y, GameSession.getInstance().borders.min.z);
+		renderer.line(GameSession.getInstance().borders.min.x, GameSession.getInstance().borders.min.y, GameSession.getInstance().borders.max.z,
+				GameSession.getInstance().borders.max.x, GameSession.getInstance().borders.max.y, GameSession.getInstance().borders.max.z);
 		
 		//draw player
 		renderer.line(GameSession.getInstance().player.position.x - 1f, GameSession.getInstance().player.position.y, GameSession.getInstance().player.position.z - 1f, 

@@ -24,9 +24,21 @@ uniform mat4 u_modelMatrix;
 varying vec3 v_reflect;
 #endif
 
+#ifndef gpuSkinningFlag
+#define BONES_NUM 0
+#endif
+#if BONES_NUM >0
+uniform mat4 bones[BONES_NUM];
+attribute vec4 a_boneWeight;
+attribute vec4 a_boneIndex;
+#endif
 
 #ifdef fogColorFlag
 varying float v_fog;
+#endif
+
+#ifdef waterFlag
+uniform float time;
 #endif
 
 varying vec2 v_texCoords;
@@ -41,13 +53,30 @@ varying float v_intensity;
 float wrapLight(vec3 nor, vec3 direction){
 	return dot(nor, direction) * 0.5 + 0.5;
 }
+
+#ifdef waterFlag
+vec4 wobble(vec4 pos){
+	pos.y = pos.y + sin(pos.y+time)*0.5;
+	pos.z = pos.z + cos(pos.x+time)*0.1;
+return pos;
+}
+#endif
+
 void main()
 {
+#if BONES_NUM >0
+	mat4 skinning = bones[int(a_boneIndex.x)]*a_boneWeight.x;
+	skinning += bones[int(a_boneIndex.y)]*a_boneWeight.y;
+	skinning += bones[int(a_boneIndex.z)]*a_boneWeight.z;
+	skinning += bones[int(a_boneIndex.w)]*a_boneWeight.w;
+#endif
 
 #ifdef normalsFlag
-
+#if BONES_NUM >0
+	v_normal    = (skinning * vec4(a_normal,0.0)).xyz;
+#else
 	v_normal    = u_normalMatrix * normalize(a_normal);
-
+#endif
 #endif
 
 	#ifdef envmapFlag
@@ -58,11 +87,19 @@ void main()
 
 	v_texCoords = a_texCoord0;
 
+#if BONES_NUM >0	
+	vec4 worldPos = skinning * vec4(a_position,1.0);
+#else
 	vec4 worldPos = u_modelMatrix * vec4(a_position,1.0);
+#endif
+
+    #ifdef waterFlag
+        worldPos = wobble(worldPos);
+    #endif
 
 	gl_Position = u_projectionViewMatrix * worldPos; 
 	vec3 pos  = worldPos.xyz;
-	v_pos = pos;
+	v_pos = pos;	
 	v_eye = camPos.xyz - pos;
 	
 #ifdef fogColorFlag
@@ -71,7 +108,44 @@ void main()
 	v_fog = min(fog, 1.0);
 #endif
 
+#if LIGHTS_NUM > 0
+
+	#ifdef normals
+	float aggWeight =  wrapLight(v_normal, -dirLightDir);
+	vec3  aggDir = -dirLightDir * aggWeight;
+	#else
+	float aggWeight = 1.0;
+	vec3  aggDir = -dirLightDir;
+	#endif
+	vec3  aggCol = dirLightCol * aggWeight;
+
+		
+	for ( int i = 0; i < LIGHTS_NUM; i++ ){
+	
+		vec3 dif  = lightsPos[i] - pos;
+		//fastest way to calculate inverse of length				
+		float invLen = inversesqrt(dot(dif, dif));
+				
+		vec3 L = dif * invLen;// normalize		
+		
+		#ifdef normalsFlag
+		float lambert = wrapLight(v_normal, L);		
+		float weight  = lightsInt[i] * invLen * lambert;
+		#else
+		float weight  = lightsInt[i] * invLen;
+		#endif
+		
+		aggDir   += L * weight;		
+		aggCol   += lightsCol[i] * weight;		
+		aggWeight+= weight;
+		
+	}	
+	v_lightDir   = aggDir / aggWeight;
+	v_lightColor = clamp((aggCol / aggWeight),0.0, 1.0 );
+	v_intensity  = aggWeight;
+#else
 	v_lightDir   = -dirLightDir;
 	v_lightColor = dirLightCol;
 	v_intensity  = 1.0;
+#endif
 }

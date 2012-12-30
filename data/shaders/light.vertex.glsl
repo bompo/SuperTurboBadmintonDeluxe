@@ -37,6 +37,10 @@ attribute vec4 a_boneIndex;
 varying float v_fog;
 #endif
 
+#ifdef waterFlag
+uniform float time;
+#endif
+
 varying vec2 v_texCoords;
 varying vec3 v_normal;
 varying vec3 v_lightDir;
@@ -49,6 +53,15 @@ varying float v_intensity;
 float wrapLight(vec3 nor, vec3 direction){
 	return dot(nor, direction) * 0.5 + 0.5;
 }
+
+#ifdef waterFlag
+vec4 wobble(vec4 pos){
+	pos.y = pos.y + sin(pos.y+time)*0.05;
+	pos.z = pos.z + cos(pos.x+time)*0.1;
+return pos;
+}
+#endif
+
 void main()
 {
 #if BONES_NUM >0
@@ -79,9 +92,14 @@ void main()
 #else
 	vec4 worldPos = u_modelMatrix * vec4(a_position,1.0);
 #endif
+
+    #ifdef waterFlag
+        worldPos = wobble(worldPos);
+    #endif
+
 	gl_Position = u_projectionViewMatrix * worldPos; 
 	vec3 pos  = worldPos.xyz;
-	v_pos = pos;
+	v_pos = pos;	
 	v_eye = camPos.xyz - pos;
 	
 #ifdef fogColorFlag

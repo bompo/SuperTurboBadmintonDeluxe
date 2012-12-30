@@ -14,10 +14,12 @@ import com.badlogic.gdx.graphics.g3d.lights.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.lights.LightManager;
 import com.badlogic.gdx.graphics.g3d.lights.LightManager.LightQuality;
 import com.badlogic.gdx.graphics.g3d.loaders.ModelLoaderRegistry;
+import com.badlogic.gdx.graphics.g3d.materials.AnimateAttribute;
 import com.badlogic.gdx.graphics.g3d.materials.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.materials.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.materials.Material;
 import com.badlogic.gdx.graphics.g3d.materials.MaterialAttribute;
+import com.badlogic.gdx.graphics.g3d.materials.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.model.keyframe.KeyframedAnimation;
 import com.badlogic.gdx.graphics.g3d.model.keyframe.KeyframedModel;
 import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
@@ -53,6 +55,7 @@ public class RenderStadium {
 	AnimatedModelNode instanceOpponent;
 	StillModelNode instanceStadium;
 	StillModelNode instanceBirdie;
+	StillModelNode instanceBirdieShadow;
 	
 	BoundingBox instancePlayerBB;
 	BoundingBox instanceOpponentBB;
@@ -64,6 +67,9 @@ public class RenderStadium {
 
 	StillModel modelBirdie;
 	Texture modelBirdieTex;
+	
+	StillModel modelBirdieShadow;
+	Texture modelBirdieShadowTex;
 
 	StillModel modelCourt;
 	Texture modelCourtTex;
@@ -120,6 +126,11 @@ public class RenderStadium {
 		modelBirdieTex.setFilter(TextureFilter.MipMapLinearLinear,
 				TextureFilter.Linear);
 		modelBirdieTex.getTextureData().useMipMaps();
+		
+		modelBirdieShadow = ModelLoaderRegistry.loadStillModel(Gdx.files
+				.internal("data/birdie_shadow.g3dt"));
+		modelBirdieShadowTex = new Texture(
+				Gdx.files.internal("data/shadow.png"), false);
 
 		modelCourt = ModelLoaderRegistry.loadStillModel(Gdx.files
 				.internal("data/court.g3dt"));
@@ -181,9 +192,12 @@ public class RenderStadium {
 		MaterialAttribute lightPurpleDiffuseColor = new ColorAttribute(new Color(0.5f, 0.0f, 0.2f, 1.0f), ColorAttribute.diffuse);
 		
 		MaterialAttribute waterDiffuseColor = new ColorAttribute(new Color(0.2f, 0.45f, 0.6f, 0.6f), ColorAttribute.diffuse);
+		MaterialAttribute waterAnimationFlag = new AnimateAttribute("water");
 		MaterialAttribute alphaBlending = new BlendingAttribute("translucent");
 		
 		MaterialAttribute netDiffuseColor = new ColorAttribute(new Color(0.95f, 0.95f, 0.95f, 0.8f), ColorAttribute.diffuse);
+		
+		MaterialAttribute birdieShadowColor = new TextureAttribute(modelBirdieShadowTex, 0, TextureAttribute.diffuseTexture);
 		
 		Material clayBlue = new Material("blue", blueDiffuseColor, blueSpecularColor);
 		Material clayWhite = new Material("white", whiteDiffuseColor, whiteSpecularColor);
@@ -196,8 +210,10 @@ public class RenderStadium {
 		
 		Material pureWhite = new Material("pureWhite", pureWhiteDiffuseColor);
 		
-		Material water = new Material("water", waterDiffuseColor, alphaBlending);
+		Material water = new Material("water", waterDiffuseColor, waterAnimationFlag, alphaBlending);
 		Material net = new Material("net", netDiffuseColor, alphaBlending);
+		
+		Material birdieShadow = new Material("birdieShadow", birdieShadowColor);
 				
 		modelOctopus.setMaterial(clayBlue);
 		modelOctopus.getSubMesh("bandana").material = clayWhite;
@@ -214,7 +230,9 @@ public class RenderStadium {
 		modelWater.setMaterial(water);
 		modelNet.setMaterial(net);
 		
-		modelBirdie.setMaterial(pureWhite);	
+		modelBirdie.setMaterial(pureWhite);
+		
+		modelBirdieShadow.setMaterial(birdieShadow);	
 		
 		
 		// create instances
@@ -310,7 +328,7 @@ public class RenderStadium {
 			// birdie	
 			BoundingBox box = new BoundingBox();		
 			instanceBirdie = new StillModelNode();
-			modelOctopus.getBoundingBox(box);
+			modelBirdie.getBoundingBox(box);
 			instanceBirdie.matrix.rotate(Vector3.X, -90);
 			instanceBirdie.matrix.trn(birdie.currentPosition.x, birdie.currentPosition.y, birdie.currentPosition.z);
 			instanceBirdie.matrix.scale(1, 1, 1);
@@ -318,6 +336,17 @@ public class RenderStadium {
 			instanceBirdie.matrix.mul(tmp);
 			box.mul(instanceBirdie.matrix);
 			instanceBirdie.radius = (box.getDimensions().len() / 2);
+		}
+		
+		{
+			// birdie shadow
+			BoundingBox box = new BoundingBox();		
+			instanceBirdieShadow = new StillModelNode();
+			modelBirdieShadow.getBoundingBox(box);
+			instanceBirdieShadow.matrix.trn(birdie.currentPosition.x, 0.1f, birdie.currentPosition.z);
+			instanceBirdieShadow.matrix.scale(1, 1, 1);
+			box.mul(instanceBirdieShadow.matrix);
+			instanceBirdieShadow.radius = (box.getDimensions().len() / 2);
 		}
 			
 		
@@ -332,6 +361,7 @@ public class RenderStadium {
 		protoRenderer.draw(modelOctopus, instancePlayer);	
 		protoRenderer.draw(modelOctopus, instanceOpponent);
 		protoRenderer.draw(modelBirdie, instanceBirdie);
+		protoRenderer.draw(modelBirdieShadow, instanceBirdieShadow);
 		protoRenderer.end();
 		
 //		// render birdie

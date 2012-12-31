@@ -56,8 +56,9 @@ float wrapLight(vec3 nor, vec3 direction){
 
 #ifdef waterFlag
 vec4 wobble(vec4 pos){
-	pos.y = pos.y + sin(pos.y+time)*0.05;
+	pos.y = pos.y + sin(pos.y+time)*0.01;
 	pos.z = pos.z + cos(pos.x+time)*0.1;
+	pos.x = pos.x + sin(pos.x+time)*0.1;
 return pos;
 }
 #endif

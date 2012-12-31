@@ -130,7 +130,12 @@ public class Birdie {
 		}
 		t=0;
 		state = STATE.HELD;
-		GameSession.getInstance().player.state = Player.STATE.IDLE;
+
+		if(GameSession.getInstance().player.state == Player.STATE.AIMING) {
+			GameSession.getInstance().player.aiming = Player.AIMING.IDLE;
+		} else {
+			GameSession.getInstance().player.aiming = Player.AIMING.values()[GameSession.getInstance().player.state.ordinal()];
+		}
 		GameSession.getInstance().player.service = true;
 		
 		smash = false;
@@ -145,8 +150,8 @@ public class Birdie {
 		player.service = false;
 		player.aimTime = 1;
 
-		int tmp = player.aiming.ordinal();
-		player.state = Player.STATE.values()[tmp];
+		//disable aiming state and set same state for moving state
+		player.state = Player.STATE.values()[player.aiming.ordinal()];
 		
 		acceleration = player.aimTime;
 		if(acceleration > 1.f)

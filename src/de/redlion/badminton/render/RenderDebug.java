@@ -30,6 +30,7 @@ public class RenderDebug {
 
 	public void render(PerspectiveCamera cam) {
 		batch.begin();
+		font.draw(batch, "press F1 to leave debug mode", 20, Gdx.graphics.getHeight() - 20);
 		font.draw(batch, Gdx.graphics.getFramesPerSecond() + " fps", 20, 30);
 		font.draw(batch, GameSession.getInstance().player.toString(), 20, 50);
 		font.draw(batch, GameSession.getInstance().opponent.toString(), 20, 70);

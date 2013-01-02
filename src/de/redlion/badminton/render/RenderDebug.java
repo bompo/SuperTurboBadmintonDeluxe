@@ -26,8 +26,6 @@ public class RenderDebug {
 		renderer = new ShapeRenderer();
 	}
 	
-	
-
 	public void render(PerspectiveCamera cam) {
 		batch.begin();
 		font.draw(batch, "press F1 to leave debug mode", 20, Gdx.graphics.getHeight() - 20);
@@ -85,7 +83,6 @@ public class RenderDebug {
 	
 	public void resize(int width, int height) {
 		batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
-
 	}
 
 }

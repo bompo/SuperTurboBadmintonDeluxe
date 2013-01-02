@@ -50,6 +50,7 @@ public class RenderStadium {
 	float alpha = 1;
 	PrototypeRendererGL20 protoRenderer;
 	KeyframedModel modelOctopus;
+	KeyframedModel modelElephant;
 	
 	AnimatedModelNode instancePlayer;
 	AnimatedModelNode instanceOpponent;
@@ -60,7 +61,8 @@ public class RenderStadium {
 	BoundingBox instancePlayerBB;
 	BoundingBox instanceOpponentBB;
 	
-	Material octopus;	
+	Material octopus;
+	Material elephant;
 	
 	StillModel modelPlane;
 	Texture modelPlaneTex;
@@ -157,6 +159,9 @@ public class RenderStadium {
 		modelOctopus = ModelLoaderRegistry.loadKeyframedModel(Gdx.files
 				.internal("data/octopus_anim.g3dt"));
 		
+		modelElephant = ModelLoaderRegistry.loadKeyframedModel(Gdx.files
+				.internal("data/elephant_anim.g3dt"));
+		
 		player = GameSession.getInstance().player;
 		birdie = GameSession.getInstance().birdie;
 		opponent = GameSession.getInstance().opponent;
@@ -177,16 +182,20 @@ public class RenderStadium {
 		MaterialAttribute blueDiffuseColor = new ColorAttribute(new Color(0.1f, 0.2f, 0.91f, 1.0f), ColorAttribute.diffuse);
 		MaterialAttribute yellowDiffuseColor = new ColorAttribute(new Color(1f, 0.7f, 0.0f, 1.0f), ColorAttribute.diffuse);
 		MaterialAttribute redDiffuseColor = new ColorAttribute(new Color(0.8f, 0.0f, 0.3f, 1.0f), ColorAttribute.diffuse);
+		MaterialAttribute lightRedDiffuseColor = new ColorAttribute(new Color(0.7f, 0.02f, 0.01f, 1.0f), ColorAttribute.diffuse);
 		MaterialAttribute whiteDiffuseColor = new ColorAttribute(new Color(1.0f, 1.0f, 1.0f, 1.0f), ColorAttribute.diffuse);
 		MaterialAttribute blackDiffuseColor = new ColorAttribute(new Color(0.01f, 0.01f, 0.01f, 1.0f), ColorAttribute.diffuse);
+		MaterialAttribute brownDiffuseColor = new ColorAttribute(new Color(1.0f, 0.35f, 0.00f, 1.0f), ColorAttribute.diffuse);
 		
 		MaterialAttribute pureWhiteDiffuseColor = new ColorAttribute(new Color(0.99f, 0.99f, 0.99f, 1.0f), ColorAttribute.diffuse);
 		
 		MaterialAttribute blueSpecularColor = new ColorAttribute(new Color(0.0f, 0.04f, 0.49f, 1.0f), ColorAttribute.specular);
 		MaterialAttribute yellowSpecularColor = new ColorAttribute(new Color(0.58f, 0.35f, 0.0f, 1.0f), ColorAttribute.specular);
 		MaterialAttribute redSpecularColor = new ColorAttribute(new Color(0.2f, 0.0f, 0.03f, 1.0f), ColorAttribute.specular);
+		MaterialAttribute lightRedSpecularColor = new ColorAttribute(new Color(0.2f, 0.0f, 0.03f, 1.0f), ColorAttribute.specular);
 		MaterialAttribute whiteSpecularColor = new ColorAttribute(new Color(0.6f, 0.6f, 0.6f, 1.0f), ColorAttribute.specular);
 		MaterialAttribute blackSpecularColor = new ColorAttribute(new Color(0.01f, 0.01f, 0.01f, 1.0f), ColorAttribute.specular);
+		MaterialAttribute brownSpecularColor = new ColorAttribute(new Color(0.5f, 0.25f, 0.00f, 1.0f), ColorAttribute.specular);
 		
 		MaterialAttribute darkPurpleDiffuseColor = new ColorAttribute(new Color(0.3f, 0.0f, 0.2f, 1.0f), ColorAttribute.diffuse);
 		MaterialAttribute lightPurpleDiffuseColor = new ColorAttribute(new Color(0.5f, 0.0f, 0.2f, 1.0f), ColorAttribute.diffuse);
@@ -203,7 +212,9 @@ public class RenderStadium {
 		Material clayWhite = new Material("white", whiteDiffuseColor, whiteSpecularColor);
 		Material clayBlack = new Material("black", blackDiffuseColor, blackSpecularColor);
 		Material clayRed = new Material("red", redDiffuseColor, redSpecularColor);
-		Material clayYellow = new Material("tentacle", yellowDiffuseColor, yellowSpecularColor);
+		Material clayLightRed = new Material("lightRed", lightRedDiffuseColor, lightRedSpecularColor);
+		Material clayYellow = new Material("yellow", yellowDiffuseColor, yellowSpecularColor);
+		Material clayBrown = new Material("brown", brownDiffuseColor, brownSpecularColor);
 		
 		Material darkPurple = new Material("court", darkPurpleDiffuseColor);
 		Material lightPurple = new Material("outerCourt", lightPurpleDiffuseColor);
@@ -223,6 +234,13 @@ public class RenderStadium {
 		modelOctopus.getSubMesh("suckers").material = clayRed;
 		modelOctopus.getSubMesh("tentacles").material = clayYellow;
 		
+		modelElephant.setMaterial(clayYellow);
+		modelElephant.getSubMesh("bandana").material = clayLightRed;
+		modelElephant.getSubMesh("pupille").material = clayBlack;
+		modelElephant.getSubMesh("horn").material = clayBrown;
+		modelElephant.getSubMesh("fingers").material = clayRed;
+		modelElephant.getSubMesh("eyes").material = clayWhite;
+		
 		modelStadium.setMaterial(pureWhite);
 		modelStadium.getSubMesh("playground").material = lightPurple;
 		modelStadium.getSubMesh("playfield").material = darkPurple;
@@ -237,31 +255,31 @@ public class RenderStadium {
 		
 		// create instances
 		{
-		instancePlayerBB = new BoundingBox();		
-		instancePlayer = new AnimatedModelNode();
-		modelOctopus.getBoundingBox(instancePlayerBB);
-		instancePlayer.matrix.trn(player.position.x, player.position.y, player.position.z);
-		instancePlayerBB.mul(instancePlayer.matrix);
-		instancePlayer.radius = (instancePlayerBB.getDimensions().len() / 2);
-		
-		KeyframedAnimation[] animations = modelOctopus.getAnimations();
-		instancePlayer.animation = animations[0].name;
-		instancePlayer.time = MathUtils.random(animations[0].totalDuration);
-		instancePlayer.looping = true;
+			instancePlayerBB = new BoundingBox();		
+			instancePlayer = new AnimatedModelNode();
+			modelOctopus.getBoundingBox(instancePlayerBB);
+			instancePlayer.matrix.trn(player.position.x, player.position.y, player.position.z);
+			instancePlayerBB.mul(instancePlayer.matrix);
+			instancePlayer.radius = (instancePlayerBB.getDimensions().len() / 2);
+			
+			KeyframedAnimation[] animations = modelOctopus.getAnimations();
+			instancePlayer.animation = animations[0].name;
+			instancePlayer.time = MathUtils.random(animations[0].totalDuration);
+			instancePlayer.looping = true;
 		}
 		
 		{
-		instanceOpponentBB = new BoundingBox();		
-		instanceOpponent = new AnimatedModelNode();
-		modelOctopus.getBoundingBox(instanceOpponentBB);
-		instanceOpponent.matrix.trn(opponent.position.x, opponent.position.y, opponent.position.z);
-		instanceOpponentBB.mul(instanceOpponent.matrix);
-		instanceOpponent.radius = (instanceOpponentBB.getDimensions().len() / 2);
-		
-		KeyframedAnimation[] animations = modelOctopus.getAnimations();
-		instanceOpponent.animation = animations[0].name;
-		instanceOpponent.time = MathUtils.random(animations[0].totalDuration);
-		instanceOpponent.looping = true;
+			instanceOpponentBB = new BoundingBox();		
+			instanceOpponent = new AnimatedModelNode();
+			modelElephant.getBoundingBox(instanceOpponentBB);
+			instanceOpponent.matrix.trn(opponent.position.x, opponent.position.y, opponent.position.z);
+			instanceOpponentBB.mul(instanceOpponent.matrix);
+			instanceOpponent.radius = (instanceOpponentBB.getDimensions().len() / 2);
+			
+			KeyframedAnimation[] animations = modelElephant.getAnimations();
+			instanceOpponent.animation = animations[0].name;
+			instanceOpponent.time = MathUtils.random(animations[0].totalDuration);
+			instanceOpponent.looping = true;
 		}
 		
 		
@@ -312,13 +330,13 @@ public class RenderStadium {
 			}
 			
 			instanceOpponent.matrix.idt();
-			instanceOpponent.matrix.rotate(Vector3.Y, 180);
+//			instanceOpponent.matrix.rotate(Vector3.Y, 180);
 			instanceOpponent.matrix.trn(opponent.position.x, opponent.position.y, opponent.position.z);
 //			instanceOpponent.matrix.scale(scaler, scaler, scaler);
 			instanceOpponentBB.mul(instanceOpponent.matrix);
 			
 			instanceOpponent.time = opponent.keyframeAnimTime;
-			if (instanceOpponent.time > modelOctopus.getAnimations()[0].totalDuration - 0.3f) {
+			if (instanceOpponent.time > modelElephant.getAnimations()[0].totalDuration - 0.3f) {
 				opponent.keyframeAnimTime = 0;
 				instanceOpponent.time = 0;
 			}
@@ -359,7 +377,7 @@ public class RenderStadium {
 		protoRenderer.draw(modelWater, instanceStadium);
 		protoRenderer.draw(modelNet, instanceStadium);
 		protoRenderer.draw(modelOctopus, instancePlayer);	
-		protoRenderer.draw(modelOctopus, instanceOpponent);
+		protoRenderer.draw(modelElephant, instanceOpponent);
 		protoRenderer.draw(modelBirdie, instanceBirdie);
 		protoRenderer.draw(modelBirdieShadow, instanceBirdieShadow);
 		protoRenderer.end();

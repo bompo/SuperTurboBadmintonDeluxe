@@ -159,37 +159,77 @@ public class Birdie {
 		t=0;
 		fromPosition = currentPosition.cpy();
 		
-		if(player.aiming == Player.AIMING.LEFT) {
-			toPosition.x = fromPosition.x - acceleration * 4;
-			if(toPosition.x < GameSession.getInstance().borders.min.x)
-				toPosition.x = GameSession.getInstance().borders.min.x;
-			toPosition.z = GameSession.getInstance().borders.min.z + (fromPosition.z /3);
-		}
-		else if(player.aiming == Player.AIMING.RIGHT) {
-			toPosition.x = fromPosition.x + acceleration * 4;
-			if(toPosition.x > GameSession.getInstance().borders.max.x)
-				toPosition.x = GameSession.getInstance().borders.max.x;
-			toPosition.z = GameSession.getInstance().borders.min.z + (fromPosition.z /7);
-		}
-		else if(player.aiming == Player.AIMING.UPLEFT) {
-			toPosition.x = fromPosition.x - 0.8f * acceleration * 4;
-			if(toPosition.x < GameSession.getInstance().borders.min.x)
-				toPosition.x = GameSession.getInstance().borders.min.x;
-			toPosition.z = -3 - acceleration * 4 + (fromPosition.z /7);
-			if(toPosition.z < GameSession.getInstance().borders.min.z)
-				toPosition.z = GameSession.getInstance().borders.min.z;
-		}
-		else if(player.aiming == Player.AIMING.UPRIGHT) {
-			toPosition.x = fromPosition.x + 0.8f * acceleration * 4;
-			if(toPosition.x > GameSession.getInstance().borders.max.x)
-				toPosition.x = GameSession.getInstance().borders.max.x;
-			toPosition.z = -3 - acceleration * 4 + (fromPosition.z /7);
-			if(toPosition.z < GameSession.getInstance().borders.min.z)
-				toPosition.z = GameSession.getInstance().borders.min.z;
-		}
-		else { 
-			toPosition.x = 0;
-			toPosition.z = -2.5f * acceleration * 4 + (fromPosition.z /7);
+		if(player.side == Player.SIDE.BOTTOM) {
+				
+			if(player.aiming == Player.AIMING.LEFT) {
+				toPosition.x = fromPosition.x - acceleration * 4;
+				if(toPosition.x < GameSession.getInstance().borders.min.x)
+					toPosition.x = GameSession.getInstance().borders.min.x;
+				toPosition.z = GameSession.getInstance().borders.min.z + (fromPosition.z /3);
+			}
+			else if(player.aiming == Player.AIMING.RIGHT) {
+				toPosition.x = fromPosition.x + acceleration * 4;
+				if(toPosition.x > GameSession.getInstance().borders.max.x)
+					toPosition.x = GameSession.getInstance().borders.max.x;
+				toPosition.z = GameSession.getInstance().borders.min.z + (fromPosition.z /7);
+			}
+			else if(player.aiming == Player.AIMING.UPLEFT) {
+				toPosition.x = fromPosition.x - 0.8f * acceleration * 4;
+				if(toPosition.x < GameSession.getInstance().borders.min.x)
+					toPosition.x = GameSession.getInstance().borders.min.x;
+				toPosition.z = -3 - acceleration * 4 + (fromPosition.z /7);
+				if(toPosition.z < GameSession.getInstance().borders.min.z)
+					toPosition.z = GameSession.getInstance().borders.min.z;
+			}
+			else if(player.aiming == Player.AIMING.UPRIGHT) {
+				toPosition.x = fromPosition.x + 0.8f * acceleration * 4;
+				if(toPosition.x > GameSession.getInstance().borders.max.x)
+					toPosition.x = GameSession.getInstance().borders.max.x;
+				toPosition.z = -3 - acceleration * 4 + (fromPosition.z /7);
+				if(toPosition.z < GameSession.getInstance().borders.min.z)
+					toPosition.z = GameSession.getInstance().borders.min.z;
+			}
+			else { 
+				toPosition.x = 0;
+				toPosition.z = -2.5f * acceleration * 4 + (fromPosition.z /7);
+			}
+				
+		} else {
+			
+			if(player.aiming == Player.AIMING.LEFT) {
+				toPosition.x = fromPosition.x + acceleration * 4;
+				if(toPosition.x < GameSession.getInstance().borders.max.x)
+					toPosition.x = GameSession.getInstance().borders.max.x;
+				toPosition.z = GameSession.getInstance().borders.max.z + (fromPosition.z /3);
+			}
+			else if(player.aiming == Player.AIMING.RIGHT) {
+				toPosition.x = fromPosition.x - acceleration * 4;
+				if(toPosition.x > GameSession.getInstance().borders.min.x)
+					toPosition.x = GameSession.getInstance().borders.min.x;
+				toPosition.z = GameSession.getInstance().borders.max.z + (fromPosition.z /7);
+			}
+			else if(player.aiming == Player.AIMING.UPLEFT) {
+				toPosition.x = fromPosition.x + 0.8f * acceleration * 4;
+				if(toPosition.x < GameSession.getInstance().borders.min.x)
+					toPosition.x = GameSession.getInstance().borders.min.x;
+				toPosition.z = 3 + acceleration * 4 + (fromPosition.z /7);
+				if(toPosition.z < GameSession.getInstance().borders.max.z)
+					toPosition.z = GameSession.getInstance().borders.max.z;
+			}
+			else if(player.aiming == Player.AIMING.UPRIGHT) {
+				toPosition.x = fromPosition.x - 0.8f * acceleration * 4;
+				if(toPosition.x > GameSession.getInstance().borders.max.x)
+					toPosition.x = GameSession.getInstance().borders.max.x;
+				toPosition.z = 3 + acceleration * 4 + (fromPosition.z /7);
+				if(toPosition.z < GameSession.getInstance().borders.max.z)
+					toPosition.z = GameSession.getInstance().borders.max.z;
+			}
+			else { 
+				toPosition.x = 0;
+				toPosition.z = 2.5f * acceleration * 4 + (fromPosition.z /7);
+			}
+			
+			
 		}
 		
 		if(acceleration > 1.5f && !high) {

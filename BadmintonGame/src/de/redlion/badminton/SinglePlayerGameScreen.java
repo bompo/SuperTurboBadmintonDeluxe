@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 import de.redlion.badminton.controls.SinglePlayerControls;
@@ -163,10 +164,18 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 		birdie.update();
 		opponent.update(player.position);
 
-		if (opponent.position.dst(birdie.currentPosition) < 1.0f
+		if (opponent.position.dst(birdie.currentPosition) < 4.0f
 				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {
+			System.out.println("hit by opponent");
 			birdie.state = Birdie.STATE.HITBYOPPONENT;  //TODO quote-unquote to test movements
-			birdie.hit(false);
+
+			int randomAim = MathUtils.random(0, 3);
+			if(randomAim == 0) opponent.aiming = Player.AIMING.LEFT;
+			if(randomAim == 1) opponent.aiming = Player.AIMING.RIGHT;
+			if(randomAim == 2) opponent.aiming = Player.AIMING.UPLEFT;
+			if(randomAim == 3) opponent.aiming = Player.AIMING.UPRIGHT;
+			
+			birdie.hit(opponent,false);
 		}
 	}
 

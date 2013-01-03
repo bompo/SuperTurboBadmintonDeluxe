@@ -22,7 +22,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 public class ScreenshotSaver {
 
 	public static void saveScreenshot(String baseName) throws IOException {
-		if(Gdx.app.getType()==ApplicationType.Android){
+		if(Gdx.app.getType() == ApplicationType.Android || Gdx.app.getType()==ApplicationType.WebGL){
 			return;
 		}
 

@@ -9,6 +9,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector3;
 
 import de.redlion.badminton.Birdie;
+import de.redlion.badminton.Birdie.STATE;
 import de.redlion.badminton.Configuration;
 import de.redlion.badminton.GameSession;
 import de.redlion.badminton.Player;
@@ -289,6 +290,7 @@ public class GameControls implements InputProcessor {
 //		}
 		if (keycode == Input.Keys.R) {
 			GameSession.getInstance().birdie.currentPosition = new Vector3(2, 5, -0.5f);
+			GameSession.getInstance().birdie.state = STATE.HELD;
 		}
 		
 		player.moveTime = 0.0f;

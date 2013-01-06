@@ -82,9 +82,6 @@ public class RenderStadium {
 	Player player;
 	Opponent opponent;
 
-	// GLES20
-	Matrix4 model = new Matrix4().idt();
-	Matrix4 normal = new Matrix4().idt();
 	Matrix4 tmp = new Matrix4().idt();
 
 	Preferences prefs;

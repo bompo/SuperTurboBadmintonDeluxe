@@ -268,7 +268,7 @@ public class Player {
 	}
 	
 	public String toString() {
-		return this.getClass().getSimpleName() + " State: " + state + " Aiming: " + aiming + " Position: "
+		return "Player " + " State: " + state + " Aiming: " + aiming + " Position: "
 				+ (float) MathUtils.round(position.x * 10) / 10. + " " 
 				+ (float) MathUtils.round(position.y * 10) / 10. + " "
 				+ (float) MathUtils.round(position.z * 10) / 10. + " Direction: "

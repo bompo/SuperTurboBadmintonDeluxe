@@ -3,6 +3,7 @@ d:data
 i:data/white.png
 i:data/uiskin.png
 t:data/default.fnt
+b:data/elephant_anim.g3d
 i:data/birdie_diff.png
 b:data/octopus.g3dt
 b:data/plane.g3dt
@@ -28,12 +29,14 @@ t:data/shaders/vertexpath.vertex.glsl
 b:data/shaders/light.fragment.glsl~
 b:data/shaders/vertexpath.fragment.glsl~
 b:data/elephant_anim.g3dt
+b:data/octopus_anim.g3d
 b:data/court.g3dt
 b:data/octopus_anim.g3dt
 t:data/uiskin.xml
 i:data/shadow.png
 b:data/birdie.g3dt
 b:data/water.g3dt
+b:data/stadium.g3d
 i:data/libgdx.png
 b:data/net.g3dt
 i:data/black.png

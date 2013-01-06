@@ -18,14 +18,14 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.ui.FlickScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import de.redlion.badminton.network.Network;
 import de.redlion.badminton.network.Room;
@@ -82,138 +82,137 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		font = Resources.getInstance().font;
 		font.setScale(1);
 		
-		skin = new Skin(Gdx.files.internal("data/uiskin.json"), Gdx.files.internal("data/uiskin.png"));
+		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 		
 		//ui stuff	
 		container = new Table();
 		container.setSkin(skin);
 		ui.addActor(container);
-		container.getTableLayout().debug();
 
 		table = new Table();
 		table.setSkin(skin);
-		FlickScrollPane scroll = new FlickScrollPane(table);
+		ScrollPane scroll = new ScrollPane(table);
 		container.add(scroll).expand().fill();
-		table.parse("pad:10 * expand:x space:4");
+		table.add("pad:10 * expand:x space:4");
 
 		
 		
 		
-		container.getTableLayout().row().left();
-		TextButton createRoom = new TextButton("Create Room", skin);
-		createRoom.setClickListener(new ClickListener() {
-			
-			@Override
-			public void click(Actor arg0, float arg1, float arg2) {
-				
-				final Table temp = new Table(skin);
-				temp.width = 300;
-				temp.height = 150;
-				temp.y = Gdx.graphics.getHeight() / 2 - temp.height / 2;
-				temp.x = Gdx.graphics.getWidth() / 2 - temp.width / 2;
-
-				temp.setBackground(new NinePatch(blackFade));
-				createRoomMenu.addActor(temp);
-				
-				final TextField name = new TextField("Name", skin);
-				final TextField pass = new TextField("Password", skin);
-				pass.visible = false;
-				
-				final CheckBox check = new CheckBox("Private", skin);
-				check.setClickListener(new ClickListener() {					
-					@Override
-					public void click(Actor arg0, float arg1, float arg2) {						
-						pass.visible = !pass.visible;						
-					}
-				});
-						
-				final TextButton cancel = new TextButton("Cancel", skin);
-				cancel.setClickListener(new ClickListener() {
-					
-					@Override
-					public void click(Actor arg0, float arg1, float arg2) {
-						
-						if(waiting) {
-							Network.getInstance().sendLeaveRoom();
-						}
-						
-						createRoomMenu.clear();
-						Gdx.input.setInputProcessor(ui);
-						creating = false;
-						waiting = false;
-						
-					}
-				});
-				
-				TextButton create = new TextButton("Create", skin);
-				
-				create.setClickListener(new ClickListener() {
-					
-					@Override
-					public void click(Actor arg0, float arg1, float arg2) {
-
-						waiting = true;
-						
-						
-						if(check.isChecked()) {
-							Network.getInstance().sendCreatePrivateRoom(name.getText(),pass.getText());
-						} else {
-							Network.getInstance().sendCreateRoom(name.getText());
-						}						
-						
-						temp.clear();
-						
-						Label waiting = new Label("Waiting For Challenger...", skin);
-						waiting.setColor(1,1,1,1);
-						
-						temp.add(waiting).top();
-						temp.row();
-						temp.add(cancel).right();
-						
-						
-						//change to multiplayer
-					}
-				});
-				
-				temp.row();
-				temp.add(new Label("Create Room", skin)).left();
-				temp.row();
-				temp.add(name);
-				temp.row();
-				temp.add(pass).left();
-				temp.add(check).right();
-				temp.row();
-				temp.add(create).left();
-				temp.add(cancel);
-				
-				Gdx.input.setInputProcessor(createRoomMenu);
-				
-				creating = true;
-			}
-		});
-		
-
-		
-
-		TextButton back = new TextButton("Back", skin);
-		back.setClickListener(new ClickListener() {
-			
-			@Override
-			public void click(Actor arg0, float arg1, float arg2) {
-				
-				mode = MODE.TITLESCREEN;
-				finished = true;
-				
-			}
-		});
-		
-		Table buttons = new Table(skin);
-
-		container.add(buttons).expandX().fill();
-		
-		buttons.left();
-		buttons.add(createRoom);
-		buttons.add(back).expandX().right();
+//		container.getTableLayout().row().left();
+//		TextButton createRoom = new TextButton("Create Room", skin);
+//		createRoom.setClickListener(new ClickListener() {
+//			
+//			@Override
+//			public void click(Actor arg0, float arg1, float arg2) {
+//				
+//				final Table temp = new Table(skin);
+//				temp.width = 300;
+//				temp.height = 150;
+//				temp.y = Gdx.graphics.getHeight() / 2 - temp.height / 2;
+//				temp.x = Gdx.graphics.getWidth() / 2 - temp.width / 2;
+//
+//				temp.setBackground(new NinePatch(blackFade));
+//				createRoomMenu.addActor(temp);
+//				
+//				final TextField name = new TextField("Name", skin);
+//				final TextField pass = new TextField("Password", skin);
+//				pass.visible = false;
+//				
+//				final CheckBox check = new CheckBox("Private", skin);
+//				check.setClickListener(new ClickListener() {					
+//					@Override
+//					public void click(Actor arg0, float arg1, float arg2) {						
+//						pass.visible = !pass.visible;						
+//					}
+//				});
+//						
+//				final TextButton cancel = new TextButton("Cancel", skin);
+//				cancel.setClickListener(new ClickListener() {
+//					
+//					@Override
+//					public void click(Actor arg0, float arg1, float arg2) {
+//						
+//						if(waiting) {
+//							Network.getInstance().sendLeaveRoom();
+//						}
+//						
+//						createRoomMenu.clear();
+//						Gdx.input.setInputProcessor(ui);
+//						creating = false;
+//						waiting = false;
+//						
+//					}
+//				});
+//				
+//				TextButton create = new TextButton("Create", skin);
+//				
+//				create.setClickListener(new ClickListener() {
+//					
+//					@Override
+//					public void click(Actor arg0, float arg1, float arg2) {
+//
+//						waiting = true;
+//						
+//						
+//						if(check.isChecked()) {
+//							Network.getInstance().sendCreatePrivateRoom(name.getText(),pass.getText());
+//						} else {
+//							Network.getInstance().sendCreateRoom(name.getText());
+//						}						
+//						
+//						temp.clear();
+//						
+//						Label waiting = new Label("Waiting For Challenger...", skin);
+//						waiting.setColor(1,1,1,1);
+//						
+//						temp.add(waiting).top();
+//						temp.row();
+//						temp.add(cancel).right();
+//						
+//						
+//						//change to multiplayer
+//					}
+//				});
+//				
+//				temp.row();
+//				temp.add(new Label("Create Room", skin)).left();
+//				temp.row();
+//				temp.add(name);
+//				temp.row();
+//				temp.add(pass).left();
+//				temp.add(check).right();
+//				temp.row();
+//				temp.add(create).left();
+//				temp.add(cancel);
+//				
+//				Gdx.input.setInputProcessor(createRoomMenu);
+//				
+//				creating = true;
+//			}
+//		});
+//		
+//
+//		
+//
+//		TextButton back = new TextButton("Back", skin);
+//		back.setClickListener(new ClickListener() {
+//			
+//			@Override
+//			public void click(Actor arg0, float arg1, float arg2) {
+//				
+//				mode = MODE.TITLESCREEN;
+//				finished = true;
+//				
+//			}
+//		});
+//		
+//		Table buttons = new Table(skin);
+//
+//		container.add(buttons).expandX().fill();
+//		
+//		buttons.left();
+//		buttons.add(createRoom);
+//		buttons.add(back).expandX().right();
 		
 		
 		
@@ -232,8 +231,6 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		super.resize(width, height);
 		
 		ui.setViewport(width, height, false);
-		container.width = width;
-        container.height = height;
         
 		Vector3 oldPosition = new Vector3();
 		Vector3 oldDirection = new Vector3();
@@ -344,187 +341,187 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	}
 
 	private void checkForNewRooms() {
-		if(roomCnt != Network.getInstance().rooms.size()) {
-			//refresh table
-			table.reset();
-	        int roomNumber = 1;
-	        
-	        Network.getInstance().sortRooms();
-	        
-	        
-	        for (final Room room: Network.getInstance().rooms) {
-	        	
-        		if(!room.hasPass) {
-        			Label playerCount = new Label(room.playersCnt + "/2", skin);
-        			Label roomInfo = new Label(room.name, skin);
-        			
-	        		TextButton join = new TextButton(skin);
-	        		
-	        		if(room.playersCnt < 2) {
-		    			join.setClickListener(new ClickListener() {
-		    				
-		    				@Override
-		    				public void click(Actor arg0, float arg1, float arg2) {
-		    					Network.getInstance().sendJoinRoom(room.id);
-								joining = true;
-
-								final Table temp = new Table(skin);
-								temp.width = 300;
-								temp.height = 150;
-								temp.y = Gdx.graphics.getHeight() / 2
-										- temp.height / 2;
-								temp.x = Gdx.graphics.getWidth() / 2
-										- temp.width / 2;
-
-								temp.setBackground(new NinePatch(blackFade));
-								createRoomMenu.addActor(temp);
-
-								temp.clear();
-
-								Label joinText = new Label("Joining...", skin);
-								joinText.setColor(1, 1, 1, 1);
-								
-								final TextButton cancel = new TextButton("Cancel", skin);
-								cancel.setClickListener(new ClickListener() {
-									
-									@Override
-									public void click(Actor arg0, float arg1, float arg2) {
-										
-										if(joining) {
-											Network.getInstance().sendLeaveRoom();
-										}
-										
-										createRoomMenu.clear();
-										Gdx.input.setInputProcessor(ui);
-										creating = false;
-										waiting = false;
-										joining = false;
-										
-									}
-								});
-								
-								temp.add(joinText).top();
-								temp.row();
-								temp.add(cancel).right();
-								
-								Gdx.input.setInputProcessor(createRoomMenu);
-		    						
-		    				}
-		    			});
-		    			roomInfo.setColor(1,1,1,1);
-		    			playerCount.setColor(1,1,1,1);
-	        		}
-	        		else {
-	        			roomInfo.setColor(0,0,0,0.5f);
-		    			playerCount.setColor(0,0,0,0.5f);
-	        		}
-	        		join.getTableLayout().skin = skin;
-	        		join.add(roomInfo).center();
-	        		join.add(playerCount).right();
-	    			table.row();
-	    			table.add(join).fill().expandX();
-	    			roomNumber++;
-        		} else {
-        			//private room, check pass with server
-        			Label playerCount = new Label(room.playersCnt + "/2", skin);
-        			Label roomInfo = new Label(room.name, skin);
-	        		TextButton join = new TextButton(skin);
-	        		
-	        		
-        			
-        			if(room.playersCnt < 2) {
-		    			join.setClickListener(new ClickListener() {
-		    				
-		    				
-		    				@Override
-		    				public void click(Actor arg0, float arg1, float arg2) {
-		    					joining = true;
-		    					
-		    					final Table temp = new Table(skin);
-		    					temp.width = 300;
-		    					temp.height = 150;
-		    					temp.y = Gdx.graphics.getHeight() / 2 - temp.height / 2;
-		    					temp.x = Gdx.graphics.getWidth() / 2 - temp.width / 2;
-
-		    					temp.setBackground(new NinePatch(blackFade));
-		    					createRoomMenu.addActor(temp);
-		    					
-		    					Label passText = new Label("Enter Password:", skin);
-								passText.setColor(1, 1, 1, 1);
-		    					
-								final TextButton cancel = new TextButton("Cancel", skin);
-								cancel.setClickListener(new ClickListener() {
-									
-									@Override
-									public void click(Actor arg0, float arg1, float arg2) {
-										
-										if(joining) {
-											Network.getInstance().sendLeaveRoom();
-										}
-										
-										createRoomMenu.clear();
-										Gdx.input.setInputProcessor(ui);
-										creating = false;
-										waiting = false;
-										joining = false;
-										
-									}
-								});
-								
-		    					final TextField pass = new TextField("Password", skin);
-		    					TextButton enter = new TextButton("Enter", skin);	    					
-		    					
-		    					enter.setClickListener(new ClickListener() {
-									
-									@Override
-									public void click(Actor arg0, float arg1, float arg2) {
-				    					
-				    					Network.getInstance().sendJoinPrivateRoom(room.id, pass.getText());
-				    					joining = true;
-										
-										//TODO if pass.getText().equals(room.pass)
-										
-										temp.clear();
-										Label joinText = new Label("Joining...", skin);
-										joinText.setColor(1, 1, 1, 1);
-										
-										temp.add(joinText);
-										temp.row();
-										temp.add(cancel).right();
-										
-									}
-								});    					
-		    					
-		    					
-								temp.add(passText).top().left();
-								temp.row();
-		    					temp.add(pass);
-		    					temp.add(enter);
-		    					temp.row();
-		    					temp.add(cancel).right();
-		    					Gdx.input.setInputProcessor(createRoomMenu);
-		    					
-		    				}
-		    			});
-	        			roomInfo.setColor(1,1,1,1);
-		    			playerCount.setColor(1,1,1,1);
-        			}
-        			else {
-        				roomInfo.setColor(0,0,0,0.5f);
-		    			playerCount.setColor(0,0,0,0.5f);
-	        		}
-        			Image locked = new Image(Resources.getInstance().lock);
-        			join.add(roomInfo).center();
-        			join.add(locked).width(28).height((int) join.height).right();
-        			join.add(playerCount).right();
-	    			table.row();
-	    			table.add(join).fill().expandX();
-	    			roomNumber++;
-        		}
-	        }
-	        roomCnt = Network.getInstance().rooms.size();
-	        
-		}
+//		if(roomCnt != Network.getInstance().rooms.size()) {
+//			//refresh table
+//			table.reset();
+//	        int roomNumber = 1;
+//	        
+//	        Network.getInstance().sortRooms();
+//	        
+//	        
+//	        for (final Room room: Network.getInstance().rooms) {
+//	        	
+//        		if(!room.hasPass) {
+//        			Label playerCount = new Label(room.playersCnt + "/2", skin);
+//        			Label roomInfo = new Label(room.name, skin);
+//        			
+//	        		TextButton join = new TextButton(skin);
+//	        		
+//	        		if(room.playersCnt < 2) {
+//		    			join.setClickListener(new ClickListener() {
+//		    				
+//		    				@Override
+//		    				public void click(Actor arg0, float arg1, float arg2) {
+//		    					Network.getInstance().sendJoinRoom(room.id);
+//								joining = true;
+//
+//								final Table temp = new Table(skin);
+//								temp.width = 300;
+//								temp.height = 150;
+//								temp.y = Gdx.graphics.getHeight() / 2
+//										- temp.height / 2;
+//								temp.x = Gdx.graphics.getWidth() / 2
+//										- temp.width / 2;
+//
+//								temp.setBackground(new NinePatch(blackFade));
+//								createRoomMenu.addActor(temp);
+//
+//								temp.clear();
+//
+//								Label joinText = new Label("Joining...", skin);
+//								joinText.setColor(1, 1, 1, 1);
+//								
+//								final TextButton cancel = new TextButton("Cancel", skin);
+//								cancel.setClickListener(new ClickListener() {
+//									
+//									@Override
+//									public void click(Actor arg0, float arg1, float arg2) {
+//										
+//										if(joining) {
+//											Network.getInstance().sendLeaveRoom();
+//										}
+//										
+//										createRoomMenu.clear();
+//										Gdx.input.setInputProcessor(ui);
+//										creating = false;
+//										waiting = false;
+//										joining = false;
+//										
+//									}
+//								});
+//								
+//								temp.add(joinText).top();
+//								temp.row();
+//								temp.add(cancel).right();
+//								
+//								Gdx.input.setInputProcessor(createRoomMenu);
+//		    						
+//		    				}
+//		    			});
+//		    			roomInfo.setColor(1,1,1,1);
+//		    			playerCount.setColor(1,1,1,1);
+//	        		}
+//	        		else {
+//	        			roomInfo.setColor(0,0,0,0.5f);
+//		    			playerCount.setColor(0,0,0,0.5f);
+//	        		}
+//	        		join.getTableLayout().skin = skin;
+//	        		join.add(roomInfo).center();
+//	        		join.add(playerCount).right();
+//	    			table.row();
+//	    			table.add(join).fill().expandX();
+//	    			roomNumber++;
+//        		} else {
+//        			//private room, check pass with server
+//        			Label playerCount = new Label(room.playersCnt + "/2", skin);
+//        			Label roomInfo = new Label(room.name, skin);
+//	        		TextButton join = new TextButton(skin);
+//	        		
+//	        		
+//        			
+//        			if(room.playersCnt < 2) {
+//		    			join.setClickListener(new ClickListener() {
+//		    				
+//		    				
+//		    				@Override
+//		    				public void click(Actor arg0, float arg1, float arg2) {
+//		    					joining = true;
+//		    					
+//		    					final Table temp = new Table(skin);
+//		    					temp.width = 300;
+//		    					temp.height = 150;
+//		    					temp.y = Gdx.graphics.getHeight() / 2 - temp.height / 2;
+//		    					temp.x = Gdx.graphics.getWidth() / 2 - temp.width / 2;
+//
+//		    					temp.setBackground(new NinePatch(blackFade));
+//		    					createRoomMenu.addActor(temp);
+//		    					
+//		    					Label passText = new Label("Enter Password:", skin);
+//								passText.setColor(1, 1, 1, 1);
+//		    					
+//								final TextButton cancel = new TextButton("Cancel", skin);
+//								cancel.setClickListener(new ClickListener() {
+//									
+//									@Override
+//									public void click(Actor arg0, float arg1, float arg2) {
+//										
+//										if(joining) {
+//											Network.getInstance().sendLeaveRoom();
+//										}
+//										
+//										createRoomMenu.clear();
+//										Gdx.input.setInputProcessor(ui);
+//										creating = false;
+//										waiting = false;
+//										joining = false;
+//										
+//									}
+//								});
+//								
+//		    					final TextField pass = new TextField("Password", skin);
+//		    					TextButton enter = new TextButton("Enter", skin);	    					
+//		    					
+//		    					enter.setClickListener(new ClickListener() {
+//									
+//									@Override
+//									public void click(Actor arg0, float arg1, float arg2) {
+//				    					
+//				    					Network.getInstance().sendJoinPrivateRoom(room.id, pass.getText());
+//				    					joining = true;
+//										
+//										//TODO if pass.getText().equals(room.pass)
+//										
+//										temp.clear();
+//										Label joinText = new Label("Joining...", skin);
+//										joinText.setColor(1, 1, 1, 1);
+//										
+//										temp.add(joinText);
+//										temp.row();
+//										temp.add(cancel).right();
+//										
+//									}
+//								});    					
+//		    					
+//		    					
+//								temp.add(passText).top().left();
+//								temp.row();
+//		    					temp.add(pass);
+//		    					temp.add(enter);
+//		    					temp.row();
+//		    					temp.add(cancel).right();
+//		    					Gdx.input.setInputProcessor(createRoomMenu);
+//		    					
+//		    				}
+//		    			});
+//	        			roomInfo.setColor(1,1,1,1);
+//		    			playerCount.setColor(1,1,1,1);
+//        			}
+//        			else {
+//        				roomInfo.setColor(0,0,0,0.5f);
+//		    			playerCount.setColor(0,0,0,0.5f);
+//	        		}
+//        			Image locked = new Image(Resources.getInstance().lock);
+//        			join.add(roomInfo).center();
+//        			join.add(locked).width(28).height((int) join.height).right();
+//        			join.add(playerCount).right();
+//	    			table.row();
+//	    			table.add(join).fill().expandX();
+//	    			roomNumber++;
+//        		}
+//	        }
+//	        roomCnt = Network.getInstance().rooms.size();
+//	        
+//		}
 		 
 
 	}
@@ -622,7 +619,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 	}
 
 	@Override
-	public boolean touchMoved(int arg0, int arg1) {
+	public boolean mouseMoved(int screenX, int screenY) {
 		// TODO Auto-generated method stub
 		return false;
 	}

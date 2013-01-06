@@ -3,18 +3,14 @@ package de.redlion.badminton.render;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g3d.AnimatedModelNode;
 import com.badlogic.gdx.graphics.g3d.StillModelNode;
-import com.badlogic.gdx.graphics.g3d.lights.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.lights.LightManager;
-import com.badlogic.gdx.graphics.g3d.lights.LightManager.LightQuality;
 import com.badlogic.gdx.graphics.g3d.loaders.ModelLoaderRegistry;
-import com.badlogic.gdx.graphics.g3d.materials.AnimateAttribute;
+import com.badlogic.gdx.graphics.g3d.loaders.g3d.chunks.G3dExporter;
 import com.badlogic.gdx.graphics.g3d.materials.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.materials.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.materials.Material;
@@ -23,8 +19,6 @@ import com.badlogic.gdx.graphics.g3d.materials.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.model.keyframe.KeyframedAnimation;
 import com.badlogic.gdx.graphics.g3d.model.keyframe.KeyframedModel;
 import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
-import com.badlogic.gdx.graphics.g3d.test.PrototypeRendererGL20;
-import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -34,6 +28,7 @@ import de.redlion.badminton.Birdie;
 import de.redlion.badminton.GameSession;
 import de.redlion.badminton.Player;
 import de.redlion.badminton.opponent.Opponent;
+import de.redlion.badminton.render.LightManager.LightQuality;
 
 public class RenderStadium {
 	
@@ -125,14 +120,15 @@ public class RenderStadium {
 				.internal("data/birdie_shadow.g3dt"));
 		modelBirdieShadowTex = new Texture(
 				Gdx.files.internal("data/shadow.png"), false);
-
-		modelCourt = ModelLoaderRegistry.loadStillModel(Gdx.files
-				.internal("data/court.g3dt"));
-		modelCourtTex = new Texture(Gdx.files.internal("data/court_only.png"),
-				true);
-
-		modelStadium = ModelLoaderRegistry.loadStillModel(Gdx.files
-				.internal("data/stadium.g3dt"));
+		
+		if(Gdx.files.internal("data/stadium.g3d").exists()) {
+			modelStadium = ModelLoaderRegistry.loadStillModel(Gdx.files.internal("data/stadium.g3d"));
+		} else {
+			modelStadium = ModelLoaderRegistry.loadStillModel(Gdx.files.internal("data/stadium.g3dt"));
+			G3dExporter.export(modelStadium, Gdx.files.absolute("data/stadium.g3d"));
+		}
+		
+		
 		modelStadiumTex = new Texture(Gdx.files.internal("data/uv_map.png"),
 				true);
 		modelStadiumTex.setFilter(TextureFilter.MipMapLinearLinear,
@@ -148,11 +144,19 @@ public class RenderStadium {
 		modelShadowTex = new Texture(Gdx.files.internal("data/shadow.png"),
 				false);
 		
-		modelOctopus = ModelLoaderRegistry.loadKeyframedModel(Gdx.files
-				.internal("data/octopus_anim.g3dt"));
+		if(Gdx.files.internal("data/octopus_anim.g3d").exists()) {
+			modelOctopus = ModelLoaderRegistry.loadKeyframedModel(Gdx.files.internal("data/octopus_anim.g3d"));
+		} else {
+			modelOctopus = ModelLoaderRegistry.loadKeyframedModel(Gdx.files.internal("data/octopus_anim.g3dt"));
+			G3dExporter.export(modelOctopus, Gdx.files.absolute("data/octopus_anim.g3d"));
+		}
 		
-		modelElephant = ModelLoaderRegistry.loadKeyframedModel(Gdx.files
-				.internal("data/elephant_anim.g3dt"));
+		if(Gdx.files.internal("data/elephant_anim.g3d").exists()) {
+			modelElephant = ModelLoaderRegistry.loadKeyframedModel(Gdx.files.internal("data/elephant_anim.g3d"));
+		} else {
+			modelElephant = ModelLoaderRegistry.loadKeyframedModel(Gdx.files.internal("data/elephant_anim.g3dt"));
+			G3dExporter.export(modelElephant, Gdx.files.absolute("data/elephant_anim.g3d"));
+		}
 		
 		player = GameSession.getInstance().player;
 		birdie = GameSession.getInstance().birdie;

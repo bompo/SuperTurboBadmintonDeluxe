@@ -617,7 +617,7 @@ public class GameControls implements InputProcessor {
 	}
 
 	@Override
-	public boolean touchMoved(int arg0, int arg1) {
+	public boolean mouseMoved(int screenX, int screenY) {
 		// TODO Auto-generated method stub
 		return false;
 	}

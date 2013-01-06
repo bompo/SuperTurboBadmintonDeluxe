@@ -116,18 +116,18 @@ public class Birdie {
 
 	public void reset() {
 		
-		if (currentPosition.z < 0) {
+//		if (currentPosition.z < 0) {
 			currentPosition = GameSession.getInstance().player.position.cpy()
 					.add(-0.5f, 0, 0);
 			currentPosition.y = 0f;
 			toPosition = new Vector3(0, -6, -0.5f);
-		} else {
-			currentPosition = GameSession.getInstance().opponent.position.cpy()
-					.add(-0.5f, 0, 0);
-			currentPosition.y = 0f;
-			toPosition = new Vector3(0, -6, -0.5f);
-			
-		}
+//		} else {
+//			currentPosition = GameSession.getInstance().opponent.position.cpy()
+//					.add(-0.5f, 0, 0);
+//			currentPosition.y = 0f;
+//			toPosition = new Vector3(0, -6, -0.5f);
+//			
+//		}
 		t=0;
 		state = STATE.HELD;
 

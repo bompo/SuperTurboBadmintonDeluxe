@@ -174,6 +174,8 @@ public class NetworkMultiPlayerGameScreen extends DefaultScreen {
 				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {
 			birdie.state = Birdie.STATE.HITBYOPPONENT;  //TODO quote-unquote to test movements
 			birdie.hit(opponent, false);
+			
+			opponent.switchState();
 		}
 	}
 
@@ -187,35 +189,9 @@ public class NetworkMultiPlayerGameScreen extends DefaultScreen {
 				&& player.position.dst(birdie.currentPosition) < 1.8f
 				&& birdie.state != Birdie.STATE.HIT) {
 			birdie.state = Birdie.STATE.HIT;
-			// IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT,
-			// UPRIGHT;
 			birdie.hit(player, true);
 			
-			if (player.state == Player.STATE.AIMING) {
-				if (player.aiming == Player.AIMING.UP) {
-					player.state = Player.STATE.UP;
-				} else if (player.aiming == Player.AIMING.DOWN) {
-					player.state = Player.STATE.DOWN;
-				}else if (player.aiming == Player.AIMING.LEFT) {
-					player.state = Player.STATE.LEFT;
-				}else if (player.aiming == Player.AIMING.RIGHT) {
-					player.state = Player.STATE.RIGHT;
-				}else if (player.aiming == Player.AIMING.UPLEFT) {
-					player.state = Player.STATE.UPLEFT;
-				}else if (player.aiming == Player.AIMING.UPRIGHT) {
-					player.state = Player.STATE.UPRIGHT;
-				}else if (player.aiming == Player.AIMING.DOWNLEFT) {
-					player.state = Player.STATE.DOWNLEFT;
-				}else if (player.aiming == Player.AIMING.DOWNRIGHT) {
-					player.state = Player.STATE.DOWNRIGHT;
-				}
-				int tmp = player.aiming.ordinal();
-				player.aimTime = 1;
-				player.aiming = Player.AIMING.IDLE;
-				player.state = Player.STATE.IDLE;
-				
-				player.state = Player.STATE.values()[tmp];
-			}
+			player.switchState();
 		}
 
 	}

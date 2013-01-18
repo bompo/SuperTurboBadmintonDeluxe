@@ -165,35 +165,10 @@ public class LocalMultiPlayerGameScreen extends DefaultScreen {
 				&& player.position.dst(birdie.currentPosition) < 4f
 				&& birdie.state != Birdie.STATE.HIT) {
 			birdie.state = Birdie.STATE.HIT;
-			// IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT,
-			// UPRIGHT;
 			birdie.hit(player, false);
-			
-			if (player.state == Player.STATE.AIMING) {
-				if (player.aiming == Player.AIMING.UP) {
-					player.state = Player.STATE.UP;
-				} else if (player.aiming == Player.AIMING.DOWN) {
-					player.state = Player.STATE.DOWN;
-				} else if (player.aiming == Player.AIMING.LEFT) {
-					player.state = Player.STATE.LEFT;
-				} else if (player.aiming == Player.AIMING.RIGHT) {
-					player.state = Player.STATE.RIGHT;
-				} else if (player.aiming == Player.AIMING.UPLEFT) {
-					player.state = Player.STATE.UPLEFT;
-				} else if (player.aiming == Player.AIMING.UPRIGHT) {
-					player.state = Player.STATE.UPRIGHT;
-				} else if (player.aiming == Player.AIMING.DOWNLEFT) {
-					player.state = Player.STATE.DOWNLEFT;
-				} else if (player.aiming == Player.AIMING.DOWNRIGHT) {
-					player.state = Player.STATE.DOWNRIGHT;
-				}
-				int tmp = player.aiming.ordinal();
-				player.aimTime = 1;
-				player.aiming = Player.AIMING.IDLE;
-				player.state = Player.STATE.IDLE;
 				
-				player.state = Player.STATE.values()[tmp];
-			}
+			player.switchState();
+			
 		}
 		
 		// check if player is in aiming mode and could hit birdie
@@ -201,35 +176,10 @@ public class LocalMultiPlayerGameScreen extends DefaultScreen {
 				&& opponent.position.dst(birdie.currentPosition) < 4f
 				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {
 			birdie.state = Birdie.STATE.HITBYOPPONENT;
-			// IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT,
-			// UPRIGHT;
 			birdie.hit(opponent, false);
 			
-			if (opponent.state == Player.STATE.AIMING) {
-				if (opponent.aiming == Player.AIMING.UP) {
-					opponent.state = Player.STATE.UP;
-				} else if (opponent.aiming == Player.AIMING.DOWN) {
-					opponent.state = Player.STATE.DOWN;
-				} else if (opponent.aiming == Player.AIMING.LEFT) {
-					opponent.state = Player.STATE.LEFT;
-				} else if (opponent.aiming == Player.AIMING.RIGHT) {
-					opponent.state = Player.STATE.RIGHT;
-				} else if (opponent.aiming == Player.AIMING.UPLEFT) {
-					opponent.state = Player.STATE.UPLEFT;
-				} else if (opponent.aiming == Player.AIMING.UPRIGHT) {
-					opponent.state = Player.STATE.UPRIGHT;
-				} else if (opponent.aiming == Player.AIMING.DOWNLEFT) {
-					opponent.state = Player.STATE.DOWNLEFT;
-				} else if (opponent.aiming == Player.AIMING.DOWNRIGHT) {
-					opponent.state = Player.STATE.DOWNRIGHT;
-				}
-				int tmp = opponent.aiming.ordinal();
-				opponent.aimTime = 1;
-				opponent.aiming = Player.AIMING.IDLE;
-				opponent.state = Player.STATE.IDLE;
-				
-				opponent.state = Player.STATE.values()[tmp];
-			}
+			opponent.switchState();
+		
 		}
 
 	}

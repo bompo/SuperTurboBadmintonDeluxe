@@ -270,6 +270,21 @@ public class Player {
 
 	}
 	
+	public void switchState() {
+		if(this.state == STATE.AIMING) {
+			int tmp = this.aiming.ordinal();
+			this.aimTime = 1;
+			this.aiming = Player.AIMING.IDLE;
+			this.state = Player.STATE.values()[tmp];
+		} else {
+			int tmp = this.state.ordinal();
+			this.aimTime = 1;
+			this.aiming = Player.AIMING.values()[tmp];
+			this.state = Player.STATE.AIMING;
+		}
+		
+	}
+	
 	public String toString() {
 		return "Player " + " State: " + state + " Aiming: " + aiming + " Position: "
 				+ (float) MathUtils.round(position.x * 10) / 10. + " " 

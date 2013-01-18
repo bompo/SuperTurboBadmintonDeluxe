@@ -213,32 +213,14 @@ public class GameControls implements InputProcessor {
 			}
 		}
 		if (keycode == player.input.shoot) {
-			if(GameSession.getInstance().birdie.state != Birdie.STATE.HELD && player.position.dst(GameSession.getInstance().birdie.currentPosition) >= 1.3f) {
-				if (player.state != Player.STATE.AIMING) {
-					if (player.state == Player.STATE.UP) {
-						player.aiming = Player.AIMING.UP;
-					} else if (player.state == Player.STATE.DOWN) {
-						player.aiming = Player.AIMING.DOWN;
-					}else if (player.state == Player.STATE.LEFT) {
-						player.aiming = Player.AIMING.LEFT;
-					}else if (player.state == Player.STATE.RIGHT) {
-						player.aiming = Player.AIMING.RIGHT;
-					}else if (player.state == Player.STATE.UPLEFT) {
-						player.aiming = Player.AIMING.UPLEFT;
-					}else if (player.state == Player.STATE.UPRIGHT) {
-						player.aiming = Player.AIMING.UPRIGHT;
-					}else if (player.state == Player.STATE.DOWNLEFT) {
-						player.aiming = Player.AIMING.DOWNLEFT;
-					}else if (player.state == Player.STATE.DOWNRIGHT) {
-						player.aiming = Player.AIMING.DOWNRIGHT;
-					}
-				}
-				player.state = Player.STATE.AIMING;
+			if(GameSession.getInstance().birdie.state != Birdie.STATE.HELD) {
+				player.switchState();
 			}
 			
 			if(player.service && GameSession.getInstance().birdie.state == Birdie.STATE.HELD) {
 				GameSession.getInstance().birdie.hit(player, false);
-				GameSession.getInstance().birdie.state = Birdie.STATE.HIT;				
+				GameSession.getInstance().birdie.state = Birdie.STATE.HIT;		
+				player.switchState();
 			}
 				
 		}

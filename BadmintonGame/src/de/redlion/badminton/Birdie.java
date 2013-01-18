@@ -122,30 +122,24 @@ public class Birdie {
 					.add(-0.5f, 0, 0);
 			currentPosition.y = 0f;
 			toPosition = new Vector3(0, -6, -0.5f);			
-			GameSession.getInstance().player.state = Player.STATE.AIMING;
+			if(GameSession.getInstance().player.state != Player.STATE.AIMING) {
+				GameSession.getInstance().player.switchState();
+			}
 			
 			if(GameSession.getInstance().opponent.state == Player.STATE.AIMING) {
-				int tmp = GameSession.getInstance().opponent.aiming.ordinal();
-				GameSession.getInstance().opponent.aimTime = 1;
-				GameSession.getInstance().opponent.aiming = Player.AIMING.IDLE;
-				GameSession.getInstance().opponent.state = Player.STATE.IDLE;
-				
-				GameSession.getInstance().opponent.state = Player.STATE.values()[tmp];
+				GameSession.getInstance().opponent.switchState();
 			}
 		} else {
 			currentPosition = GameSession.getInstance().opponent.position.cpy()
 					.add(-0.5f, 0, 0);
 			currentPosition.y = 0f;
 			toPosition = new Vector3(0, -6, -0.5f);
-			GameSession.getInstance().opponent.state = Player.STATE.AIMING;
+			if(GameSession.getInstance().opponent.state != Player.STATE.AIMING) {
+				GameSession.getInstance().opponent.switchState();	
+			}			
 			
 			if(GameSession.getInstance().player.state == Player.STATE.AIMING) {
-				int tmp = GameSession.getInstance().player.aiming.ordinal();
-				GameSession.getInstance().player.aimTime = 1;
-				GameSession.getInstance().player.aiming = Player.AIMING.IDLE;
-				GameSession.getInstance().player.state = Player.STATE.IDLE;
-				
-				GameSession.getInstance().player.state = Player.STATE.values()[tmp];
+				GameSession.getInstance().player.switchState();
 			}
 		}
 		t=0;
@@ -169,9 +163,6 @@ public class Birdie {
 		//set player states
 		player.service = false;
 		player.aimTime = 1;
-
-		//disable aiming state and set same state for moving state
-		player.state = Player.STATE.values()[player.aiming.ordinal()];
 		
 		acceleration = player.aimTime;
 		if(acceleration > 1.f)

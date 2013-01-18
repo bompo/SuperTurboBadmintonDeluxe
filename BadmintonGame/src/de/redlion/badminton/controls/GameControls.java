@@ -218,8 +218,7 @@ public class GameControls implements InputProcessor {
 			}
 			
 			if(player.service && GameSession.getInstance().birdie.state == Birdie.STATE.HELD) {
-				GameSession.getInstance().birdie.hit(player, false);
-				GameSession.getInstance().birdie.state = Birdie.STATE.HIT;		
+				GameSession.getInstance().birdie.hit(player, false);	
 				player.switchState();
 			}
 				

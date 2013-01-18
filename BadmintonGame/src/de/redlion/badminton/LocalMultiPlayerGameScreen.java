@@ -164,7 +164,6 @@ public class LocalMultiPlayerGameScreen extends DefaultScreen {
 		if (player.state == Player.STATE.AIMING
 				&& player.position.dst(birdie.currentPosition) < 4f
 				&& birdie.state != Birdie.STATE.HIT) {
-			birdie.state = Birdie.STATE.HIT;
 			birdie.hit(player, false);
 				
 			player.switchState();
@@ -175,7 +174,6 @@ public class LocalMultiPlayerGameScreen extends DefaultScreen {
 		if (opponent.state == Player.STATE.AIMING
 				&& opponent.position.dst(birdie.currentPosition) < 4f
 				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {
-			birdie.state = Birdie.STATE.HITBYOPPONENT;
 			birdie.hit(opponent, false);
 			
 			opponent.switchState();

@@ -163,8 +163,6 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 
 		if (opponent.position.dst(birdie.currentPosition) < 4.0f
 				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {
-			System.out.println("hit by opponent");
-			birdie.state = Birdie.STATE.HITBYOPPONENT;  //TODO quote-unquote to test movements
 
 			int randomAim = MathUtils.random(0, 3);
 			if(randomAim == 0) opponent.aiming = Player.AIMING.LEFT;
@@ -187,7 +185,6 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 		if (player.state == Player.STATE.AIMING
 				&& player.position.dst(birdie.currentPosition) < 4.0f
 				&& birdie.state != Birdie.STATE.HIT) {
-			birdie.state = Birdie.STATE.HIT;
 			birdie.hit(player, false);
 			
 			player.switchState();

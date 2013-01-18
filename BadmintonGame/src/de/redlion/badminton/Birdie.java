@@ -6,6 +6,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 
+import de.redlion.badminton.opponent.Opponent;
+
 public class Birdie {
 
 	public enum STATE {
@@ -38,7 +40,11 @@ public class Birdie {
 
 	public void update() {
 		if (state == STATE.HELD || state == STATE.PREPARED) {
-			currentPosition = GameSession.getInstance().player.position.cpy().add(-0.5f, 0, 0);
+			if(GameSession.getInstance().player.service) {
+				currentPosition = GameSession.getInstance().player.position.cpy().add(-1.0f, 1, 0);
+			} else {
+				currentPosition = GameSession.getInstance().opponent.position.cpy().add(-1.0f, 1, 0);
+			}
 
 		} else {
 					
@@ -157,6 +163,12 @@ public class Birdie {
 	}
 
 	public void hit(Player player, boolean high) {
+		if(player instanceof Opponent) {
+			state = Birdie.STATE.HITBYOPPONENT;
+		} else {
+			state = Birdie.STATE.HIT;
+		}
+		
 		maxHeight = 0;
 		
 		//set player states

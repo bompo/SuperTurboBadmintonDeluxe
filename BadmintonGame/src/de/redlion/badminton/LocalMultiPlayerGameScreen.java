@@ -61,6 +61,9 @@ public class LocalMultiPlayerGameScreen extends DefaultScreen {
 		
 		font = Resources.getInstance().font;
 		font.setScale(1);
+		
+		cam = new PerspectiveCamera(7, Gdx.graphics.getWidth(),	Gdx.graphics.getHeight());
+		cam.lookAt(0, 0, 0.5f);
 
 		initRender();
 	}
@@ -70,26 +73,17 @@ public class LocalMultiPlayerGameScreen extends DefaultScreen {
 				Gdx.graphics.getHeight());
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 		Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+
+		Gdx.gl.glClearColor(0.2f ,0.2f ,0.2f ,1.0f);
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		super.resize(width, height);
-		Vector3 oldPosition = new Vector3();
-		Vector3 oldDirection = new Vector3();
-		if (cam != null) {
-			oldPosition.set(cam.position);
-			oldDirection.set(cam.direction);
-			cam = new PerspectiveCamera(7, Gdx.graphics.getWidth(),
-					Gdx.graphics.getHeight());
-			cam.position.set(oldPosition);
-			cam.lookAt(0, 0, 0.5f);
-		} else {
-			cam = new PerspectiveCamera(7, Gdx.graphics.getWidth(),
-					Gdx.graphics.getHeight());
-			cam.position.set(-0.6f, 7.2f, 38.8f);
-			cam.lookAt(0, -0.2f, -1.1f);
-		}
+		cam.viewportWidth = width;
+		cam.viewportHeight = height;
+		
+		renderDebug.resize(width, height);
 		
 		initRender();
 	}
@@ -119,11 +113,12 @@ public class LocalMultiPlayerGameScreen extends DefaultScreen {
 		collisionTest();
 		updateAI();
 		
-		cam.position.set(0, 20f, 45f);
+		cam.position.set(0, 26f, 58f);
+		cam.fieldOfView = 14;
 		cam.lookAt(0, 0.0f, GameSession.getInstance().birdie.currentPosition.y / 10);
 		cam.up.set(0, 1, 0);
 		cam.near = 0.5f;
-		cam.far = 100f;
+		cam.far = 1000f;
 		renderStadium.updateCamera(cam);
 		renderStadium.render();
 		
@@ -155,11 +150,6 @@ public class LocalMultiPlayerGameScreen extends DefaultScreen {
 	}
 
 	private void updateAI() {	
-		
-		if (birdie.state == Birdie.STATE.HELD && player.position.dst(birdie.currentPosition) < 1.3f) {
-			player.state = Player.STATE.AIMING;
-		}
-
 		birdie.update();
 		player.update();
 		opponent.update();
@@ -172,29 +162,29 @@ public class LocalMultiPlayerGameScreen extends DefaultScreen {
 
 		// check if player is in aiming mode and could hit birdie
 		if (player.state == Player.STATE.AIMING
-				&& player.position.dst(birdie.currentPosition) < 1.8f
+				&& player.position.dst(birdie.currentPosition) < 4f
 				&& birdie.state != Birdie.STATE.HIT) {
 			birdie.state = Birdie.STATE.HIT;
 			// IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT,
 			// UPRIGHT;
-			birdie.hit(player, true);
+			birdie.hit(player, false);
 			
 			if (player.state == Player.STATE.AIMING) {
 				if (player.aiming == Player.AIMING.UP) {
 					player.state = Player.STATE.UP;
 				} else if (player.aiming == Player.AIMING.DOWN) {
 					player.state = Player.STATE.DOWN;
-				}else if (player.aiming == Player.AIMING.LEFT) {
+				} else if (player.aiming == Player.AIMING.LEFT) {
 					player.state = Player.STATE.LEFT;
-				}else if (player.aiming == Player.AIMING.RIGHT) {
+				} else if (player.aiming == Player.AIMING.RIGHT) {
 					player.state = Player.STATE.RIGHT;
-				}else if (player.aiming == Player.AIMING.UPLEFT) {
+				} else if (player.aiming == Player.AIMING.UPLEFT) {
 					player.state = Player.STATE.UPLEFT;
-				}else if (player.aiming == Player.AIMING.UPRIGHT) {
+				} else if (player.aiming == Player.AIMING.UPRIGHT) {
 					player.state = Player.STATE.UPRIGHT;
-				}else if (player.aiming == Player.AIMING.DOWNLEFT) {
+				} else if (player.aiming == Player.AIMING.DOWNLEFT) {
 					player.state = Player.STATE.DOWNLEFT;
-				}else if (player.aiming == Player.AIMING.DOWNRIGHT) {
+				} else if (player.aiming == Player.AIMING.DOWNRIGHT) {
 					player.state = Player.STATE.DOWNRIGHT;
 				}
 				int tmp = player.aiming.ordinal();
@@ -203,6 +193,42 @@ public class LocalMultiPlayerGameScreen extends DefaultScreen {
 				player.state = Player.STATE.IDLE;
 				
 				player.state = Player.STATE.values()[tmp];
+			}
+		}
+		
+		// check if player is in aiming mode and could hit birdie
+		if (opponent.state == Player.STATE.AIMING
+				&& opponent.position.dst(birdie.currentPosition) < 4f
+				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {
+			birdie.state = Birdie.STATE.HITBYOPPONENT;
+			// IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT,
+			// UPRIGHT;
+			birdie.hit(opponent, false);
+			
+			if (opponent.state == Player.STATE.AIMING) {
+				if (opponent.aiming == Player.AIMING.UP) {
+					opponent.state = Player.STATE.UP;
+				} else if (opponent.aiming == Player.AIMING.DOWN) {
+					opponent.state = Player.STATE.DOWN;
+				} else if (opponent.aiming == Player.AIMING.LEFT) {
+					opponent.state = Player.STATE.LEFT;
+				} else if (opponent.aiming == Player.AIMING.RIGHT) {
+					opponent.state = Player.STATE.RIGHT;
+				} else if (opponent.aiming == Player.AIMING.UPLEFT) {
+					opponent.state = Player.STATE.UPLEFT;
+				} else if (opponent.aiming == Player.AIMING.UPRIGHT) {
+					opponent.state = Player.STATE.UPRIGHT;
+				} else if (opponent.aiming == Player.AIMING.DOWNLEFT) {
+					opponent.state = Player.STATE.DOWNLEFT;
+				} else if (opponent.aiming == Player.AIMING.DOWNRIGHT) {
+					opponent.state = Player.STATE.DOWNRIGHT;
+				}
+				int tmp = opponent.aiming.ordinal();
+				opponent.aimTime = 1;
+				opponent.aiming = Player.AIMING.IDLE;
+				opponent.state = Player.STATE.IDLE;
+				
+				opponent.state = Player.STATE.values()[tmp];
 			}
 		}
 

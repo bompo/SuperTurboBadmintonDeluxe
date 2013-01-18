@@ -156,10 +156,7 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 		}
 	}
 
-	private void updateAI() {	
-		
-		if (birdie.state == Birdie.STATE.HELD && player.position.dst(birdie.currentPosition) < 1.3f)
-			player.state = Player.STATE.AIMING;
+	private void updateAI() {
 		player.update();
 		birdie.update();
 		opponent.update(player.position);
@@ -186,12 +183,12 @@ public class SinglePlayerGameScreen extends DefaultScreen {
 
 		// check if player is in aiming mode and could hit birdie
 		if (player.state == Player.STATE.AIMING
-				&& player.position.dst(birdie.currentPosition) < 1.8f
+				&& player.position.dst(birdie.currentPosition) < 4.0f
 				&& birdie.state != Birdie.STATE.HIT) {
 			birdie.state = Birdie.STATE.HIT;
 			// IDLE, UP, DOWN, LEFT, RIGHT, DOWNLEFT, UPLEFT, DOWNRIGHT,
 			// UPRIGHT;
-			birdie.hit(player, true);
+			birdie.hit(player, false);
 			
 			if (player.state == Player.STATE.AIMING) {
 				if (player.aiming == Player.AIMING.UP) {

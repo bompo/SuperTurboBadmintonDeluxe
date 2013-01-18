@@ -28,6 +28,7 @@ public class Birdie {
 	public Array<Vector3> trajectoryPath = new Array<Vector3>();
 
 	public float acceleration = 1;
+	public final float speed = 0.75f;
 	
 	float t = 0;
 	public STATE state = STATE.HELD;
@@ -58,9 +59,9 @@ public class Birdie {
 			up.nor();
 			
 			if(!smash)
-				t+= (Gdx.graphics.getDeltaTime()) * acceleration;
+				t+= (Gdx.graphics.getDeltaTime()) * acceleration * speed;
 			else
-				t+= (Gdx.graphics.getDeltaTime()) * acceleration;
+				t+= (Gdx.graphics.getDeltaTime()) * acceleration * speed;
 			
 			if(acceleration > 1.5f)
 				trajectoryPath.add(currentPosition);
@@ -116,18 +117,37 @@ public class Birdie {
 
 	public void reset() {
 		
-//		if (currentPosition.z < 0) {
+		if (currentPosition.z < 0) {
 			currentPosition = GameSession.getInstance().player.position.cpy()
 					.add(-0.5f, 0, 0);
 			currentPosition.y = 0f;
+			toPosition = new Vector3(0, -6, -0.5f);			
+			GameSession.getInstance().player.state = Player.STATE.AIMING;
+			
+			if(GameSession.getInstance().opponent.state == Player.STATE.AIMING) {
+				int tmp = GameSession.getInstance().opponent.aiming.ordinal();
+				GameSession.getInstance().opponent.aimTime = 1;
+				GameSession.getInstance().opponent.aiming = Player.AIMING.IDLE;
+				GameSession.getInstance().opponent.state = Player.STATE.IDLE;
+				
+				GameSession.getInstance().opponent.state = Player.STATE.values()[tmp];
+			}
+		} else {
+			currentPosition = GameSession.getInstance().opponent.position.cpy()
+					.add(-0.5f, 0, 0);
+			currentPosition.y = 0f;
 			toPosition = new Vector3(0, -6, -0.5f);
-//		} else {
-//			currentPosition = GameSession.getInstance().opponent.position.cpy()
-//					.add(-0.5f, 0, 0);
-//			currentPosition.y = 0f;
-//			toPosition = new Vector3(0, -6, -0.5f);
-//			
-//		}
+			GameSession.getInstance().opponent.state = Player.STATE.AIMING;
+			
+			if(GameSession.getInstance().player.state == Player.STATE.AIMING) {
+				int tmp = GameSession.getInstance().player.aiming.ordinal();
+				GameSession.getInstance().player.aimTime = 1;
+				GameSession.getInstance().player.aiming = Player.AIMING.IDLE;
+				GameSession.getInstance().player.state = Player.STATE.IDLE;
+				
+				GameSession.getInstance().player.state = Player.STATE.values()[tmp];
+			}
+		}
 		t=0;
 		state = STATE.HELD;
 
@@ -250,12 +270,12 @@ public class Birdie {
 		via2.x = toPosition.x * 0.7f + middleX * 0.3f;
 		
 		if(high) {
-			via1.y = 15;
-			via2.y = 15;
+			via1.y = 12;
+			via2.y = 12;
 		}
 		else {
-			via1.y = 6;
-			via2.y = 6;
+			via1.y = 8;
+			via2.y = 8;
 			
 			if(acceleration > 1.5f) {
 				via1.y = -2.0f;
@@ -270,32 +290,9 @@ public class Birdie {
 		System.out.println(fromPosition);
 		System.out.println(via1);
 		System.out.println(via2);
-		System.out.println(toPosition);
-		
-		
+		System.out.println(toPosition);		
 	}
-	
-	//placeholder for opponent hit
-	public void hit(boolean smash) {
-		maxHeight = 0;
 		
-		smash = false;
-		t=0;
-		fromPosition = currentPosition.cpy();
-		acceleration = 1;
-		toPosition.x = 0;
-		toPosition.z = 3.5f;
-		
-		float middleY = (fromPosition.z + toPosition.z) / 2;
-		
-		via1.z = fromPosition.y + middleY/2;
-		via2.z = toPosition.y + middleY/2;
-		
-		via1.x = 1/3 * toPosition.x + fromPosition.x;
-		
-		via2.x = toPosition.x + 1/3 * fromPosition.x;
-	}
-	
 	public void fuzzyPosition(Vector3 pos, float aimTime) {		
 		float x = (float) Math.random() * aimTime * 2 - aimTime;
 		float z = (float) Math.random() * aimTime * 2 - aimTime;

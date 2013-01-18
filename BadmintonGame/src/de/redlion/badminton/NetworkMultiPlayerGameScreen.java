@@ -173,7 +173,7 @@ public class NetworkMultiPlayerGameScreen extends DefaultScreen {
 		if (opponent.position.dst(birdie.currentPosition) < 1.0f
 				&& birdie.state != Birdie.STATE.HITBYOPPONENT) {
 			birdie.state = Birdie.STATE.HITBYOPPONENT;  //TODO quote-unquote to test movements
-			birdie.hit(false);
+			birdie.hit(opponent, false);
 		}
 	}
 

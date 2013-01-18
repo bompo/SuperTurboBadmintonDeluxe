@@ -24,7 +24,7 @@ public class Player {
 	
 	public ControlMappings input;
 
-	final static float SPEED = 2;
+	final static float SPEED = 8;
 	final static float MOMENTUM = 0.85f;
 	
 	public SIDE side = SIDE.BOTTOM;
@@ -48,6 +48,9 @@ public class Player {
 	public Player(SIDE side, boolean service) {		
 		this.side = side;
 		this.service = service;
+		if(this.service) {
+			state = STATE.AIMING;
+		}
 		if(side == SIDE.TOP) {
 			position = new Vector3(0, 0, -3);
 		}
@@ -250,8 +253,8 @@ public class Player {
 			}
 		}
 		if (side == SIDE.TOP) {
-			if (position.z > 1.5f) {
-				position.z = 1.5f;
+			if (position.z > -1.5f) {
+				position.z = -1.5f;
 			}
 
 			if (position.z < borders.min.z + 1.5f) {

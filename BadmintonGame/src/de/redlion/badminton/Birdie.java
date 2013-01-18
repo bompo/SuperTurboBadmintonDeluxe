@@ -129,6 +129,9 @@ public class Birdie {
 			if(GameSession.getInstance().opponent.state == Player.STATE.AIMING) {
 				GameSession.getInstance().opponent.switchState();
 			}
+			
+			GameSession.getInstance().player.service = true;
+			GameSession.getInstance().opponent.service = false;
 		} else {
 			currentPosition = GameSession.getInstance().opponent.position.cpy()
 					.add(-0.5f, 0, 0);
@@ -141,17 +144,13 @@ public class Birdie {
 			if(GameSession.getInstance().player.state == Player.STATE.AIMING) {
 				GameSession.getInstance().player.switchState();
 			}
+			
+			GameSession.getInstance().player.service = false;
+			GameSession.getInstance().opponent.service = true;
 		}
 		t=0;
 		state = STATE.HELD;
 
-		if(GameSession.getInstance().player.state == Player.STATE.AIMING) {
-			GameSession.getInstance().player.aiming = Player.AIMING.IDLE;
-		} else {
-			GameSession.getInstance().player.aiming = Player.AIMING.values()[GameSession.getInstance().player.state.ordinal()];
-		}
-		GameSession.getInstance().player.service = true;
-		
 		smash = false;
 		
 		trajectoryPath.clear();

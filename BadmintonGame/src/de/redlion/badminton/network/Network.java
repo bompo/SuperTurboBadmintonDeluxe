@@ -70,7 +70,7 @@ public class Network {
 	private void connectToServer() {
 		
 		try {
-			socket = new SocketIO("http://217.234.97.210:19834");
+			socket = new SocketIO("http://badminton.no-ip.org:19834");
 //			socket = new SocketIO("http://localhost:19834");
 //			socket = new SocketIO("http://superturbobadminton.nodester.com:80");
 

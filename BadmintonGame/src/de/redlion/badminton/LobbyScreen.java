@@ -83,7 +83,7 @@ public class LobbyScreen extends DefaultScreen implements InputProcessor {
 		font = Resources.getInstance().font;
 		font.setScale(1);
 		
-		skin = new Skin(Gdx.files.internal("data/skin.json"));
+		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 		
 		//ui stuff	
 		container = new Table();
